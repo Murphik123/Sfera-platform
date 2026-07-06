@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СФЕРА — Единая цифровая платформа Туркменистана</title>
+
+    <!-- Шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* =====================================================
+           ВСЕ СТИЛИ (адаптированы под "СФЕРА")
+        ===================================================== */
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #1f6bff;
+            --accent: #00ffa3;
+            --dark: #08131d;
+            --dark2: #0d1c29;
+            --dark3: #142738;
+            --glass: rgba(255,255,255,.08);
+            --border: rgba(255,255,255,.15);
+            --white: #ffffff;
+            --text: #dbe9ff;
+            --shadow: 0 20px 60px rgba(0,0,0,.35);
+            --radius: 22px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: linear-gradient(135deg, #06111d, #0b2035, #102b45);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(0,212,255,.15), transparent 35%),
+                radial-gradient(circle at 80% 20%, rgba(0,255,170,.10), transparent 35%),
+                radial-gradient(circle at 60% 80%, rgba(32,108,255,.15), transparent 40%);
+            animation: bgmove 18s linear infinite;
+            z-index: -2;
+        }
+
+        @keyframes bgmove {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(-8%,-5%); }
+            100% { transform: translate(0,0); }
+        }
+
+        .container {
+            width: min(1400px, 92%);
+            margin: auto;
+        }
+
+        /* ================= HEADER ================= */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
+            backdrop-filter: blur(18px);
+            background: rgba(5,15,25,.55);
+            border-bottom: 1px solid var(--border);
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            font-weight: 800;
+            box-shadow: 0 0 30px rgba(0,212,255,.5);
+            color: white;
+        }
+
+        .logo-text h2 {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            color: #8fb6d8;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: .3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .header-buttons a,
+        .header-buttons button {
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: .3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .lang {
+            background: transparent;
+            border: 1px solid var(--border) !important;
+            color: white;
+        }
+
+        .login {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,212,255,.35);
+        }
+
+        /* ================= HERO ================= */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            padding: 120px 7% 80px;
+            gap: 60px;
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0,0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        #heroCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.5;
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+            animation: pulseGlow 4s ease-in-out infinite alternate;
+        }
+
+        .glow-left {
+            top: -10%;
+            left: -10%;
+            background: rgba(0,212,255,.4);
+        }
+
+        .glow-right {
+            bottom: -10%;
+            right: -10%;
+            background: rgba(0,255,170,.3);
+            animation-delay: 2s;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1); opacity: 0.2; }
+            100% { transform: scale(1.2); opacity: 0.5; }
+        }
+
+        .map-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+        }
+
+        .tm-map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-outline {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawMap 8s ease forwards;
+        }
+
+        @keyframes drawMap {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: rgba(0,212,255,.12);
+            border: 1px solid rgba(0,212,255,.3);
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 25px;
+        }
+
+        .hero-content h1 {
+            font-size: 64px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #fff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .hero-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #bcd0e2;
+            max-width: 550px;
+            margin-bottom: 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .hero-buttons a,
+        .hero-buttons button {
+            padding: 18px 40px;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: .35s;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #00d4ff, #008cff);
+            color: white;
+            box-shadow: 0 20px 45px rgba(0,212,255,.35);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0,212,255,.5);
+        }
+
+        .glass-btn {
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.25);
+            backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .glass-btn:hover {
+            background: rgba(255,255,255,.15);
+            transform: translateY(-5px);
+        }
+
+        .hero-visual {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .core {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .core-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(0,212,255,.3);
+            animation: spinRing linear infinite;
+        }
+
+        .ring-1 {
+            width: 100%;
+            height: 100%;
+            animation-duration: 20s;
+        }
+
+        .ring-2 {
+            width: 120%;
+            height: 120%;
+            animation-duration: 15s;
+            animation-direction: reverse;
+            border-color: rgba(0,255,170,.2);
+        }
+
+        .ring-3 {
+            width: 140%;
+            height: 140%;
+            animation-duration: 25s;
+            border-color: rgba(31,107,255,.2);
+        }
+
+        @keyframes spinRing {
+            to { transform: rotate(360deg); }
+        }
+
+        .core-center {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00d4ff, #004d80);
+            box-shadow: 0 0 80px rgba(0,212,255,.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 0 20px rgba(0,0,0,.3);
+            animation: pulseCore 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseCore {
+            0% { transform: scale(1); box-shadow: 0 0 80px rgba(0,212,255,.4); }
+            100% { transform: scale(1.05); box-shadow: 0 0 120px rgba(0,212,255,.7); }
+        }
+
+        /* ================= MODULES ================= */
+        .modules {
+            padding: 120px 7%;
+        }
+
+        .modules h2 {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 70px;
+            font-weight: 800;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+        }
+
+        .card {
+            position: relative;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.12);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 45px;
+            overflow: hidden;
+            transition: .45s;
+            box-shadow: 0 25px 45px rgba(0,0,0,.25);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 220%;
+            height: 220%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,.08), transparent);
+            transition: .7s;
+        }
+
+        .card:hover::before {
+            top: 0;
+            left: 0;
+        }
+
+        .card:hover {
+            transform: translateY(-12px);
+            border-color: #00d4ff;
+            box-shadow: 0 35px 70px rgba(0,212,255,.25);
+        }
+
+        .icon {
+            font-size: 60px;
+            margin-bottom: 25px;
+        }
+
+        .card h3 {
+            font-size: 30px;
+            margin-bottom: 18px;
+        }
+
+        .card p {
+            line-height: 1.8;
+            color: #bfd3e4;
+        }
+
+        /* ================= STATISTICS ================= */
+        .statistics {
+            padding: 120px 7%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 35px;
+        }
+
+        .stat {
+            background: rgba(255,255,255,.05);
+            border-radius: 22px;
+            padding: 45px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,.10);
+            transition: .35s;
+        }
+
+        .stat:hover {
+            transform: scale(1.05);
+        }
+
+        .stat h1 {
+            font-size: 60px;
+            background: linear-gradient(#00d4ff, #00ffa3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .stat p {
+            font-size: 18px;
+            color: #bdd0df;
+        }
+
+        /* ================= NEWS ================= */
+        .news {
+            padding: 120px 7%;
+        }
+
+        .news h2 {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 60px;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 35px;
+        }
+
+        .news-card {
+            padding: 35px;
+            border-radius: 22px;
+            background: rgba(255,255,255,.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,.08);
+            transition: .35s;
+        }
+
+        .news-card:hover {
+            transform: translateY(-10px);
+            border-color: #00d4ff;
+        }
+
+        .news-card h3 {
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .news-card p {
+            color: #bdd0df;
+            line-height: 1.7;
+        }
+
+        /* ================= FOOTER ================= */
+        footer {
+            margin-top: 120px;
+            padding: 70px;
+            text-align: center;
+            background: #08131d;
+            border-top: 1px solid rgba(255,255,255,.10);
+        }
+
+        footer h2 {
+            font-size: 38px;
+            margin-bottom: 15px;
+        }
+
+        footer p {
+            color: #9fb5c8;
+        }
+
+        /* ================= SCROLLBAR ================= */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 20px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #08131d;
+        }
+
+        .hidden {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: .8s;
+        }
+
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #particles {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #00d4ff;
+            opacity: .5;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { opacity: .6; }
+            80% { opacity: .6; }
+            100% { transform: translateY(-120vh); opacity: 0; }
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media(max-width: 1200px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 120px 5% 60px;
+            }
+            .hero-content { max-width: 100%; }
+            .hero-text { max-width: 100%; margin: 0 auto 40px; }
+            .hero-buttons { justify-content: center; }
+            .hero-visual { margin-top: 40px; }
+            .core { width: 240px; height: 240px; }
+            .core-center { width: 100px; height: 100px; font-size: 28px; }
+            .hero-content h1 { font-size: 44px; }
+            nav { display: none; }
+        }
+
+        @media(max-width: 768px) {
+            .hero-content h1 { font-size: 32px; }
+            .hero-subtitle { font-size: 18px; }
+            .hero-text { font-size: 16px; }
+            .modules h2, .news h2 { font-size: 34px; }
+            .core { width: 180px; height: 180px; }
+            .core-center { width: 80px; height: 80px; font-size: 22px; }
+            .primary-btn, .glass-btn { padding: 14px 28px; font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="particles"></div>
+
+    <!-- ========== HEADER ========== -->
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">С</div>
+                <div class="logo-text">
+                    <h2>СФЕРА</h2>
+                    <p>Национальная Цифровая Платформа</p>
+                </div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#">Главная</a></li>
+                    <li><a href="#">Биржа</a></li>
+                    <li><a href="#">TM Pay</a></li>
+                    <li><a href="#">TM Coin</a></li>
+                    <li><a href="#">Банк</a></li>
+                    <li><a href="#">ИИ</a></li>
+                    <li><a href="#">Документы</a></li>
+                    <li><a href="#">Контакты</a></li>
+                </ul>
+            </nav>
+            <div class="header-buttons">
+                <button class="lang">RU</button>
+                <a href="login.html" class="login">Войти</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== HERO ========== -->
+    <section class="hero">
+        <div class="hero-grid"></div>
+        <canvas id="heroCanvas"></canvas>
+        <div class="hero-glow glow-left"></div>
+        <div class="hero-glow glow-right"></div>
+
+        <div class="map-wrapper">
+            <svg class="tm-map" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00d4ff"/>
+                        <stop offset="100%" stop-color="#00ff99"/>
+                    </linearGradient>
+                </defs>
+                <path d="M92 270 L150 210 L280 170 L420 120 L580 140 L710 160 L790 210 L760 290 L640 340 L540 370 L360 360 L220 330 L120 300 Z"
+                      fill="rgba(0,212,255,.08)" stroke="url(#mapGradient)" stroke-width="3" class="map-outline"/>
+            </svg>
+        </div>
+
+        <div class="hero-content">
+            <span class="hero-tag">СФЕРА — ЦИФРОВАЯ ПЛАТФОРМА</span>
+            <h1>Единая цифровая<br>платформа Туркменистана</h1>
+            <p class="hero-subtitle">Торговля • ИИ • Платежи • Банк • Документооборот</p>
+            <p class="hero-text">
+                Современная государственная цифровая экосистема, объединяющая электронную торговлю, интеллектуальную аналитику, финансовые сервисы, документооборот и цифровые государственные услуги.
+            </p>
+            <div class="hero-buttons">
+                <a href="dashboard.html" class="primary-btn">Начать работу</a>
+                <a href="#" class="glass-btn">Демо</a>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="core">
+                <div class="core-ring ring-1"></div>
+                <div class="core-ring ring-2"></div>
+                <div class="core-ring ring-3"></div>
+                <div class="core-center">С</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== МОДУЛИ ========== -->
+    <section class="modules">
+        <h2>Основные модули платформы</h2>
+        <div class="grid">
+            <div class="card"><div class="icon">🛒</div><h3>Биржа</h3><p>Электронная торговая площадка</p></div>
+            <div class="card"><div class="icon">💳</div><h3>TM Pay</h3><p>Национальная платежная система</p></div>
+            <div class="card"><div class="icon">₮</div><h3>TM Coin</h3><p>Цифровая государственная валюта</p></div>
+            <div class="card"><div class="icon">🏦</div><h3>Банк</h3><p>Цифровой банк "Благо"</p></div>
+            <div class="card"><div class="icon">🤖</div><h3>ИИ</h3><p>Проверка документов, прогнозирование, аналитика</p></div>
+            <div class="card"><div class="icon">📄</div><h3>Документы</h3><p>Автоматическая верификация</p></div>
+        </div>
+    </section>
+
+    <!-- ========== СТАТИСТИКА ========== -->
+    <section class="statistics">
+        <div class="stat"><h1 id="users">0</h1><p>Пользователей</p></div>
+        <div class="stat"><h1 id="orders">0</h1><p>Сделок</p></div>
+        <div class="stat"><h1 id="docs">0</h1><p>Документов</p></div>
+        <div class="stat"><h1 id="coin">0</h1><p>TM Coin</p></div>
+    </section>
+
+    <!-- ========== НОВОСТИ ========== -->
+    <section class="news">
+        <h2>Последние новости</h2>
+        <div class="news-grid">
+            <div class="news-card"><h3>Запуск платформы</h3><p>Современная цифровая экосистема нового поколения.</p></div>
+            <div class="news-card"><h3>ИИ модуль</h3><p>Автоматическая проверка документов.</p></div>
+            <div class="news-card"><h3>TM Pay</h3><p>Национальная система мгновенных платежей.</p></div>
+        </div>
+    </section>
+
+    <!-- ========== ФУТЕР ========== -->
+    <footer>
+        <h2>СФЕРА</h2>
+        <p>© 2026 — Национальная цифровая платформа</p>
+    </footer>
+
+    <!-- ========== СКРИПТЫ ========== -->
+    <script>
+        // Canvas: линии данных
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('heroCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h;
+
+            function resize() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                w = canvas.width;
+                h = canvas.height;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const points = [];
+            for (let i = 0; i < 30; i++) {
+                points.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.6,
+                    vy: (Math.random() - 0.5) * 0.6,
+                });
+            }
+
+            function drawLines() {
+                ctx.clearRect(0, 0, w, h);
+                points.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > w) p.vx *= -1;
+                    if (p.y < 0 || p.y > h) p.vy *= -1;
+                });
+                for (let i = 0; i < points.length; i++) {
+                    for (let j = i+1; j < points.length; j++) {
+                        const dx = points[i].x - points[j].x;
+                        const dy = points[i].y - points[j].y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(points[i].x, points[i].y);
+                            ctx.lineTo(points[j].x, points[j].y);
+                            ctx.strokeStyle = `rgba(0,212,255,${0.15 * (1 - dist/150)})`;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                points.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0,212,255,0.5)';
+                    ctx.fill();
+                });
+                requestAnimationFrame(drawLines);
+            }
+            drawLines();
+        });
+
+        // Анимированные счётчики
+        const counters = [
+            { id: "users", target: 2340000 },
+            { id: "orders", target: 18540291 },
+            { id: "docs", target: 11328901 },
+            { id: "coin", target: 21000000 }
+        ];
+
+        function animateCounter(el, target) {
+            let value = 0;
+            const step = Math.max(1, Math.floor(target / 180));
+            const timer = setInterval(() => {
+                value += step;
+                if (value >= target) {
+                    value = target;
+                    clearInterval(timer);
+                }
+                el.textContent = value.toLocaleString("ru-RU");
+            }, 16);
+        }
+
+        window.addEventListener("load", () => {
+            counters.forEach(c => {
+                const el = document.getElementById(c.id);
+                if (el) animateCounter(el, c.target);
+            });
+        });
+
+        // Intersection Observer
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll(".card, .news-card, .stat").forEach(el => {
+            el.classList.add("hidden");
+            observer.observe(el);
+        });
+
+        // Hover эффект на карточках
+        document.querySelectorAll(".card").forEach(card => {
+            card.addEventListener("mousemove", e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.background = `
+                    radial-gradient(circle at ${x}px ${y}px,
+                    rgba(0,212,255,.18),
+                    rgba(255,255,255,.05))
+                `;
+            });
+            card.addEventListener("mouseleave", () => {
+                card.style.background = "rgba(255,255,255,.06)";
+            });
+        });
+
+        // Липкий хедер
+        const header = document.querySelector("header");
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 50) {
+                header.style.background = "rgba(5,15,25,.85)";
+                header.style.boxShadow = "0 10px 35px rgba(0,0,0,.35)";
+            } else {
+                header.style.background = "rgba(5,15,25,.55)";
+                header.style.boxShadow = "none";
+            }
+        });
+
+        // Частицы
+        const particles = document.getElementById("particles");
+        if (particles) {
+            for (let i = 0; i < 60; i++) {
+                const p = document.createElement("span");
+                p.className = "particle";
+                p.style.left = Math.random() * 100 + "%";
+                p.style.top = Math.random() * 100 + "%";
+                p.style.animationDuration = (6 + Math.random() * 12) + "s";
+                p.style.animationDelay = Math.random() * 5 + "s";
+                particles.appendChild(p);
+            }
+        }
+
+        // Кнопки
+        document.querySelectorAll("button").forEach(btn => {
+            btn.addEventListener("mouseenter", () => {
+                btn.style.transform = "translateY(-3px) scale(1.03)";
+            });
+            btn.addEventListener("mouseleave", () => {
+                btn.style.transform = "";
+            });
+        });
+
+        // Переключение языка (демо)
+        const langButton = document.querySelector(".lang");
+        const langs = ["RU", "TM", "EN"];
+        let langIndex = 0;
+        if (langButton) {
+            langButton.addEventListener("click", () => {
+                langIndex++;
+                if (langIndex >= langs.length) langIndex = 0;
+                langButton.textContent = langs[langIndex];
+            });
+        }
+
+        // Эффект пульсации сферы
+        const core = document.querySelector(".core-center");
+        if (core) {
+            setInterval(() => {
+                core.style.boxShadow = "0 0 " + (80 + Math.random() * 60) + "px rgba(0,212,255,.6)";
+            }, 1500);
+        }
+
+        console.log("СФЕРА ПЛАТФОРМА загружена");
+    </script>
+</body>
+</html>

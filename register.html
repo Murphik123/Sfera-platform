@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СФЕРА — Регистрация</title>
+    <meta name="description" content="Единая цифровая платформа Туркменистана">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* =====================================================
+           ВСЕ СТИЛИ (адаптированы под "СФЕРА")
+        ===================================================== */
+
+        :root {
+            --bg: #050b16;
+            --bg2: #071423;
+            --card: rgba(18,28,45,.72);
+            --glass: rgba(255,255,255,.06);
+            --line: rgba(255,255,255,.12);
+            --primary: #00d4ff;
+            --primary2: #0077ff;
+            --green: #00ff99;
+            --white: #ffffff;
+            --text: #d8e5f2;
+            --gray: #8ea7bf;
+            --danger: #ff5577;
+            --shadow: 0 30px 80px rgba(0,0,0,.45);
+            --radius: 24px;
+            --transition: .35s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: linear-gradient(145deg, #020711, #061728, #020711);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #04101b; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #00d4ff, #0077ff); border-radius: 30px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00d4ff; }
+
+        #backgroundCanvas {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        #particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .background-grid {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+            background-size: 55px 55px;
+            opacity: .35;
+            animation: gridMove 12s linear infinite;
+            z-index: 1;
+        }
+        @keyframes gridMove { 100% { transform: translateY(55px); } }
+
+        .background-glow {
+            position: fixed;
+            width: 700px;
+            height: 700px;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: .15;
+            z-index: 0;
+        }
+        .glow-left {
+            background: #00d4ff;
+            top: -280px;
+            left: -260px;
+            animation: leftGlow 12s ease infinite;
+        }
+        .glow-right {
+            background: #00ff99;
+            bottom: -280px;
+            right: -260px;
+            animation: rightGlow 16s ease infinite;
+        }
+        @keyframes leftGlow { 50% { transform: scale(1.2); opacity: .22; } }
+        @keyframes rightGlow { 50% { transform: scale(.8); opacity: .20; } }
+
+        .container {
+            width: min(1400px, 92%);
+            margin: auto;
+            position: relative;
+            z-index: 5;
+        }
+
+        .login-header {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 82px;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(22px);
+            background: rgba(5,12,22,.35);
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            z-index: 100;
+        }
+        .login-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            color: white;
+        }
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #00d4ff, #006eff);
+            font-size: 24px;
+            font-weight: 900;
+            box-shadow: 0 15px 45px rgba(0,212,255,.35);
+        }
+        .logo-text h2 { font-size: 28px; font-weight: 800; letter-spacing: 2px; }
+        .logo-text span { font-size: 12px; color: #9ec5dd; letter-spacing: 1px; text-transform: uppercase; }
+
+        nav { display: flex; gap: 40px; }
+        nav a {
+            color: #d7e5ef;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+        nav a:hover { color: #00d4ff; }
+        nav a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 0;
+            height: 2px;
+            background: #00d4ff;
+            transition: .3s;
+        }
+        nav a:hover::after { width: 100%; }
+
+        .language { display: flex; gap: 10px; }
+        .language button {
+            width: 48px;
+            height: 42px;
+            border: none;
+            cursor: pointer;
+            border-radius: 14px;
+            background: rgba(255,255,255,.06);
+            color: white;
+            font-weight: 700;
+            transition: .3s;
+            backdrop-filter: blur(15px);
+        }
+        .language button:hover { background: #00d4ff; color: #00111f; }
+
+        .login-page {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 120px;
+            padding-bottom: 80px;
+        }
+        .login-section {
+            width: min(1450px, 92%);
+            display: grid;
+            grid-template-columns: 1fr 560px;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .login-left {
+            position: relative;
+            z-index: 5;
+            animation: fadeLeft .8s ease;
+        }
+        @keyframes fadeLeft {
+            from { opacity: 0; transform: translateX(-60px); }
+            to { opacity: 1; transform: none; }
+        }
+        .platform-label {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            border-radius: 60px;
+            background: rgba(0,212,255,.08);
+            border: 1px solid rgba(0,212,255,.25);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 35px;
+            color: #82eaff;
+        }
+        .login-left h1 {
+            font-size: 76px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 18px;
+            background: linear-gradient(90deg, #ffffff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .login-left h2 {
+            font-size: 44px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 28px;
+            max-width: 760px;
+        }
+        .login-left p {
+            font-size: 19px;
+            line-height: 1.9;
+            color: var(--text);
+            max-width: 700px;
+            margin-bottom: 45px;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 22px;
+            max-width: 760px;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px 20px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.08);
+            backdrop-filter: blur(18px);
+            transition: .35s;
+        }
+        .feature:hover {
+            transform: translateY(-6px);
+            background: rgba(255,255,255,.08);
+            border-color: rgba(0,212,255,.35);
+            box-shadow: 0 20px 50px rgba(0,212,255,.12);
+        }
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #006cff);
+            color: #fff;
+            box-shadow: 0 12px 35px rgba(0,212,255,.3);
+        }
+        .feature div:last-child {
+            font-size: 17px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .login-right {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            animation: fadeRight .8s ease;
+        }
+        @keyframes fadeRight {
+            from { opacity: 0; transform: translateX(60px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        .login-card {
+            position: relative;
+            overflow: hidden;
+            padding: 45px;
+            border-radius: 30px;
+            background: rgba(18,28,45,.74);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,.08);
+            box-shadow: var(--shadow);
+        }
+        .login-card::before {
+            content: "";
+            position: absolute;
+            left: -120px;
+            top: -120px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(0,212,255,.12);
+            filter: blur(90px);
+        }
+        .login-card::after {
+            content: "";
+            position: absolute;
+            right: -120px;
+            bottom: -120px;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(0,255,170,.10);
+            filter: blur(90px);
+        }
+        .card-header {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 35px;
+        }
+        .card-header h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .card-header p {
+            font-size: 16px;
+            color: var(--gray);
+        }
+
+        #registerForm {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .input-group label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #d8e5f2;
+        }
+        .input-group input {
+            height: 62px;
+            padding: 0 22px;
+            font-size: 16px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.08);
+            color: #fff;
+            outline: none;
+            transition: .35s;
+        }
+        .input-group input::placeholder { color: #7d96ad; }
+        .input-group input:focus {
+            border-color: #00d4ff;
+            background: rgba(255,255,255,.08);
+            box-shadow: 0 0 0 4px rgba(0,212,255,.12);
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            margin-top: -6px;
+        }
+        .remember label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--text);
+        }
+        .remember input {
+            width: 18px;
+            height: 18px;
+            accent-color: #00d4ff;
+        }
+
+        .login-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        .login-button {
+            position: relative;
+            height: 64px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            overflow: hidden;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            color: #fff;
+            background: linear-gradient(135deg, #00d4ff, #0077ff);
+            transition: .35s;
+            box-shadow: 0 20px 50px rgba(0,212,255,.35);
+        }
+        .login-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 28px 70px rgba(0,212,255,.45);
+        }
+        .login-button:active { transform: scale(.98); }
+        .login-button::before {
+            content: "";
+            position: absolute;
+            left: -120%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+            transition: .8s;
+        }
+        .login-button:hover::before { left: 120%; }
+
+        .divider {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .divider::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: rgba(255,255,255,.08);
+        }
+        .divider span {
+            position: relative;
+            padding: 0 18px;
+            background: rgba(18,28,45,.92);
+            font-size: 14px;
+            color: #8ea7bf;
+        }
+
+        .alternative-login {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .ecp-button {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            border-radius: 18px;
+            cursor: pointer;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.08);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            transition: .35s;
+            backdrop-filter: blur(20px);
+        }
+        .ecp-button svg { color: #00d4ff; transition: .35s; }
+        .ecp-button:hover {
+            transform: translateY(-4px);
+            background: rgba(255,255,255,.08);
+            border-color: rgba(0,212,255,.35);
+            box-shadow: 0 18px 45px rgba(0,212,255,.15);
+        }
+        .ecp-button:hover svg { transform: rotate(8deg) scale(1.1); }
+
+        .register-block {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,.08);
+            text-align: center;
+        }
+        .register-block p {
+            font-size: 15px;
+            color: #9bb3ca;
+            margin-bottom: 16px;
+        }
+        .login-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 34px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.2);
+            color: #fff;
+            transition: .35s;
+        }
+        .login-link:hover {
+            background: rgba(255,255,255,.1);
+            transform: translateY(-3px);
+        }
+
+        .status-panel {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 18px;
+            margin-top: 20px;
+        }
+        .status-card {
+            padding: 24px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.08);
+            backdrop-filter: blur(20px);
+            transition: .35s;
+        }
+        .status-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(0,212,255,.25);
+            box-shadow: 0 18px 45px rgba(0,212,255,.12);
+        }
+        .status-title {
+            font-size: 14px;
+            color: #8ea7bf;
+            margin-bottom: 16px;
+        }
+        .status-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+        .status-online {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #8dffd5;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff99;
+            box-shadow: 0 0 12px #00ff99, 0 0 25px #00ff99;
+            animation: statusPulse 1.8s infinite;
+        }
+        @keyframes statusPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.35); opacity: .6; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #030a13;
+            z-index: 5000;
+            transition: .6s;
+        }
+        #loadingScreen.hide { opacity: 0; visibility: hidden; }
+        .loader {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .loader-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: #00d4ff;
+            animation: spin 2s linear infinite;
+        }
+        .loader-ring:nth-child(1) { width: 180px; height: 180px; }
+        .loader-ring:nth-child(2) { width: 140px; height: 140px; animation-duration: 1.5s; animation-direction: reverse; }
+        .loader-ring:nth-child(3) { width: 100px; height: 100px; animation-duration: 1s; }
+        .loader-center {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #00d4ff;
+        }
+        .loading-text {
+            margin-top: 30px;
+            font-size: 18px;
+            letter-spacing: 1px;
+            color: #9cb4ca;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .notification {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 20px 26px;
+            border-radius: 20px;
+            background: rgba(18,28,45,.92);
+            border: 1px solid rgba(255,255,255,.08);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0,0,0,.4);
+            transform: translateY(120px);
+            opacity: 0;
+            transition: .35s;
+            z-index: 2000;
+        }
+        .notification.show { transform: none; opacity: 1; }
+        .notification-icon {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #00ff99, #00d4ff);
+            font-size: 24px;
+            font-weight: 700;
+            color: #00111f;
+        }
+        .notification-content h4 { font-size: 18px; margin-bottom: 6px; }
+        .notification-content p { font-size: 14px; color: #9ab2c8; }
+
+        .login-footer {
+            padding: 35px 0;
+            border-top: 1px solid rgba(255,255,255,.08);
+            background: rgba(5,12,22,.45);
+            backdrop-filter: blur(20px);
+        }
+        .login-footer .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+        .footer-left, .footer-center {
+            font-size: 14px;
+            color: #8ea7bf;
+        }
+        .footer-right {
+            display: flex;
+            gap: 24px;
+        }
+        .footer-right a {
+            color: #9cb4ca;
+            text-decoration: none;
+            transition: .3s;
+        }
+        .footer-right a:hover { color: #00d4ff; }
+
+        .floating-elements {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(0,212,255,.12);
+            animation: floatCircle linear infinite;
+        }
+        .circle-1 { width: 320px; height: 320px; left: -100px; top: 25%; animation-duration: 22s; }
+        .circle-2 { width: 180px; height: 180px; right: 8%; top: 12%; animation-duration: 18s; }
+        .circle-3 { width: 260px; height: 260px; right: 18%; bottom: 5%; animation-duration: 28s; }
+        .circle-4 { width: 120px; height: 120px; left: 12%; bottom: 10%; animation-duration: 15s; }
+        @keyframes floatCircle {
+            50% { transform: translateY(-25px) rotate(180deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* УДАЛЁН .system-version */
+
+        @media (max-width: 1400px) {
+            .login-left h1 { font-size: 64px; }
+            .login-left h2 { font-size: 38px; }
+            .login-section { grid-template-columns: 1fr 520px; gap: 60px; }
+        }
+        @media (max-width: 1200px) {
+            .login-section { grid-template-columns: 1fr; }
+            .login-right { max-width: 620px; margin: auto; }
+            .status-panel { grid-template-columns: repeat(3,1fr); }
+            nav { display: none; }
+        }
+        @media (max-width: 992px) {
+            .login-page { padding-top: 120px; }
+            .login-left { text-align: center; }
+            .login-left p { margin: auto auto 40px; }
+            .feature-list { grid-template-columns: 1fr; margin: auto; }
+            .status-panel { grid-template-columns: 1fr; }
+            .login-footer .container { flex-direction: column; text-align: center; }
+            .footer-right { justify-content: center; flex-wrap: wrap; }
+        }
+        @media (max-width: 768px) {
+            .login-left h1 { font-size: 50px; }
+            .login-left h2 { font-size: 30px; }
+            .login-card { padding: 30px; }
+            .language { display: none; }
+        }
+        @media (max-width: 576px) {
+            .login-page { padding-top: 100px; }
+            .login-left h1 { font-size: 42px; }
+            .login-left h2 { font-size: 24px; }
+            .login-left p { font-size: 16px; }
+            .login-card { padding: 24px; border-radius: 24px; }
+            .input-group input { height: 56px; }
+            .login-button { height: 58px; }
+            .ecp-button { height: 56px; font-size: 15px; }
+            .footer-right { flex-direction: column; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Фоновые элементы -->
+    <div id="particles"></div>
+    <canvas id="backgroundCanvas"></canvas>
+    <div class="background-grid"></div>
+    <div class="background-glow glow-left"></div>
+    <div class="background-glow glow-right"></div>
+
+    <div class="floating-elements">
+        <span class="floating-circle circle-1"></span>
+        <span class="floating-circle circle-2"></span>
+        <span class="floating-circle circle-3"></span>
+        <span class="floating-circle circle-4"></span>
+    </div>
+
+    <!-- HEADER -->
+    <header class="login-header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">С</div>
+                <div class="logo-text">
+                    <h2>СФЕРА</h2>
+                    <span>Национальная Цифровая Платформа</span>
+                </div>
+            </a>
+            <nav>
+                <a href="index.html">Главная</a>
+                <a href="#">Возможности</a>
+                <a href="#">Поддержка</a>
+                <a href="#">Контакты</a>
+            </nav>
+            <div class="language">
+                <button data-lang="ru" class="lang-btn active">RU</button>
+                <button data-lang="tm" class="lang-btn">TM</button>
+                <button data-lang="en" class="lang-btn">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="login-page">
+        <section class="login-section">
+
+            <div class="login-left">
+                <div class="platform-label">Единая цифровая экосистема</div>
+                <h1>СФЕРА</h1>
+                <h2>Создайте учётную запись<br>и получите доступ ко всем сервисам</h2>
+                <p>
+                    Присоединяйтесь к национальной цифровой платформе Туркменистана.
+                    Электронная торговля, банкинг, госуслуги, документооборот, аналитика и ИИ — всё в одном месте.
+                </p>
+                <div class="feature-list">
+                    <div class="feature"><div class="feature-icon">✓</div><div>Бесплатная регистрация</div></div>
+                    <div class="feature"><div class="feature-icon">✓</div><div>Поддержка ЭЦП</div></div>
+                    <div class="feature"><div class="feature-icon">✓</div><div>Мгновенный доступ</div></div>
+                    <div class="feature"><div class="feature-icon">✓</div><div>Защита данных</div></div>
+                </div>
+            </div>
+
+            <div class="login-right">
+                <div class="login-card">
+                    <div class="card-header">
+                        <h2>Регистрация</h2>
+                        <p>Заполните поля для создания аккаунта</p>
+                    </div>
+                    <form id="registerForm" autocomplete="off">
+                        <div class="input-group">
+                            <label>Имя и фамилия</label>
+                            <input type="text" placeholder="Иванов Иван" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Email или телефон</label>
+                            <input type="text" placeholder="example@mail.com" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Пароль</label>
+                            <input type="password" placeholder="Минимум 8 символов" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Подтверждение пароля</label>
+                            <input type="password" placeholder="Введите пароль ещё раз" required>
+                        </div>
+                        <div class="remember">
+                            <label>
+                                <input type="checkbox" checked>
+                                <span>Я принимаю условия пользовательского соглашения</span>
+                            </label>
+                        </div>
+                        <div class="login-actions">
+                            <button type="submit" class="login-button">Зарегистрироваться</button>
+                        </div>
+                        <div class="divider"><span>или</span></div>
+                        <div class="alternative-login">
+                            <button type="button" class="ecp-button">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2L20 6V12C20 17 16.5 21 12 22C7.5 21 4 17 4 12V6L12 2Z" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span>Зарегистрироваться с ЭЦП</span>
+                            </button>
+                        </div>
+                        <div class="register-block">
+                            <p>Уже есть аккаунт?</p>
+                            <a href="login.html" class="login-link">Войти</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="status-panel">
+                    <div class="status-card">
+                        <div class="status-title">Статус платформы</div>
+                        <div class="status-online"><span class="status-dot"></span>Все сервисы работают</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-title">Активных пользователей</div>
+                        <div class="status-value">2 340 000+</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="login-footer">
+        <div class="container">
+            <div class="footer-left">© 2026 СФЕРА</div>
+            <div class="footer-center">Национальная цифровая платформа Туркменистана</div>
+            <div class="footer-right">
+                <a href="#">Политика безопасности</a>
+                <a href="#">Конфиденциальность</a>
+                <a href="#">Поддержка</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ЗАГРУЗКА -->
+    <div id="loadingScreen">
+        <div class="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-center">С</div>
+        </div>
+        <div class="loading-text">Подготовка платформы...</div>
+    </div>
+
+    <!-- Уведомление -->
+    <div id="notification" class="notification">
+        <div class="notification-icon">✔</div>
+        <div class="notification-content">
+            <h4>Регистрация</h4>
+            <p>Аккаунт успешно создан!</p>
+        </div>
+    </div>
+
+    <script>
+        // Закрытие загрузочного экрана
+        window.addEventListener("load", function() {
+            const loading = document.getElementById("loadingScreen");
+            setTimeout(function() {
+                loading.classList.add("hide");
+                setTimeout(function(){ loading.remove(); }, 600);
+            }, 800);
+        });
+
+        // Форма регистрации
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showNotification('Успешно', 'Аккаунт успешно создан!');
+            // Можно перенаправить на login.html
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
+        });
+
+        // Уведомления
+        function showNotification(title, message) {
+            const notif = document.getElementById('notification');
+            if (!notif) return;
+            notif.querySelector('h4').textContent = title;
+            notif.querySelector('p').textContent = message;
+            notif.classList.add('show');
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 4000);
+        }
+
+        // Переключение языка (демо)
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                console.log('Язык изменён на:', this.textContent);
+            });
+        });
+
+        // Частицы
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            for (let i = 0; i < 50; i++) {
+                const p = document.createElement('span');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDuration = (8 + Math.random() * 14) + 's';
+                p.style.animationDelay = Math.random() * 6 + 's';
+                p.style.position = 'absolute';
+                p.style.width = '4px';
+                p.style.height = '4px';
+                p.style.borderRadius = '50%';
+                p.style.background = '#00d4ff';
+                p.style.opacity = '0.5';
+                p.style.animation = 'float linear infinite';
+                container.appendChild(p);
+            }
+        })();
+
+        // Canvas фон
+        (function initCanvas() {
+            const canvas = document.getElementById('backgroundCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const points = [];
+            for (let i = 0; i < 20; i++) {
+                points.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                points.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > w) p.vx *= -1;
+                    if (p.y < 0 || p.y > h) p.vy *= -1;
+                });
+                for (let i = 0; i < points.length; i++) {
+                    for (let j = i+1; j < points.length; j++) {
+                        const dx = points[i].x - points[j].x;
+                        const dy = points[i].y - points[j].y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(points[i].x, points[i].y);
+                            ctx.lineTo(points[j].x, points[j].y);
+                            ctx.strokeStyle = `rgba(0,212,255,${0.08 * (1 - dist/150)})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+
+        console.log('СФЕРА — Страница регистрации загружена');
+    </script>
+</body>
+</html>

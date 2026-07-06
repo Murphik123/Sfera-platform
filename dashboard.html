@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZNW Platform | Личный кабинет</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="particles"></div>
+    <canvas id="backgroundCanvas"></canvas>
+    <div class="background-grid"></div>
+
+    <header class="dashboard-header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">Z</div>
+                <div class="logo-text">
+                    <h2>ZNW</h2>
+                    <span>National Digital Platform</span>
+                </div>
+            </a>
+            <nav>
+                <a href="#" class="active">Обзор</a>
+                <a href="#">Биржа</a>
+                <a href="#">TM Pay</a>
+                <a href="#">TM Coin</a>
+                <a href="#">Банк</a>
+                <a href="#">ИИ</a>
+                <a href="#">Документы</a>
+            </nav>
+            <div class="header-buttons">
+                <button class="lang">RU</button>
+                <button class="login">Профиль</button>
+                <button class="login" style="background: rgba(255,255,255,.1);">Выйти</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container">
+            <div class="dashboard-grid">
+                <!-- Боковое меню -->
+                <aside class="sidebar">
+                    <div class="user-card">
+                        <div class="avatar">ИИ</div>
+                        <h3>Иванов Иван</h3>
+                        <p>ivan@znw.tm</p>
+                        <span class="badge-status">Онлайн</span>
+                    </div>
+                    <nav class="sidebar-nav">
+                        <a href="#" class="active"><span>📊</span> Обзор</a>
+                        <a href="#"><span>💳</span> Платежи</a>
+                        <a href="#"><span>📈</span> Торговля</a>
+                        <a href="#"><span>📁</span> Документы</a>
+                        <a href="#"><span>⚙️</span> Настройки</a>
+                    </nav>
+                </aside>
+
+                <!-- Основной контент -->
+                <section class="content">
+                    <div class="content-header">
+                        <h1>Добро пожаловать, Иван!</h1>
+                        <p>Ваш личный кабинет ZNW</p>
+                    </div>
+
+                    <div class="widget-grid">
+                        <div class="widget">
+                            <div class="widget-icon">💰</div>
+                            <div class="widget-text">
+                                <h3>Баланс</h3>
+                                <p class="widget-value">1 245 000 ₮</p>
+                                <span>+12.5% за месяц</span>
+                            </div>
+                        </div>
+                        <div class="widget">
+                            <div class="widget-icon">📦</div>
+                            <div class="widget-text">
+                                <h3>Активные сделки</h3>
+                                <p class="widget-value">18</p>
+                                <span>3 ожидают подтверждения</span>
+                            </div>
+                        </div>
+                        <div class="widget">
+                            <div class="widget-icon">🪙</div>
+                            <div class="widget-text">
+                                <h3>TM Coin</h3>
+                                <p class="widget-value">2 340</p>
+                                <span>≈ 340 000 ₮</span>
+                            </div>
+                        </div>
+                        <div class="widget">
+                            <div class="widget-icon">📄</div>
+                            <div class="widget-text">
+                                <h3>Документов</h3>
+                                <p class="widget-value">47</p>
+                                <span>5 требуют подписи</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-activity">
+                        <h2>Последние операции</h2>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <span class="activity-icon">🔄</span>
+                                <div>
+                                    <h4>Перевод TM Coin</h4>
+                                    <p>Отправлено 150 TM Coin на адрес 0x7F...3A</p>
+                                </div>
+                                <span class="activity-time">10:45</span>
+                            </div>
+                            <div class="activity-item">
+                                <span class="activity-icon">✅</span>
+                                <div>
+                                    <h4>Подтверждение сделки</h4>
+                                    <p>Сделка №4821 завершена успешно</p>
+                                </div>
+                                <span class="activity-time">09:20</span>
+                            </div>
+                            <div class="activity-item">
+                                <span class="activity-icon">📩</span>
+                                <div>
+                                    <h4>Новый документ</h4>
+                                    <p>Поступил акт сверки от контрагента</p>
+                                </div>
+                                <span class="activity-time">08:15</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="dashboard-footer">
+        <div class="container">
+            <div class="footer-left">© 2026 ZNW Platform</div>
+            <div class="footer-center">Национальная цифровая платформа Туркменистана</div>
+            <div class="footer-right">
+                <a href="#">Политика</a>
+                <a href="#">API</a>
+                <a href="#">Контакты</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="loadingScreen">
+        <div class="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-center">ZNW</div>
+        </div>
+        <div class="loading-text">Загрузка личного кабинета...</div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        window.addEventListener("load", function() {
+            const loading = document.getElementById("loadingScreen");
+            setTimeout(function() {
+                loading.classList.add("hide");
+                setTimeout(function(){ loading.remove(); }, 600);
+            }, 900);
+        });
+    </script>
+</body>
+</html>
