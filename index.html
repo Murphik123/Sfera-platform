@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>СФЕРА — Türkmenistanyň sanly platformasy</title>
+    <title data-i18n="title">СФЕРА — Türkmenistanyň sanly platformasy</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
-        /* ===== ВСЕ СТИЛИ (без изменений) ===== */
+        /* ===== БАЗОВЫЕ СТИЛИ (без изменений) ===== */
         :root {
             --primary: #00d4ff;
             --secondary: #1f6bff;
@@ -33,8 +33,7 @@
         body::before {
             content: "";
             position: fixed;
-            width: 200%;
-            height: 200%;
+            width: 200%; height: 200%;
             background: radial-gradient(circle at 20% 30%, rgba(0,212,255,.15), transparent 35%),
                         radial-gradient(circle at 80% 20%, rgba(0,255,170,.10), transparent 35%),
                         radial-gradient(circle at 60% 80%, rgba(32,108,255,.15), transparent 40%);
@@ -48,6 +47,7 @@
         }
         .container { width: min(1400px, 92%); margin: auto; }
 
+        /* ===== HEADER ===== */
         header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
             backdrop-filter: blur(18px);
@@ -84,11 +84,11 @@
             background: transparent;
             border: 1px solid var(--border) !important;
             color: white;
+            min-width: 48px;
+            text-align: center;
         }
-        .lang-btn.active {
-            background: var(--primary);
-            color: #00111f;
-            border-color: var(--primary) !important;
+        .lang-btn:hover {
+            background: rgba(255,255,255,.08);
         }
         .login-btn {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -141,27 +141,93 @@
         .glow-right { bottom:-10%; right:-10%; background: rgba(0,255,170,.3); animation-delay:2s; }
         @keyframes pulseGlow { 0% { transform: scale(1); opacity:0.2; } 100% { transform: scale(1.2); opacity:0.5; } }
 
+        /* ===== MAP WRAPPER ===== */
         .map-wrapper {
             position: absolute;
-            top:50%; left:50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width:80%; height:80%;
+            width: 70%; height: 70%;
             pointer-events: none;
-            z-index:0;
-            opacity:0.15;
+            z-index: 2;
+            opacity: 0.25;
         }
-        .tm-map { width:100%; height:100%; }
-        .map-outline {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: drawMap 8s ease forwards;
+        .tm-map {
+            width: 100%; height: 100%;
+            pointer-events: all;
         }
-        @keyframes drawMap { to { stroke-dashoffset:0; } }
+        /* Стили для регионов */
+        .tm-map .region {
+            fill: rgba(0,212,255,.12);
+            stroke: rgba(0,212,255,.6);
+            stroke-width: 2;
+            transition: fill 0.3s, stroke 0.3s;
+            cursor: pointer;
+            pointer-events: all;
+        }
+        .tm-map .region:hover,
+        .tm-map .region.active {
+            fill: rgba(0,212,255,.35);
+            stroke: #00d4ff;
+            stroke-width: 3;
+            filter: drop-shadow(0 0 12px rgba(0,212,255,.5));
+        }
+        .tm-map .city-marker {
+            fill: #00d4ff;
+            stroke: #fff;
+            stroke-width: 2;
+            transition: all 0.3s;
+            cursor: pointer;
+            pointer-events: all;
+        }
+        .tm-map .city-marker:hover,
+        .tm-map .city-marker.active {
+            fill: #00ff99;
+            stroke: #00ff99;
+            filter: drop-shadow(0 0 20px rgba(0,255,153,.8));
+            r: 10;
+        }
+        .tm-map .city-label {
+            fill: white;
+            font-size: 11px;
+            font-weight: 600;
+            text-anchor: middle;
+            pointer-events: none;
+            text-shadow: 0 0 8px rgba(0,0,0,.8);
+        }
+        /* Тултип */
+        .map-tooltip {
+            position: fixed;
+            padding: 18px 22px;
+            min-width: 200px;
+            background: rgba(10,20,35,.92);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(0,212,255,.25);
+            border-radius: 16px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s;
+            z-index: 9999;
+            box-shadow: 0 20px 60px rgba(0,0,0,.4);
+            color: white;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .map-tooltip.visible { opacity: 1; }
+        .map-tooltip h3 {
+            color: #00d4ff;
+            margin-bottom: 6px;
+            font-size: 18px;
+        }
+        .map-tooltip .highlight {
+            color: #00ff99;
+            font-weight: 600;
+        }
 
+        /* ===== HERO CONTENT ===== */
         .hero-content {
             position: relative;
-            z-index:2;
-            max-width:700px;
+            z-index: 5;
+            max-width: 700px;
         }
         .hero-tag {
             display: inline-block;
@@ -208,7 +274,7 @@
         .glass-btn:hover { background:rgba(255,255,255,.15); transform:translateY(-5px); }
 
         .hero-visual {
-            position:relative; z-index:2;
+            position:relative; z-index:5;
             display:flex; justify-content:center; align-items:center;
         }
         .core {
@@ -237,7 +303,7 @@
         }
         @keyframes pulseCore { 0% { transform:scale(1); box-shadow:0 0 80px rgba(0,212,255,.4); } 100% { transform:scale(1.05); box-shadow:0 0 120px rgba(0,212,255,.7); } }
 
-        /* ===== MODULES ===== */
+        /* ===== ОСТАЛЬНЫЕ БЛОКИ (без изменений) ===== */
         .modules { padding:120px 7%; }
         .modules h2 { text-align:center; font-size:48px; margin-bottom:70px; font-weight:800; }
         .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:35px; }
@@ -266,7 +332,6 @@
         .card h3 { font-size:30px; margin-bottom:18px; }
         .card p { line-height:1.8; color:#bfd3e4; }
 
-        /* ===== STATISTICS ===== */
         .statistics { padding:120px 7%; display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:35px; }
         .stat {
             background:rgba(255,255,255,.05);
@@ -285,7 +350,6 @@
         }
         .stat p { font-size:18px; color:#bdd0df; }
 
-        /* ===== NEWS ===== */
         .news { padding:120px 7%; }
         .news h2 { text-align:center; font-size:48px; margin-bottom:60px; }
         .news-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(350px,1fr)); gap:35px; }
@@ -300,12 +364,10 @@
         .news-card h3 { margin-bottom:20px; font-size:28px; }
         .news-card p { color:#bdd0df; line-height:1.7; }
 
-        /* ===== FOOTER ===== */
         footer { margin-top:120px; padding:70px; text-align:center; background:#08131d; border-top:1px solid rgba(255,255,255,.10); }
         footer h2 { font-size:38px; margin-bottom:15px; }
         footer p { color:#9fb5c8; }
 
-        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar { width:10px; }
         ::-webkit-scrollbar-thumb { background:#00d4ff; border-radius:20px; }
         ::-webkit-scrollbar-track { background:#08131d; }
@@ -339,6 +401,7 @@
             .core-center { width:100px; height:100px; font-size:28px; }
             .hero-content h1 { font-size:44px; }
             nav { display:none; }
+            .map-wrapper { width:90%; height:60%; opacity:0.3; }
         }
         @media(max-width:768px) {
             .hero-content h1 { font-size:32px; }
@@ -348,6 +411,7 @@
             .core { width:180px; height:180px; }
             .core-center { width:80px; height:80px; font-size:22px; }
             .primary-btn, .glass-btn { padding:14px 28px; font-size:16px; }
+            .map-wrapper { width:100%; height:50%; opacity:0.2; }
         }
     </style>
 </head>
@@ -360,8 +424,8 @@
             <a href="index.html" class="logo">
                 <div class="logo-icon">С</div>
                 <div class="logo-text">
-                    <h2>СФЕРА</h2>
-                    <p data-i18n="platform.sub">Национальная цифровая платформа</p>
+                    <h2 data-i18n="brand.name">СФЕРА</h2>
+                    <p data-i18n="brand.sub">Национальная цифровая платформа</p>
                 </div>
             </a>
             <nav>
@@ -377,9 +441,7 @@
                 </ul>
             </nav>
             <div class="header-buttons">
-                <button class="lang-btn" data-lang="tm">TM</button>
-                <button class="lang-btn" data-lang="ru">RU</button>
-                <button class="lang-btn" data-lang="en">EN</button>
+                <button class="lang-btn" id="langToggle" data-i18n="lang.label">TM</button>
                 <a href="login.html" class="login-btn" data-i18n="auth.login">Войти</a>
             </div>
         </div>
@@ -391,18 +453,68 @@
         <canvas id="heroCanvas"></canvas>
         <div class="hero-glow glow-left"></div>
         <div class="hero-glow glow-right"></div>
+
+        <!-- ===== ИНТЕРАКТИВНАЯ КАРТА ===== -->
         <div class="map-wrapper">
-            <svg class="tm-map" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
+            <svg class="tm-map" viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg">
+                <!-- Определения -->
                 <defs>
-                    <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#00d4ff"/>
-                        <stop offset="100%" stop-color="#00ff99"/>
+                    <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00d4ff" />
+                        <stop offset="100%" stop-color="#00ff99" />
                     </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                    </filter>
                 </defs>
-                <path d="M92 270 L150 210 L280 170 L420 120 L580 140 L710 160 L790 210 L760 290 L640 340 L540 370 L360 360 L220 330 L120 300 Z"
-                      fill="rgba(0,212,255,.08)" stroke="url(#mapGradient)" stroke-width="3" class="map-outline"/>
+
+                <!-- Велаяты (полигоны – схематично, с координатами) -->
+                <!-- Балкан -->
+                <polygon class="region" data-region="balkan"
+                         points="80,200 180,140 320,160 380,240 340,340 220,360 120,300"
+                         data-name-tm="Balkan" data-name-ru="Балкан" data-name-en="Balkan"
+                         data-orders="9870" data-companies="420" data-export="30" data-import="45" />
+                <!-- Дашогуз -->
+                <polygon class="region" data-region="dashoguz"
+                         points="340,100 460,80 560,120 540,220 420,200 360,140"
+                         data-name-tm="Daşoguz" data-name-ru="Дашогуз" data-name-en="Dashoguz"
+                         data-orders="15200" data-companies="710" data-export="70" data-import="80" />
+                <!-- Лебап -->
+                <polygon class="region" data-region="lebap"
+                         points="540,220 660,180 760,240 720,360 600,340 560,260"
+                         data-name-tm="Lebap" data-name-ru="Лебап" data-name-en="Lebap"
+                         data-orders="11500" data-companies="490" data-export="55" data-import="65" />
+                <!-- Мары -->
+                <polygon class="region" data-region="mary"
+                         points="380,300 480,260 580,300 560,400 460,420 380,380"
+                         data-name-tm="Mary" data-name-ru="Мары" data-name-en="Mary"
+                         data-orders="13800" data-companies="530" data-export="50" data-import="55" />
+                <!-- Ахал (включает Ашхабад и Аркадаг) -->
+                <polygon class="region" data-region="ahal"
+                         points="220,360 320,280 380,260 380,380 280,420 220,400"
+                         data-name-tm="Ahal" data-name-ru="Ахал" data-name-en="Ahal"
+                         data-orders="12340" data-companies="560" data-export="45" data-import="60" />
+
+                <!-- Городские маркеры -->
+                <!-- Ашхабад -->
+                <circle class="city-marker" data-city="ashgabat"
+                        cx="300" cy="330" r="8"
+                        data-name-tm="Aşgabat" data-name-ru="Ашхабад" data-name-en="Ashgabat"
+                        data-orders="45000" data-companies="2100" data-population="1030" />
+                <text class="city-label" x="300" y="355" data-i18n="city.ashgabat">Ашхабад</text>
+
+                <!-- Аркадаг -->
+                <circle class="city-marker" data-city="arkadag"
+                        cx="340" cy="300" r="8"
+                        data-name-tm="Arkadag" data-name-ru="Аркадаг" data-name-en="Arkadag"
+                        data-orders="8500" data-companies="320" data-population="73"
+                        data-digital="5G, akylly öýler, diňe elektromobiller, 40 halkara baýragy" />
+                <text class="city-label" x="340" y="325" data-i18n="city.arkadag">Аркадаг</text>
             </svg>
         </div>
+
+        <!-- ===== HERO КОНТЕНТ ===== -->
         <div class="hero-content">
             <span class="hero-tag" data-i18n="hero.tag">СФЕРА — ЦИФРОВАЯ ПЛАТФОРМА</span>
             <h1 data-i18n="hero.title">Единая цифровая<br>платформа Туркменистана</h1>
@@ -415,6 +527,7 @@
                 <a href="#" class="glass-btn" data-i18n="hero.demo">Демо</a>
             </div>
         </div>
+
         <div class="hero-visual">
             <div class="core">
                 <div class="core-ring ring-1"></div>
@@ -425,44 +538,19 @@
         </div>
     </section>
 
-    <!-- ===== MODULES ===== -->
+    <!-- ===== ОСТАЛЬНЫЕ БЛОКИ ===== -->
     <section class="modules">
         <h2 data-i18n="modules.title">Основные модули платформы</h2>
         <div class="grid">
-            <div class="card">
-                <div class="icon">🛒</div>
-                <h3 data-i18n="modules.market.title">Биржа</h3>
-                <p data-i18n="modules.market.desc">Электронная торговая площадка</p>
-            </div>
-            <div class="card">
-                <div class="icon">💳</div>
-                <h3 data-i18n="modules.pay.title">TM Pay</h3>
-                <p data-i18n="modules.pay.desc">Национальная платежная система</p>
-            </div>
-            <div class="card">
-                <div class="icon">₮</div>
-                <h3 data-i18n="modules.coin.title">TM Coin</h3>
-                <p data-i18n="modules.coin.desc">Цифровая государственная валюта</p>
-            </div>
-            <div class="card">
-                <div class="icon">🏦</div>
-                <h3 data-i18n="modules.bank.title">Банк</h3>
-                <p data-i18n="modules.bank.desc">Цифровой банк "Благо"</p>
-            </div>
-            <div class="card">
-                <div class="icon">🤖</div>
-                <h3 data-i18n="modules.ai.title">ИИ</h3>
-                <p data-i18n="modules.ai.desc">Проверка документов, прогнозирование, аналитика</p>
-            </div>
-            <div class="card">
-                <div class="icon">📄</div>
-                <h3 data-i18n="modules.documents.title">Документы</h3>
-                <p data-i18n="modules.documents.desc">Автоматическая верификация</p>
-            </div>
+            <div class="card"><div class="icon">🛒</div><h3 data-i18n="modules.market.title">Биржа</h3><p data-i18n="modules.market.desc">Электронная торговая площадка</p></div>
+            <div class="card"><div class="icon">💳</div><h3 data-i18n="modules.pay.title">TM Pay</h3><p data-i18n="modules.pay.desc">Национальная платежная система</p></div>
+            <div class="card"><div class="icon">₮</div><h3 data-i18n="modules.coin.title">TM Coin</h3><p data-i18n="modules.coin.desc">Цифровая государственная валюта</p></div>
+            <div class="card"><div class="icon">🏦</div><h3 data-i18n="modules.bank.title">Банк</h3><p data-i18n="modules.bank.desc">Цифровой банк "Благо"</p></div>
+            <div class="card"><div class="icon">🤖</div><h3 data-i18n="modules.ai.title">ИИ</h3><p data-i18n="modules.ai.desc">Проверка документов, прогнозирование, аналитика</p></div>
+            <div class="card"><div class="icon">📄</div><h3 data-i18n="modules.documents.title">Документы</h3><p data-i18n="modules.documents.desc">Автоматическая верификация</p></div>
         </div>
     </section>
 
-    <!-- ===== STATISTICS ===== -->
     <section class="statistics">
         <div class="stat"><h1 id="users">0</h1><p data-i18n="stats.users">Пользователей</p></div>
         <div class="stat"><h1 id="orders">0</h1><p data-i18n="stats.deals">Сделок</p></div>
@@ -470,37 +558,32 @@
         <div class="stat"><h1 id="coin">0</h1><p data-i18n="stats.coin">TM Coin</p></div>
     </section>
 
-    <!-- ===== NEWS ===== -->
     <section class="news">
         <h2 data-i18n="news.title">Последние новости</h2>
         <div class="news-grid">
-            <div class="news-card">
-                <h3 data-i18n="news.item1.title">Запуск платформы</h3>
-                <p data-i18n="news.item1.desc">Современная цифровая экосистема нового поколения.</p>
-            </div>
-            <div class="news-card">
-                <h3 data-i18n="news.item2.title">ИИ модуль</h3>
-                <p data-i18n="news.item2.desc">Автоматическая проверка документов.</p>
-            </div>
-            <div class="news-card">
-                <h3 data-i18n="news.item3.title">TM Pay</h3>
-                <p data-i18n="news.item3.desc">Национальная система мгновенных платежей.</p>
-            </div>
+            <div class="news-card"><h3 data-i18n="news.item1.title">Запуск платформы</h3><p data-i18n="news.item1.desc">Современная цифровая экосистема нового поколения.</p></div>
+            <div class="news-card"><h3 data-i18n="news.item2.title">ИИ модуль</h3><p data-i18n="news.item2.desc">Автоматическая проверка документов.</p></div>
+            <div class="news-card"><h3 data-i18n="news.item3.title">TM Pay</h3><p data-i18n="news.item3.desc">Национальная система мгновенных платежей.</p></div>
         </div>
     </section>
 
-    <!-- ===== FOOTER ===== -->
     <footer>
-        <h2>СФЕРА</h2>
+        <h2 data-i18n="brand.name">СФЕРА</h2>
         <p data-i18n="footer.copy">© 2026 — Национальная цифровая платформа</p>
     </footer>
 
-    <!-- ===== SCRIPTS ===== -->
+    <!-- ===== ТУЛТИП (всплывающая подсказка) ===== -->
+    <div id="mapTooltip" class="map-tooltip"></div>
+
+    <!-- ===== СКРИПТЫ ===== -->
     <script>
-        /* ========== МУЛЬТИЯЗЫЧНОСТЬ ========== */
+        // ============================================================
+        //  МУЛЬТИЯЗЫЧНОСТЬ (переводы)
+        // ============================================================
         const translations = {
             tm: {
-                'platform.sub': 'Milli sanly platforma',
+                'brand.name': 'SФERA',
+                'brand.sub': 'Milli sanly platforma',
                 'nav.home': 'Baş sahypa',
                 'nav.market': 'Birža',
                 'nav.pay': 'TM Pay',
@@ -510,6 +593,7 @@
                 'nav.documents': 'Resminamalar',
                 'nav.contacts': 'Aragatnaşyk',
                 'auth.login': 'Giriş',
+                'lang.label': 'TM',
                 'hero.tag': 'SФERA — SANLY PLATFORMA',
                 'hero.title': 'Türkmenistanyň bitewi sanly platformasy',
                 'hero.subtitle': 'Söwda • AI • Tölegler • Bank • Resminama dolanyşygy',
@@ -540,10 +624,25 @@
                 'news.item2.desc': 'Resminamalary awtomatik barlamak.',
                 'news.item3.title': 'TM Pay',
                 'news.item3.desc': 'Milli çalt töleg ulgamy.',
-                'footer.copy': '© 2026 — Milli sanly platforma'
+                'footer.copy': '© 2026 — Milli sanly platforma',
+                // Для карты (регионы)
+                'region.ahal': 'Ahal',
+                'region.balkan': 'Balkan',
+                'region.dashoguz': 'Daşoguz',
+                'region.lebap': 'Lebap',
+                'region.mary': 'Mary',
+                'city.ashgabat': 'Aşgabat',
+                'city.arkadag': 'Arkadag',
+                'tooltip.orders': 'Söwdalar',
+                'tooltip.companies': 'Kärhanalar',
+                'tooltip.export': 'Eksport',
+                'tooltip.import': 'Import',
+                'tooltip.population': 'Ilaty',
+                'tooltip.digital': 'Sanly şäher: 5G, akylly öýler, diňe elektromobiller, 40 halkara baýragy'
             },
             ru: {
-                'platform.sub': 'Национальная цифровая платформа',
+                'brand.name': 'СФЕРА',
+                'brand.sub': 'Национальная цифровая платформа',
                 'nav.home': 'Главная',
                 'nav.market': 'Биржа',
                 'nav.pay': 'TM Pay',
@@ -553,6 +652,7 @@
                 'nav.documents': 'Документы',
                 'nav.contacts': 'Контакты',
                 'auth.login': 'Войти',
+                'lang.label': 'RU',
                 'hero.tag': 'СФЕРА — ЦИФРОВАЯ ПЛАТФОРМА',
                 'hero.title': 'Единая цифровая<br>платформа Туркменистана',
                 'hero.subtitle': 'Торговля • ИИ • Платежи • Банк • Документооборот',
@@ -583,10 +683,24 @@
                 'news.item2.desc': 'Автоматическая проверка документов.',
                 'news.item3.title': 'TM Pay',
                 'news.item3.desc': 'Национальная система мгновенных платежей.',
-                'footer.copy': '© 2026 — Национальная цифровая платформа'
+                'footer.copy': '© 2026 — Национальная цифровая платформа',
+                'region.ahal': 'Ахал',
+                'region.balkan': 'Балкан',
+                'region.dashoguz': 'Дашогуз',
+                'region.lebap': 'Лебап',
+                'region.mary': 'Мары',
+                'city.ashgabat': 'Ашхабад',
+                'city.arkadag': 'Аркадаг',
+                'tooltip.orders': 'Сделки',
+                'tooltip.companies': 'Предприятия',
+                'tooltip.export': 'Экспорт',
+                'tooltip.import': 'Импорт',
+                'tooltip.population': 'Население',
+                'tooltip.digital': 'Цифровой город: 5G, умные дома, только электромобили, 40 международных наград'
             },
             en: {
-                'platform.sub': 'National Digital Platform',
+                'brand.name': 'SFERA',
+                'brand.sub': 'National Digital Platform',
                 'nav.home': 'Home',
                 'nav.market': 'Exchange',
                 'nav.pay': 'TM Pay',
@@ -596,6 +710,7 @@
                 'nav.documents': 'Documents',
                 'nav.contacts': 'Contacts',
                 'auth.login': 'Sign In',
+                'lang.label': 'EN',
                 'hero.tag': 'SFERA — DIGITAL PLATFORM',
                 'hero.title': 'Unified Digital<br>Platform of Turkmenistan',
                 'hero.subtitle': 'Trade • AI • Payments • Bank • Document Management',
@@ -626,16 +741,35 @@
                 'news.item2.desc': 'Automated document verification.',
                 'news.item3.title': 'TM Pay',
                 'news.item3.desc': 'National instant payment system.',
-                'footer.copy': '© 2026 — National Digital Platform'
+                'footer.copy': '© 2026 — National Digital Platform',
+                'region.ahal': 'Ahal',
+                'region.balkan': 'Balkan',
+                'region.dashoguz': 'Dashoguz',
+                'region.lebap': 'Lebap',
+                'region.mary': 'Mary',
+                'city.ashgabat': 'Ashgabat',
+                'city.arkadag': 'Arkadag',
+                'tooltip.orders': 'Orders',
+                'tooltip.companies': 'Companies',
+                'tooltip.export': 'Export',
+                'tooltip.import': 'Import',
+                'tooltip.population': 'Population',
+                'tooltip.digital': 'Digital city: 5G, smart homes, only electric vehicles, 40 international awards'
             }
         };
 
+        // ============================================================
+        //  ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА (одна кнопка)
+        // ============================================================
+        let currentLang = 'tm';
+        const langCycle = ['tm', 'ru', 'en'];
+
         function setLanguage(lang) {
             if (!translations[lang]) return;
+            currentLang = lang;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang][key]) {
-                    // Если элемент содержит HTML, вставляем как innerHTML, иначе textContent
                     if (el.innerHTML.includes('<')) {
                         el.innerHTML = translations[lang][key];
                     } else {
@@ -643,42 +777,135 @@
                     }
                 }
             });
-            // Обновить активную кнопку языка
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.lang === lang);
-            });
-            // Сохранить язык
+            // Обновить надпись на кнопке
+            const langBtn = document.getElementById('langToggle');
+            if (langBtn) {
+                langBtn.textContent = translations[lang]['lang.label'] || lang.toUpperCase();
+            }
             localStorage.setItem('preferredLang', lang);
             document.documentElement.lang = lang;
+            // Обновить тултип, если он открыт (перерисовать данные)
+            if (tooltipData) {
+                updateTooltip(tooltipData);
+            }
         }
 
-        // Загрузка языка
-        document.addEventListener('DOMContentLoaded', function() {
-            let lang = localStorage.getItem('preferredLang') || 'tm';
-            // Проверка, что язык поддерживается
-            if (!translations[lang]) lang = 'tm';
-            setLanguage(lang);
+        // Обработчик одной кнопки
+        document.getElementById('langToggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            let idx = langCycle.indexOf(currentLang);
+            idx = (idx + 1) % langCycle.length;
+            setLanguage(langCycle[idx]);
         });
 
-        // Обработчики кнопок языка
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const lang = this.dataset.lang;
-                setLanguage(lang);
+        // Загрузка языка при старте
+        document.addEventListener('DOMContentLoaded', function() {
+            let saved = localStorage.getItem('preferredLang');
+            if (saved && translations[saved]) {
+                currentLang = saved;
+            } else {
+                currentLang = 'tm';
+            }
+            setLanguage(currentLang);
+        });
+
+        // ============================================================
+        //  ИНТЕРАКТИВНАЯ КАРТА
+        // ============================================================
+        const tooltip = document.getElementById('mapTooltip');
+        let tooltipData = null; // для обновления при смене языка
+
+        function getTranslation(key) {
+            return translations[currentLang] && translations[currentLang][key] ? translations[currentLang][key] : key;
+        }
+
+        function updateTooltip(data) {
+            // data: { name, orders, companies, export, import, population?, digital? }
+            let html = `<h3>${data.name}</h3>`;
+            if (data.orders !== undefined) {
+                html += `<p>${getTranslation('tooltip.orders')}: <span class="highlight">${Number(data.orders).toLocaleString()}</span></p>`;
+            }
+            if (data.companies !== undefined) {
+                html += `<p>${getTranslation('tooltip.companies')}: <span class="highlight">${Number(data.companies).toLocaleString()}</span></p>`;
+            }
+            if (data.export !== undefined) {
+                html += `<p>${getTranslation('tooltip.export')}: <span class="highlight">${data.export} млн</span></p>`;
+            }
+            if (data.import !== undefined) {
+                html += `<p>${getTranslation('tooltip.import')}: <span class="highlight">${data.import} млн</span></p>`;
+            }
+            if (data.population !== undefined) {
+                html += `<p>${getTranslation('tooltip.population')}: <span class="highlight">${Number(data.population).toLocaleString()} тыс.</span></p>`;
+            }
+            if (data.digital) {
+                html += `<p style="margin-top:8px; font-size:13px; color:#8dffd5;">${data.digital}</p>`;
+            }
+            tooltip.innerHTML = html;
+            tooltipData = data;
+        }
+
+        // Обработчики для регионов
+        document.querySelectorAll('.region').forEach(el => {
+            el.addEventListener('mouseenter', function(e) {
+                const name = this.dataset.nameTm; // используем текущий язык позже
+                const data = {
+                    name: translations[currentLang]['region.' + this.dataset.region] || this.dataset.nameTm,
+                    orders: this.dataset.orders,
+                    companies: this.dataset.companies,
+                    export: this.dataset.export,
+                    import: this.dataset.import
+                };
+                updateTooltip(data);
+                tooltip.classList.add('visible');
+                this.classList.add('active');
+            });
+            el.addEventListener('mousemove', function(e) {
+                tooltip.style.left = (e.clientX + 18) + 'px';
+                tooltip.style.top = (e.clientY - 10) + 'px';
+            });
+            el.addEventListener('mouseleave', function() {
+                tooltip.classList.remove('visible');
+                this.classList.remove('active');
+                tooltipData = null;
             });
         });
 
-        /* ========== ОСТАЛЬНЫЕ СКРИПТЫ (canvas, counters, etc) ========== */
-        // (код без изменений, только добавлены data-i18n)
+        // Обработчики для городов
+        document.querySelectorAll('.city-marker').forEach(el => {
+            el.addEventListener('mouseenter', function(e) {
+                const cityKey = this.dataset.city; // 'ashgabat' или 'arkadag'
+                const data = {
+                    name: translations[currentLang]['city.' + cityKey] || this.dataset.nameTm,
+                    orders: this.dataset.orders,
+                    companies: this.dataset.companies,
+                    population: this.dataset.population
+                };
+                if (cityKey === 'arkadag') {
+                    data.digital = getTranslation('tooltip.digital');
+                }
+                updateTooltip(data);
+                tooltip.classList.add('visible');
+                this.classList.add('active');
+            });
+            el.addEventListener('mousemove', function(e) {
+                tooltip.style.left = (e.clientX + 18) + 'px';
+                tooltip.style.top = (e.clientY - 10) + 'px';
+            });
+            el.addEventListener('mouseleave', function() {
+                tooltip.classList.remove('visible');
+                this.classList.remove('active');
+                tooltipData = null;
+            });
+        });
 
-        // Canvas: линии данных
+        // ============================================================
+        //  CANVAS (линии данных) – без изменений
+        // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             const canvas = document.getElementById('heroCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             let w, h;
-
             function resize() {
                 const rect = canvas.parentElement.getBoundingClientRect();
                 canvas.width = rect.width;
@@ -688,7 +915,6 @@
             }
             resize();
             window.addEventListener('resize', resize);
-
             const points = [];
             for (let i = 0; i < 30; i++) {
                 points.push({
@@ -698,7 +924,6 @@
                     vy: (Math.random() - 0.5) * 0.6,
                 });
             }
-
             function drawLines() {
                 ctx.clearRect(0, 0, w, h);
                 points.forEach(p => {
@@ -732,14 +957,15 @@
             drawLines();
         });
 
-        // Анимированные счётчики
+        // ============================================================
+        //  АНИМАЦИЯ СЧЁТЧИКОВ (без изменений)
+        // ============================================================
         const counters = [
             { id: "users", target: 2340000 },
             { id: "orders", target: 18540291 },
             { id: "docs", target: 11328901 },
             { id: "coin", target: 21000000 }
         ];
-
         function animateCounter(el, target) {
             let value = 0;
             const step = Math.max(1, Math.floor(target / 180));
@@ -752,7 +978,6 @@
                 el.textContent = value.toLocaleString("ru-RU");
             }, 16);
         }
-
         window.addEventListener("load", () => {
             counters.forEach(c => {
                 const el = document.getElementById(c.id);
@@ -760,7 +985,9 @@
             });
         });
 
-        // Intersection Observer
+        // ============================================================
+        //  ОСТАЛЬНЫЕ ЭФФЕКТЫ (observer, hover, particles и т.д.)
+        // ============================================================
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -768,13 +995,11 @@
                 }
             });
         }, { threshold: 0.15 });
-
         document.querySelectorAll(".card, .news-card, .stat").forEach(el => {
             el.classList.add("hidden");
             observer.observe(el);
         });
 
-        // Hover эффект на карточках
         document.querySelectorAll(".card").forEach(card => {
             card.addEventListener("mousemove", e => {
                 const rect = card.getBoundingClientRect();
@@ -791,7 +1016,6 @@
             });
         });
 
-        // Липкий хедер
         const header = document.querySelector("header");
         window.addEventListener("scroll", () => {
             if (window.scrollY > 50) {
@@ -803,7 +1027,6 @@
             }
         });
 
-        // Частицы
         const particles = document.getElementById("particles");
         if (particles) {
             for (let i = 0; i < 60; i++) {
@@ -817,7 +1040,6 @@
             }
         }
 
-        // Кнопки
         document.querySelectorAll("button").forEach(btn => {
             btn.addEventListener("mouseenter", () => {
                 btn.style.transform = "translateY(-3px) scale(1.03)";
@@ -827,7 +1049,6 @@
             });
         });
 
-        // Эффект пульсации сферы
         const core = document.querySelector(".core-center");
         if (core) {
             setInterval(() => {
@@ -835,7 +1056,7 @@
             }, 1500);
         }
 
-        console.log("СФЕРА загружена");
+        console.log("СФЕРА загружена (карта + одна кнопка языка)");
     </script>
 </body>
 </html>
