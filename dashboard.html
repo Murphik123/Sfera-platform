@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="tm">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>СФЕРА — Личный кабинет</title>
-    <meta name="description" content="Единая цифровая платформа Туркменистана" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>СФЕРА — Kabinet</title>
+    <meta name="description" content="Türkmenistanyň milli sanly platformasy" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
     <style>
-        /* ===== ВСЕ СТИЛИ (как в вашем проекте) ===== */
+        /* ===== ВСЕ СТИЛИ (как в предыдущей версии) ===== */
         :root {
             --bg: #050b16;
             --bg2: #071423;
@@ -183,21 +183,47 @@
         .header-buttons {
             display: flex;
             gap: 12px;
+            align-items: center;
         }
-        .header-buttons button {
-            padding: 12px 20px;
+        .lang-btn {
+            padding: 8px 14px;
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: 700;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.15);
+            color: white;
+            transition: .3s;
+            font-size: 13px;
+        }
+        .lang-btn:hover {
+            background: rgba(255,255,255,.08);
+        }
+        .lang-btn.active {
+            background: var(--primary);
+            color: #00111f;
+            border-color: var(--primary);
+        }
+        .header-buttons .profile-btn {
+            padding: 10px 20px;
             border: none;
             cursor: pointer;
             border-radius: 12px;
             font-weight: 600;
-            transition: .35s;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,.1);
-            color: white;
-        }
-        .header-buttons .login {
             background: linear-gradient(135deg, var(--primary), #0077ff);
             color: white;
+            transition: .35s;
+        }
+        .header-buttons .logout-btn {
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: 600;
+            background: rgba(255,255,255,.1);
+            color: white;
+            transition: .35s;
         }
         .header-buttons button:hover {
             transform: translateY(-3px);
@@ -445,22 +471,24 @@
                 <div class="logo-icon">С</div>
                 <div class="logo-text">
                     <h2>СФЕРА</h2>
-                    <span>Национальная Цифровая Платформа</span>
+                    <span data-i18n="platform.sub">Национальная цифровая платформа</span>
                 </div>
             </a>
             <nav class="dashboard-nav">
-                <a href="#" class="active">Обзор</a>
-                <a href="#">Биржа</a>
-                <a href="#">TM Pay</a>
-                <a href="#">TM Coin</a>
-                <a href="#">Банк</a>
-                <a href="#">ИИ</a>
-                <a href="#">Документы</a>
+                <a href="#" class="active" data-i18n="nav.overview">Обзор</a>
+                <a href="#" data-i18n="nav.market">Биржа</a>
+                <a href="#" data-i18n="nav.pay">TM Pay</a>
+                <a href="#" data-i18n="nav.coin">TM Coin</a>
+                <a href="#" data-i18n="nav.bank">Банк</a>
+                <a href="#" data-i18n="nav.ai">ИИ</a>
+                <a href="#" data-i18n="nav.documents">Документы</a>
             </nav>
             <div class="header-buttons">
-                <button class="lang">RU</button>
-                <button class="login">Профиль</button>
-                <button class="login" style="background: rgba(255,255,255,.1);">Выйти</button>
+                <button class="lang-btn" data-lang="tm">TM</button>
+                <button class="lang-btn" data-lang="ru">RU</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+                <button class="profile-btn" data-i18n="header.profile">Профиль</button>
+                <button class="logout-btn" data-i18n="header.logout">Выйти</button>
             </div>
         </div>
     </header>
@@ -476,83 +504,83 @@
                         <div class="avatar">Г</div>
                         <h3>Гуванч Халилов</h3>
                         <p>guvanch@sfera.tm</p>
-                        <span class="badge-status">Онлайн</span>
+                        <span class="badge-status" data-i18n="sidebar.online">Онлайн</span>
                     </div>
                     <nav class="sidebar-nav">
-                        <a href="#" class="active"><span>📊</span> Обзор</a>
-                        <a href="#"><span>💳</span> Платежи</a>
-                        <a href="#"><span>📈</span> Торговля</a>
-                        <a href="#"><span>📁</span> Документы</a>
-                        <a href="#"><span>⚙️</span> Настройки</a>
+                        <a href="#" class="active"><span>📊</span> <span data-i18n="sidebar.overview">Обзор</span></a>
+                        <a href="#"><span>💳</span> <span data-i18n="sidebar.payments">Платежи</span></a>
+                        <a href="#"><span>📈</span> <span data-i18n="sidebar.trade">Торговля</span></a>
+                        <a href="#"><span>📁</span> <span data-i18n="sidebar.documents">Документы</span></a>
+                        <a href="#"><span>⚙️</span> <span data-i18n="sidebar.settings">Настройки</span></a>
                     </nav>
                 </aside>
 
                 <!-- Content -->
                 <section class="content">
                     <div class="content-header">
-                        <h1>Добро пожаловать, Гуванч!</h1>
-                        <p>Ваш личный кабинет СФЕРА</p>
+                        <h1 data-i18n="content.welcome">Добро пожаловать, Гуванч!</h1>
+                        <p data-i18n="content.sub">Ваш личный кабинет СФЕРА</p>
                     </div>
 
                     <div class="widget-grid">
                         <div class="widget">
                             <div class="widget-icon">💰</div>
                             <div class="widget-text">
-                                <h3>Баланс</h3>
+                                <h3 data-i18n="widget.balance">Баланс</h3>
                                 <p class="widget-value">1 245 000 ₮</p>
-                                <span>+12.5% за месяц</span>
+                                <span data-i18n="widget.balance_change">+12.5% за месяц</span>
                             </div>
                         </div>
                         <div class="widget">
                             <div class="widget-icon">📦</div>
                             <div class="widget-text">
-                                <h3>Активные сделки</h3>
+                                <h3 data-i18n="widget.active_deals">Активные сделки</h3>
                                 <p class="widget-value">18</p>
-                                <span>3 ожидают подтверждения</span>
+                                <span data-i18n="widget.pending">3 ожидают подтверждения</span>
                             </div>
                         </div>
                         <div class="widget">
                             <div class="widget-icon">🪙</div>
                             <div class="widget-text">
-                                <h3>TM Coin</h3>
+                                <h3 data-i18n="widget.coin">TM Coin</h3>
                                 <p class="widget-value">2 340</p>
-                                <span>≈ 340 000 ₮</span>
+                                <span data-i18n="widget.coin_value">≈ 340 000 ₮</span>
                             </div>
                         </div>
                         <div class="widget">
                             <div class="widget-icon">📄</div>
                             <div class="widget-text">
-                                <h3>Документов</h3>
+                                <h3 data-i18n="widget.documents">Документов</h3>
                                 <p class="widget-value">47</p>
-                                <span>5 требуют подписи</span>
+                                <span data-i18n="widget.documents_pending">5 требуют подписи</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="recent-activity">
-                        <h2>Последние операции</h2>
+                        <h2 data-i18n="activity.title">Последние операции</h2>
                         <div class="activity-list">
                             <div class="activity-item">
                                 <span class="activity-icon">🔄</span>
                                 <div>
-                                    <h4>Перевод TM Coin</h4>
-                                    <p>Отправлено 150 TM Coin на адрес 0x7F...3A</p>
+                                    <h4 data-i18n="activity.item1.title">Перевод TM Coin</h4>
+                                    <p data-i18n="activity.item1.desc">Отправлено 150 TM Coin на адрес 0x7F...3A</p>
                                 </div>
                                 <span class="activity-time">10:45</span>
                             </div>
                             <div class="activity-item">
                                 <span class="activity-icon">✅</span>
                                 <div>
-                                    <h4>Подтверждение сделки</h4>
-                                    <p>Сделка №4821 завершена успешно</p>
+                                    <h4 data-i18n="activity.item2.title">Подтверждение сделки</h4>
+                                    <p data-i18n="activity.item2.desc">Сделка №4821 завершена успешно</p>
                                 </div>
                                 <span class="activity-time">09:20</span>
                             </div>
                             <div class="activity-item">
                                 <span class="activity-icon">📩</span>
                                 <div>
-                                    <h4>Новый документ</h4>
-                                    <p>Поступил акт сверки от контрагента</p>
+                                    <h4 data-i18n="activity.item3.title">Новый документ</h4>
+                                    <p data-i18n="activity.item3.desc">Поступил акт сверки от контрагента</p>
                                 </div>
                                 <span class="activity-time">08:15</span>
                             </div>
@@ -568,11 +596,11 @@
     <footer class="dashboard-footer">
         <div class="container">
             <div class="footer-left">© 2026 СФЕРА</div>
-            <div class="footer-center">Национальная цифровая платформа Туркменистана</div>
+            <div class="footer-center" data-i18n="footer.center">Национальная цифровая платформа Туркменистана</div>
             <div class="footer-right">
-                <a href="#">Политика</a>
-                <a href="#">API</a>
-                <a href="#">Контакты</a>
+                <a href="#" data-i18n="footer.policy">Политика</a>
+                <a href="#" data-i18n="footer.api">API</a>
+                <a href="#" data-i18n="footer.contacts">Контакты</a>
             </div>
         </div>
     </footer>
@@ -585,11 +613,187 @@
             <div class="loader-ring"></div>
             <div class="loader-center">С</div>
         </div>
-        <div class="loading-text">Загрузка личного кабинета...</div>
+        <div class="loading-text" data-i18n="loading.text">Загрузка личного кабинета...</div>
     </div>
 
+    <!-- ===== SCRIPTS ===== -->
     <script>
-        // ===== Закрытие загрузочного экрана =====
+        /* ==========================================================
+           ПЕРЕВОДЫ ДЛЯ DASHBOARD
+        ========================================================== */
+
+        const translations = {
+            tm: {
+                'platform.sub': 'Milli sanly platforma',
+                'nav.overview': 'Syn',
+                'nav.market': 'Birža',
+                'nav.pay': 'TM Pay',
+                'nav.coin': 'TM Coin',
+                'nav.bank': 'Bank',
+                'nav.ai': 'AI',
+                'nav.documents': 'Resminamalar',
+                'header.profile': 'Profil',
+                'header.logout': 'Çykmak',
+                'sidebar.online': 'Onlaýn',
+                'sidebar.overview': 'Syn',
+                'sidebar.payments': 'Tölegler',
+                'sidebar.trade': 'Söwda',
+                'sidebar.documents': 'Resminamalar',
+                'sidebar.settings': 'Sazlamalar',
+                'content.welcome': 'Hoş geldiňiz, Guwanç!',
+                'content.sub': 'Siziň şahsy kabinetaňyz SФERA',
+                'widget.balance': 'Balans',
+                'widget.balance_change': '+12.5% aýda',
+                'widget.active_deals': 'Işjeň söwdalar',
+                'widget.pending': '3 tassyklamany garaşýar',
+                'widget.coin': 'TM Coin',
+                'widget.coin_value': '≈ 340 000 ₮',
+                'widget.documents': 'Resminamalar',
+                'widget.documents_pending': '5 gol çekmeli',
+                'activity.title': 'Iň soňky amallar',
+                'activity.item1.title': 'TM Coin geçirmek',
+                'activity.item1.desc': '150 TM Coin 0x7F...3A salgysyna iberildi',
+                'activity.item2.title': 'Söwdany tassyklamak',
+                'activity.item2.desc': '4821-nji söwda üstünlikli tamamlandy',
+                'activity.item3.title': 'Täze resminama',
+                'activity.item3.desc': 'Kontragentden hasaplaşyk akty geldi',
+                'footer.center': 'Türkmenistanyň milli sanly platformasy',
+                'footer.policy': 'Syýasat',
+                'footer.api': 'API',
+                'footer.contacts': 'Aragatnaşyk',
+                'loading.text': 'Şahsy kabinet ýüklenýär...'
+            },
+            ru: {
+                'platform.sub': 'Национальная цифровая платформа',
+                'nav.overview': 'Обзор',
+                'nav.market': 'Биржа',
+                'nav.pay': 'TM Pay',
+                'nav.coin': 'TM Coin',
+                'nav.bank': 'Банк',
+                'nav.ai': 'ИИ',
+                'nav.documents': 'Документы',
+                'header.profile': 'Профиль',
+                'header.logout': 'Выйти',
+                'sidebar.online': 'Онлайн',
+                'sidebar.overview': 'Обзор',
+                'sidebar.payments': 'Платежи',
+                'sidebar.trade': 'Торговля',
+                'sidebar.documents': 'Документы',
+                'sidebar.settings': 'Настройки',
+                'content.welcome': 'Добро пожаловать, Гуванч!',
+                'content.sub': 'Ваш личный кабинет СФЕРА',
+                'widget.balance': 'Баланс',
+                'widget.balance_change': '+12.5% за месяц',
+                'widget.active_deals': 'Активные сделки',
+                'widget.pending': '3 ожидают подтверждения',
+                'widget.coin': 'TM Coin',
+                'widget.coin_value': '≈ 340 000 ₮',
+                'widget.documents': 'Документов',
+                'widget.documents_pending': '5 требуют подписи',
+                'activity.title': 'Последние операции',
+                'activity.item1.title': 'Перевод TM Coin',
+                'activity.item1.desc': 'Отправлено 150 TM Coin на адрес 0x7F...3A',
+                'activity.item2.title': 'Подтверждение сделки',
+                'activity.item2.desc': 'Сделка №4821 завершена успешно',
+                'activity.item3.title': 'Новый документ',
+                'activity.item3.desc': 'Поступил акт сверки от контрагента',
+                'footer.center': 'Национальная цифровая платформа Туркменистана',
+                'footer.policy': 'Политика',
+                'footer.api': 'API',
+                'footer.contacts': 'Контакты',
+                'loading.text': 'Загрузка личного кабинета...'
+            },
+            en: {
+                'platform.sub': 'National Digital Platform',
+                'nav.overview': 'Overview',
+                'nav.market': 'Exchange',
+                'nav.pay': 'TM Pay',
+                'nav.coin': 'TM Coin',
+                'nav.bank': 'Bank',
+                'nav.ai': 'AI',
+                'nav.documents': 'Documents',
+                'header.profile': 'Profile',
+                'header.logout': 'Logout',
+                'sidebar.online': 'Online',
+                'sidebar.overview': 'Overview',
+                'sidebar.payments': 'Payments',
+                'sidebar.trade': 'Trade',
+                'sidebar.documents': 'Documents',
+                'sidebar.settings': 'Settings',
+                'content.welcome': 'Welcome, Guvanch!',
+                'content.sub': 'Your personal dashboard SFERA',
+                'widget.balance': 'Balance',
+                'widget.balance_change': '+12.5% this month',
+                'widget.active_deals': 'Active deals',
+                'widget.pending': '3 awaiting confirmation',
+                'widget.coin': 'TM Coin',
+                'widget.coin_value': '≈ 340 000 ₮',
+                'widget.documents': 'Documents',
+                'widget.documents_pending': '5 need signature',
+                'activity.title': 'Recent Activity',
+                'activity.item1.title': 'TM Coin Transfer',
+                'activity.item1.desc': 'Sent 150 TM Coin to address 0x7F...3A',
+                'activity.item2.title': 'Deal Confirmation',
+                'activity.item2.desc': 'Deal #4821 completed successfully',
+                'activity.item3.title': 'New Document',
+                'activity.item3.desc': 'Received reconciliation report from counterparty',
+                'footer.center': 'National Digital Platform of Turkmenistan',
+                'footer.policy': 'Policy',
+                'footer.api': 'API',
+                'footer.contacts': 'Contacts',
+                'loading.text': 'Loading dashboard...'
+            }
+        };
+
+        /* ==========================================================
+           ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА
+        ========================================================== */
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    // Если элемент содержит HTML-разметку, заменяем через innerHTML
+                    if (el.innerHTML.includes('<')) {
+                        el.innerHTML = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            localStorage.setItem('preferredLang', lang);
+            document.documentElement.lang = lang;
+        }
+
+        /* ==========================================================
+           ЗАГРУЗКА ЯЗЫКА ПРИ СТАРТЕ
+        ========================================================== */
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let lang = localStorage.getItem('preferredLang') || 'tm';
+            if (!translations[lang]) lang = 'tm';
+            setLanguage(lang);
+        });
+
+        /* ==========================================================
+           ОБРАБОТЧИКИ КНОПОК ЯЗЫКА
+        ========================================================== */
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                setLanguage(this.dataset.lang);
+            });
+        });
+
+        /* ==========================================================
+           ЗАКРЫТИЕ ЗАГРУЗОЧНОГО ЭКРАНА
+        ========================================================== */
+
         window.addEventListener("load", function() {
             const loading = document.getElementById("loadingScreen");
             setTimeout(function() {
@@ -598,15 +802,10 @@
             }, 900);
         });
 
-        // ===== Переключение языка (демо) =====
-        document.querySelector('.lang').addEventListener('click', function() {
-            const langs = ['RU', 'TM', 'EN'];
-            let idx = langs.indexOf(this.textContent);
-            idx = (idx + 1) % langs.length;
-            this.textContent = langs[idx];
-        });
+        /* ==========================================================
+           ЧАСТИЦЫ
+        ========================================================== */
 
-        // ===== Частицы =====
         (function createParticles() {
             const container = document.getElementById('particles');
             if (!container) return;
@@ -628,7 +827,10 @@
             }
         })();
 
-        // ===== Canvas фон =====
+        /* ==========================================================
+           CANVAS ФОН
+        ========================================================== */
+
         (function initCanvas() {
             const canvas = document.getElementById('backgroundCanvas');
             if (!canvas) return;
@@ -680,7 +882,7 @@
             draw();
         })();
 
-        console.log('СФЕРА — Личный кабинет загружен');
+        console.log('СФЕРА — Личный кабинет загружен (3 языка)');
     </script>
 </body>
 </html>
