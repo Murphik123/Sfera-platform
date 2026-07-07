@@ -1,20 +1,14 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="tm">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>СФЕРА — Единая цифровая платформа Туркменистана</title>
-
-    <!-- Шрифты -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>СФЕРА — Türkmenistanyň sanly platformasy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
-        /* =====================================================
-           ВСЕ СТИЛИ (адаптированы под "СФЕРА")
-        ===================================================== */
-
+        /* ===== ВСЕ СТИЛИ (без изменений) ===== */
         :root {
             --primary: #00d4ff;
             --secondary: #1f6bff;
@@ -29,149 +23,80 @@
             --shadow: 0 20px 60px rgba(0,0,0,.35);
             --radius: 22px;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Inter", sans-serif;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; }
         html { scroll-behavior: smooth; }
-
         body {
             background: linear-gradient(135deg, #06111d, #0b2035, #102b45);
             color: var(--white);
             overflow-x: hidden;
         }
-
         body::before {
             content: "";
             position: fixed;
             width: 200%;
             height: 200%;
-            background:
-                radial-gradient(circle at 20% 30%, rgba(0,212,255,.15), transparent 35%),
-                radial-gradient(circle at 80% 20%, rgba(0,255,170,.10), transparent 35%),
-                radial-gradient(circle at 60% 80%, rgba(32,108,255,.15), transparent 40%);
+            background: radial-gradient(circle at 20% 30%, rgba(0,212,255,.15), transparent 35%),
+                        radial-gradient(circle at 80% 20%, rgba(0,255,170,.10), transparent 35%),
+                        radial-gradient(circle at 60% 80%, rgba(32,108,255,.15), transparent 40%);
             animation: bgmove 18s linear infinite;
             z-index: -2;
         }
-
         @keyframes bgmove {
             0% { transform: translate(0,0); }
             50% { transform: translate(-8%,-5%); }
             100% { transform: translate(0,0); }
         }
+        .container { width: min(1400px, 92%); margin: auto; }
 
-        .container {
-            width: min(1400px, 92%);
-            margin: auto;
-        }
-
-        /* ================= HEADER ================= */
         header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 999;
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
             backdrop-filter: blur(18px);
             background: rgba(5,15,25,.55);
             border-bottom: 1px solid var(--border);
         }
-
-        header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 0;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            color: white;
-        }
-
+        header .container { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; }
+        .logo { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white; }
         .logo-icon {
-            width: 58px;
-            height: 58px;
-            border-radius: 18px;
+            width: 58px; height: 58px; border-radius: 18px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            font-weight: 800;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 30px; font-weight: 800;
             box-shadow: 0 0 30px rgba(0,212,255,.5);
             color: white;
         }
+        .logo-text h2 { font-size: 24px; font-weight: 800; }
+        .logo-text p { font-size: 13px; color: #8fb6d8; }
 
-        .logo-text h2 {
-            font-size: 24px;
-            font-weight: 800;
-        }
+        nav ul { display: flex; list-style: none; gap: 32px; }
+        nav a { text-decoration: none; color: white; font-weight: 500; transition: .3s; }
+        nav a:hover { color: var(--primary); }
 
-        .logo-text p {
-            font-size: 13px;
-            color: #8fb6d8;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 32px;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: white;
-            font-weight: 500;
-            transition: .3s;
-        }
-
-        nav a:hover {
-            color: var(--primary);
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 12px;
-        }
-
-        .header-buttons a,
-        .header-buttons button {
+        .header-buttons { display: flex; gap: 12px; align-items: center; }
+        .header-buttons a, .header-buttons button {
             padding: 12px 20px;
-            border: none;
-            cursor: pointer;
+            border: none; cursor: pointer;
             border-radius: 12px;
-            font-weight: 600;
-            transition: .3s;
-            text-decoration: none;
-            display: inline-block;
+            font-weight: 600; transition: .3s;
+            text-decoration: none; display: inline-block;
             font-size: 14px;
         }
-
-        .lang {
+        .lang-btn {
             background: transparent;
             border: 1px solid var(--border) !important;
             color: white;
         }
-
-        .login {
+        .lang-btn.active {
+            background: var(--primary);
+            color: #00111f;
+            border-color: var(--primary) !important;
+        }
+        .login-btn {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
+        .login-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,212,255,.35); }
 
-        .login:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(0,212,255,.35);
-        }
-
-        /* ================= HERO ================= */
+        /* ===== HERO ===== */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -182,13 +107,10 @@
             gap: 60px;
             overflow: hidden;
         }
-
         .hero-grid {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-image:
                 linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
@@ -197,514 +119,278 @@
             z-index: 0;
             animation: gridMove 20s linear infinite;
         }
-
-        @keyframes gridMove {
-            0% { transform: translate(0,0); }
-            100% { transform: translate(60px, 60px); }
-        }
-
+        @keyframes gridMove { 0% { transform: translate(0,0); } 100% { transform: translate(60px,60px); } }
         #heroCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute; top:0; left:0;
+            width:100%; height:100%;
             pointer-events: none;
-            z-index: 1;
-            opacity: 0.5;
+            z-index:1;
+            opacity:0.5;
         }
-
         .hero-glow {
             position: absolute;
-            width: 500px;
-            height: 500px;
+            width: 500px; height: 500px;
             border-radius: 50%;
             filter: blur(120px);
             pointer-events: none;
-            z-index: 0;
-            opacity: 0.3;
+            z-index:0;
+            opacity:0.3;
             animation: pulseGlow 4s ease-in-out infinite alternate;
         }
-
-        .glow-left {
-            top: -10%;
-            left: -10%;
-            background: rgba(0,212,255,.4);
-        }
-
-        .glow-right {
-            bottom: -10%;
-            right: -10%;
-            background: rgba(0,255,170,.3);
-            animation-delay: 2s;
-        }
-
-        @keyframes pulseGlow {
-            0% { transform: scale(1); opacity: 0.2; }
-            100% { transform: scale(1.2); opacity: 0.5; }
-        }
+        .glow-left { top:-10%; left:-10%; background: rgba(0,212,255,.4); }
+        .glow-right { bottom:-10%; right:-10%; background: rgba(0,255,170,.3); animation-delay:2s; }
+        @keyframes pulseGlow { 0% { transform: scale(1); opacity:0.2; } 100% { transform: scale(1.2); opacity:0.5; } }
 
         .map-wrapper {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top:50%; left:50%;
             transform: translate(-50%, -50%);
-            width: 80%;
-            height: 80%;
+            width:80%; height:80%;
             pointer-events: none;
-            z-index: 0;
-            opacity: 0.15;
+            z-index:0;
+            opacity:0.15;
         }
-
-        .tm-map {
-            width: 100%;
-            height: 100%;
-        }
-
+        .tm-map { width:100%; height:100%; }
         .map-outline {
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
             animation: drawMap 8s ease forwards;
         }
-
-        @keyframes drawMap {
-            to { stroke-dashoffset: 0; }
-        }
+        @keyframes drawMap { to { stroke-dashoffset:0; } }
 
         .hero-content {
             position: relative;
-            z-index: 2;
-            max-width: 700px;
+            z-index:2;
+            max-width:700px;
         }
-
         .hero-tag {
             display: inline-block;
             padding: 8px 20px;
             border-radius: 30px;
             background: rgba(0,212,255,.12);
             border: 1px solid rgba(0,212,255,.3);
-            font-size: 14px;
-            letter-spacing: 2px;
+            font-size:14px;
+            letter-spacing:2px;
             color: var(--primary);
-            margin-bottom: 25px;
+            margin-bottom:25px;
         }
-
         .hero-content h1 {
-            font-size: 64px;
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 20px;
+            font-size:64px; font-weight:900; line-height:1.1; margin-bottom:20px;
             background: linear-gradient(to right, #fff, #b4d7ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .hero-subtitle {
-            font-size: 24px;
-            color: var(--primary);
-            margin-bottom: 20px;
-            letter-spacing: 1px;
+            font-size:24px; color: var(--primary); margin-bottom:20px; letter-spacing:1px;
         }
-
         .hero-text {
-            font-size: 18px;
-            line-height: 1.8;
-            color: #bcd0e2;
-            max-width: 550px;
-            margin-bottom: 40px;
+            font-size:18px; line-height:1.8; color:#bcd0e2; max-width:550px; margin-bottom:40px;
         }
-
-        .hero-buttons {
-            display: flex;
-            gap: 20px;
+        .hero-buttons { display: flex; gap:20px; }
+        .hero-buttons a {
+            padding:18px 40px; border:none; border-radius:16px;
+            font-size:18px; font-weight:700; cursor:pointer;
+            text-decoration:none; display:inline-block;
+            transition:.35s;
         }
-
-        .hero-buttons a,
-        .hero-buttons button {
-            padding: 18px 40px;
-            border: none;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: .35s;
-        }
-
         .primary-btn {
             background: linear-gradient(135deg, #00d4ff, #008cff);
             color: white;
             box-shadow: 0 20px 45px rgba(0,212,255,.35);
         }
-
-        .primary-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 30px 60px rgba(0,212,255,.5);
-        }
-
+        .primary-btn:hover { transform:translateY(-5px); box-shadow:0 30px 60px rgba(0,212,255,.5); }
         .glass-btn {
             background: rgba(255,255,255,.05);
-            border: 1px solid rgba(255,255,255,.25);
-            backdrop-filter: blur(10px);
-            color: white;
+            border:1px solid rgba(255,255,255,.25);
+            backdrop-filter:blur(10px);
+            color:white;
         }
-
-        .glass-btn:hover {
-            background: rgba(255,255,255,.15);
-            transform: translateY(-5px);
-        }
+        .glass-btn:hover { background:rgba(255,255,255,.15); transform:translateY(-5px); }
 
         .hero-visual {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position:relative; z-index:2;
+            display:flex; justify-content:center; align-items:center;
         }
-
         .core {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position:relative;
+            width:320px; height:320px;
+            display:flex; justify-content:center; align-items:center;
         }
-
         .core-ring {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px solid rgba(0,212,255,.3);
-            animation: spinRing linear infinite;
+            position:absolute;
+            border-radius:50%;
+            border:2px solid rgba(0,212,255,.3);
+            animation:spinRing linear infinite;
         }
-
-        .ring-1 {
-            width: 100%;
-            height: 100%;
-            animation-duration: 20s;
-        }
-
-        .ring-2 {
-            width: 120%;
-            height: 120%;
-            animation-duration: 15s;
-            animation-direction: reverse;
-            border-color: rgba(0,255,170,.2);
-        }
-
-        .ring-3 {
-            width: 140%;
-            height: 140%;
-            animation-duration: 25s;
-            border-color: rgba(31,107,255,.2);
-        }
-
-        @keyframes spinRing {
-            to { transform: rotate(360deg); }
-        }
-
+        .ring-1 { width:100%; height:100%; animation-duration:20s; }
+        .ring-2 { width:120%; height:120%; animation-duration:15s; animation-direction:reverse; border-color:rgba(0,255,170,.2); }
+        .ring-3 { width:140%; height:140%; animation-duration:25s; border-color:rgba(31,107,255,.2); }
+        @keyframes spinRing { to { transform:rotate(360deg); } }
         .core-center {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
+            width:140px; height:140px; border-radius:50%;
             background: radial-gradient(circle, #00d4ff, #004d80);
             box-shadow: 0 0 80px rgba(0,212,255,.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 36px;
-            font-weight: 900;
-            color: white;
-            text-shadow: 0 0 20px rgba(0,0,0,.3);
-            animation: pulseCore 3s ease-in-out infinite alternate;
+            display:flex; justify-content:center; align-items:center;
+            font-size:36px; font-weight:900; color:white;
+            text-shadow:0 0 20px rgba(0,0,0,.3);
+            animation:pulseCore 3s ease-in-out infinite alternate;
         }
+        @keyframes pulseCore { 0% { transform:scale(1); box-shadow:0 0 80px rgba(0,212,255,.4); } 100% { transform:scale(1.05); box-shadow:0 0 120px rgba(0,212,255,.7); } }
 
-        @keyframes pulseCore {
-            0% { transform: scale(1); box-shadow: 0 0 80px rgba(0,212,255,.4); }
-            100% { transform: scale(1.05); box-shadow: 0 0 120px rgba(0,212,255,.7); }
-        }
-
-        /* ================= MODULES ================= */
-        .modules {
-            padding: 120px 7%;
-        }
-
-        .modules h2 {
-            text-align: center;
-            font-size: 48px;
-            margin-bottom: 70px;
-            font-weight: 800;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 35px;
-        }
-
+        /* ===== MODULES ===== */
+        .modules { padding:120px 7%; }
+        .modules h2 { text-align:center; font-size:48px; margin-bottom:70px; font-weight:800; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:35px; }
         .card {
-            position: relative;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.12);
-            backdrop-filter: blur(25px);
-            border-radius: 24px;
-            padding: 45px;
-            overflow: hidden;
-            transition: .45s;
-            box-shadow: 0 25px 45px rgba(0,0,0,.25);
+            position:relative;
+            background:rgba(255,255,255,.06);
+            border:1px solid rgba(255,255,255,.12);
+            backdrop-filter:blur(25px);
+            border-radius:24px;
+            padding:45px;
+            overflow:hidden;
+            transition:.45s;
+            box-shadow:0 25px 45px rgba(0,0,0,.25);
         }
-
         .card::before {
-            content: "";
-            position: absolute;
-            top: -100%;
-            left: -100%;
-            width: 220%;
-            height: 220%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,.08), transparent);
-            transition: .7s;
+            content:"";
+            position:absolute;
+            top:-100%; left:-100%;
+            width:220%; height:220%;
+            background:linear-gradient(45deg, transparent, rgba(255,255,255,.08), transparent);
+            transition:.7s;
         }
+        .card:hover::before { top:0; left:0; }
+        .card:hover { transform:translateY(-12px); border-color:#00d4ff; box-shadow:0 35px 70px rgba(0,212,255,.25); }
+        .icon { font-size:60px; margin-bottom:25px; }
+        .card h3 { font-size:30px; margin-bottom:18px; }
+        .card p { line-height:1.8; color:#bfd3e4; }
 
-        .card:hover::before {
-            top: 0;
-            left: 0;
-        }
-
-        .card:hover {
-            transform: translateY(-12px);
-            border-color: #00d4ff;
-            box-shadow: 0 35px 70px rgba(0,212,255,.25);
-        }
-
-        .icon {
-            font-size: 60px;
-            margin-bottom: 25px;
-        }
-
-        .card h3 {
-            font-size: 30px;
-            margin-bottom: 18px;
-        }
-
-        .card p {
-            line-height: 1.8;
-            color: #bfd3e4;
-        }
-
-        /* ================= STATISTICS ================= */
-        .statistics {
-            padding: 120px 7%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 35px;
-        }
-
+        /* ===== STATISTICS ===== */
+        .statistics { padding:120px 7%; display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:35px; }
         .stat {
-            background: rgba(255,255,255,.05);
-            border-radius: 22px;
-            padding: 45px;
-            text-align: center;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,.10);
-            transition: .35s;
+            background:rgba(255,255,255,.05);
+            border-radius:22px; padding:45px; text-align:center;
+            backdrop-filter:blur(20px);
+            border:1px solid rgba(255,255,255,.10);
+            transition:.35s;
         }
-
-        .stat:hover {
-            transform: scale(1.05);
-        }
-
+        .stat:hover { transform:scale(1.05); }
         .stat h1 {
-            font-size: 60px;
-            background: linear-gradient(#00d4ff, #00ffa3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 12px;
+            font-size:60px;
+            background:linear-gradient(#00d4ff, #00ffa3);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            margin-bottom:12px;
         }
+        .stat p { font-size:18px; color:#bdd0df; }
 
-        .stat p {
-            font-size: 18px;
-            color: #bdd0df;
-        }
-
-        /* ================= NEWS ================= */
-        .news {
-            padding: 120px 7%;
-        }
-
-        .news h2 {
-            text-align: center;
-            font-size: 48px;
-            margin-bottom: 60px;
-        }
-
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 35px;
-        }
-
+        /* ===== NEWS ===== */
+        .news { padding:120px 7%; }
+        .news h2 { text-align:center; font-size:48px; margin-bottom:60px; }
+        .news-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(350px,1fr)); gap:35px; }
         .news-card {
-            padding: 35px;
-            border-radius: 22px;
-            background: rgba(255,255,255,.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,.08);
-            transition: .35s;
+            padding:35px; border-radius:22px;
+            background:rgba(255,255,255,.05);
+            backdrop-filter:blur(20px);
+            border:1px solid rgba(255,255,255,.08);
+            transition:.35s;
         }
+        .news-card:hover { transform:translateY(-10px); border-color:#00d4ff; }
+        .news-card h3 { margin-bottom:20px; font-size:28px; }
+        .news-card p { color:#bdd0df; line-height:1.7; }
 
-        .news-card:hover {
-            transform: translateY(-10px);
-            border-color: #00d4ff;
-        }
+        /* ===== FOOTER ===== */
+        footer { margin-top:120px; padding:70px; text-align:center; background:#08131d; border-top:1px solid rgba(255,255,255,.10); }
+        footer h2 { font-size:38px; margin-bottom:15px; }
+        footer p { color:#9fb5c8; }
 
-        .news-card h3 {
-            margin-bottom: 20px;
-            font-size: 28px;
-        }
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width:10px; }
+        ::-webkit-scrollbar-thumb { background:#00d4ff; border-radius:20px; }
+        ::-webkit-scrollbar-track { background:#08131d; }
 
-        .news-card p {
-            color: #bdd0df;
-            line-height: 1.7;
-        }
-
-        /* ================= FOOTER ================= */
-        footer {
-            margin-top: 120px;
-            padding: 70px;
-            text-align: center;
-            background: #08131d;
-            border-top: 1px solid rgba(255,255,255,.10);
-        }
-
-        footer h2 {
-            font-size: 38px;
-            margin-bottom: 15px;
-        }
-
-        footer p {
-            color: #9fb5c8;
-        }
-
-        /* ================= SCROLLBAR ================= */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #00d4ff;
-            border-radius: 20px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #08131d;
-        }
-
-        .hidden {
-            opacity: 0;
-            transform: translateY(60px);
-            transition: .8s;
-        }
-
-        .visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .hidden { opacity:0; transform:translateY(60px); transition:.8s; }
+        .visible { opacity:1; transform:translateY(0); }
 
         #particles {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: -1;
+            position:fixed; left:0; top:0; width:100%; height:100%;
+            pointer-events:none; overflow:hidden; z-index:-1;
         }
-
         .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: #00d4ff;
-            opacity: .5;
-            animation: float linear infinite;
+            position:absolute; width:4px; height:4px; border-radius:50%;
+            background:#00d4ff; opacity:.5;
+            animation:float linear infinite;
         }
-
         @keyframes float {
-            0% { transform: translateY(0); opacity: 0; }
-            20% { opacity: .6; }
-            80% { opacity: .6; }
-            100% { transform: translateY(-120vh); opacity: 0; }
+            0% { transform:translateY(0); opacity:0; }
+            20% { opacity:.6; }
+            80% { opacity:.6; }
+            100% { transform:translateY(-120vh); opacity:0; }
         }
 
-        /* ================= RESPONSIVE ================= */
-        @media(max-width: 1200px) {
-            .hero {
-                grid-template-columns: 1fr;
-                text-align: center;
-                padding: 120px 5% 60px;
-            }
-            .hero-content { max-width: 100%; }
-            .hero-text { max-width: 100%; margin: 0 auto 40px; }
-            .hero-buttons { justify-content: center; }
-            .hero-visual { margin-top: 40px; }
-            .core { width: 240px; height: 240px; }
-            .core-center { width: 100px; height: 100px; font-size: 28px; }
-            .hero-content h1 { font-size: 44px; }
-            nav { display: none; }
+        @media(max-width:1200px) {
+            .hero { grid-template-columns:1fr; text-align:center; padding:120px 5% 60px; }
+            .hero-content { max-width:100%; }
+            .hero-text { max-width:100%; margin:0 auto 40px; }
+            .hero-buttons { justify-content:center; }
+            .hero-visual { margin-top:40px; }
+            .core { width:240px; height:240px; }
+            .core-center { width:100px; height:100px; font-size:28px; }
+            .hero-content h1 { font-size:44px; }
+            nav { display:none; }
         }
-
-        @media(max-width: 768px) {
-            .hero-content h1 { font-size: 32px; }
-            .hero-subtitle { font-size: 18px; }
-            .hero-text { font-size: 16px; }
-            .modules h2, .news h2 { font-size: 34px; }
-            .core { width: 180px; height: 180px; }
-            .core-center { width: 80px; height: 80px; font-size: 22px; }
-            .primary-btn, .glass-btn { padding: 14px 28px; font-size: 16px; }
+        @media(max-width:768px) {
+            .hero-content h1 { font-size:32px; }
+            .hero-subtitle { font-size:18px; }
+            .hero-text { font-size:16px; }
+            .modules h2, .news h2 { font-size:34px; }
+            .core { width:180px; height:180px; }
+            .core-center { width:80px; height:80px; font-size:22px; }
+            .primary-btn, .glass-btn { padding:14px 28px; font-size:16px; }
         }
     </style>
 </head>
 <body>
-
     <div id="particles"></div>
 
-    <!-- ========== HEADER ========== -->
+    <!-- ===== HEADER ===== -->
     <header>
         <div class="container">
             <a href="index.html" class="logo">
                 <div class="logo-icon">С</div>
                 <div class="logo-text">
                     <h2>СФЕРА</h2>
-                    <p>Национальная Цифровая Платформа</p>
+                    <p data-i18n="platform.sub">Национальная цифровая платформа</p>
                 </div>
             </a>
             <nav>
                 <ul>
-                    <li><a href="#">Главная</a></li>
-                    <li><a href="#">Биржа</a></li>
-                    <li><a href="#">TM Pay</a></li>
-                    <li><a href="#">TM Coin</a></li>
-                    <li><a href="#">Банк</a></li>
-                    <li><a href="#">ИИ</a></li>
-                    <li><a href="#">Документы</a></li>
-                    <li><a href="#">Контакты</a></li>
+                    <li><a href="#" data-i18n="nav.home">Главная</a></li>
+                    <li><a href="#" data-i18n="nav.market">Биржа</a></li>
+                    <li><a href="#" data-i18n="nav.pay">TM Pay</a></li>
+                    <li><a href="#" data-i18n="nav.coin">TM Coin</a></li>
+                    <li><a href="#" data-i18n="nav.bank">Банк</a></li>
+                    <li><a href="#" data-i18n="nav.ai">ИИ</a></li>
+                    <li><a href="#" data-i18n="nav.documents">Документы</a></li>
+                    <li><a href="#" data-i18n="nav.contacts">Контакты</a></li>
                 </ul>
             </nav>
             <div class="header-buttons">
-                <button class="lang">RU</button>
-                <a href="login.html" class="login">Войти</a>
+                <button class="lang-btn" data-lang="tm">TM</button>
+                <button class="lang-btn" data-lang="ru">RU</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+                <a href="login.html" class="login-btn" data-i18n="auth.login">Войти</a>
             </div>
         </div>
     </header>
 
-    <!-- ========== HERO ========== -->
+    <!-- ===== HERO ===== -->
     <section class="hero">
         <div class="hero-grid"></div>
         <canvas id="heroCanvas"></canvas>
         <div class="hero-glow glow-left"></div>
         <div class="hero-glow glow-right"></div>
-
         <div class="map-wrapper">
             <svg class="tm-map" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -717,20 +403,18 @@
                       fill="rgba(0,212,255,.08)" stroke="url(#mapGradient)" stroke-width="3" class="map-outline"/>
             </svg>
         </div>
-
         <div class="hero-content">
-            <span class="hero-tag">СФЕРА — ЦИФРОВАЯ ПЛАТФОРМА</span>
-            <h1>Единая цифровая<br>платформа Туркменистана</h1>
-            <p class="hero-subtitle">Торговля • ИИ • Платежи • Банк • Документооборот</p>
-            <p class="hero-text">
+            <span class="hero-tag" data-i18n="hero.tag">СФЕРА — ЦИФРОВАЯ ПЛАТФОРМА</span>
+            <h1 data-i18n="hero.title">Единая цифровая<br>платформа Туркменистана</h1>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">Торговля • ИИ • Платежи • Банк • Документооборот</p>
+            <p class="hero-text" data-i18n="hero.text">
                 Современная государственная цифровая экосистема, объединяющая электронную торговлю, интеллектуальную аналитику, финансовые сервисы, документооборот и цифровые государственные услуги.
             </p>
             <div class="hero-buttons">
-                <a href="dashboard.html" class="primary-btn">Начать работу</a>
-                <a href="#" class="glass-btn">Демо</a>
+                <a href="dashboard.html" class="primary-btn" data-i18n="hero.start">Начать работу</a>
+                <a href="#" class="glass-btn" data-i18n="hero.demo">Демо</a>
             </div>
         </div>
-
         <div class="hero-visual">
             <div class="core">
                 <div class="core-ring ring-1"></div>
@@ -741,45 +425,253 @@
         </div>
     </section>
 
-    <!-- ========== МОДУЛИ ========== -->
+    <!-- ===== MODULES ===== -->
     <section class="modules">
-        <h2>Основные модули платформы</h2>
+        <h2 data-i18n="modules.title">Основные модули платформы</h2>
         <div class="grid">
-            <div class="card"><div class="icon">🛒</div><h3>Биржа</h3><p>Электронная торговая площадка</p></div>
-            <div class="card"><div class="icon">💳</div><h3>TM Pay</h3><p>Национальная платежная система</p></div>
-            <div class="card"><div class="icon">₮</div><h3>TM Coin</h3><p>Цифровая государственная валюта</p></div>
-            <div class="card"><div class="icon">🏦</div><h3>Банк</h3><p>Цифровой банк "Благо"</p></div>
-            <div class="card"><div class="icon">🤖</div><h3>ИИ</h3><p>Проверка документов, прогнозирование, аналитика</p></div>
-            <div class="card"><div class="icon">📄</div><h3>Документы</h3><p>Автоматическая верификация</p></div>
+            <div class="card">
+                <div class="icon">🛒</div>
+                <h3 data-i18n="modules.market.title">Биржа</h3>
+                <p data-i18n="modules.market.desc">Электронная торговая площадка</p>
+            </div>
+            <div class="card">
+                <div class="icon">💳</div>
+                <h3 data-i18n="modules.pay.title">TM Pay</h3>
+                <p data-i18n="modules.pay.desc">Национальная платежная система</p>
+            </div>
+            <div class="card">
+                <div class="icon">₮</div>
+                <h3 data-i18n="modules.coin.title">TM Coin</h3>
+                <p data-i18n="modules.coin.desc">Цифровая государственная валюта</p>
+            </div>
+            <div class="card">
+                <div class="icon">🏦</div>
+                <h3 data-i18n="modules.bank.title">Банк</h3>
+                <p data-i18n="modules.bank.desc">Цифровой банк "Благо"</p>
+            </div>
+            <div class="card">
+                <div class="icon">🤖</div>
+                <h3 data-i18n="modules.ai.title">ИИ</h3>
+                <p data-i18n="modules.ai.desc">Проверка документов, прогнозирование, аналитика</p>
+            </div>
+            <div class="card">
+                <div class="icon">📄</div>
+                <h3 data-i18n="modules.documents.title">Документы</h3>
+                <p data-i18n="modules.documents.desc">Автоматическая верификация</p>
+            </div>
         </div>
     </section>
 
-    <!-- ========== СТАТИСТИКА ========== -->
+    <!-- ===== STATISTICS ===== -->
     <section class="statistics">
-        <div class="stat"><h1 id="users">0</h1><p>Пользователей</p></div>
-        <div class="stat"><h1 id="orders">0</h1><p>Сделок</p></div>
-        <div class="stat"><h1 id="docs">0</h1><p>Документов</p></div>
-        <div class="stat"><h1 id="coin">0</h1><p>TM Coin</p></div>
+        <div class="stat"><h1 id="users">0</h1><p data-i18n="stats.users">Пользователей</p></div>
+        <div class="stat"><h1 id="orders">0</h1><p data-i18n="stats.deals">Сделок</p></div>
+        <div class="stat"><h1 id="docs">0</h1><p data-i18n="stats.documents">Документов</p></div>
+        <div class="stat"><h1 id="coin">0</h1><p data-i18n="stats.coin">TM Coin</p></div>
     </section>
 
-    <!-- ========== НОВОСТИ ========== -->
+    <!-- ===== NEWS ===== -->
     <section class="news">
-        <h2>Последние новости</h2>
+        <h2 data-i18n="news.title">Последние новости</h2>
         <div class="news-grid">
-            <div class="news-card"><h3>Запуск платформы</h3><p>Современная цифровая экосистема нового поколения.</p></div>
-            <div class="news-card"><h3>ИИ модуль</h3><p>Автоматическая проверка документов.</p></div>
-            <div class="news-card"><h3>TM Pay</h3><p>Национальная система мгновенных платежей.</p></div>
+            <div class="news-card">
+                <h3 data-i18n="news.item1.title">Запуск платформы</h3>
+                <p data-i18n="news.item1.desc">Современная цифровая экосистема нового поколения.</p>
+            </div>
+            <div class="news-card">
+                <h3 data-i18n="news.item2.title">ИИ модуль</h3>
+                <p data-i18n="news.item2.desc">Автоматическая проверка документов.</p>
+            </div>
+            <div class="news-card">
+                <h3 data-i18n="news.item3.title">TM Pay</h3>
+                <p data-i18n="news.item3.desc">Национальная система мгновенных платежей.</p>
+            </div>
         </div>
     </section>
 
-    <!-- ========== ФУТЕР ========== -->
+    <!-- ===== FOOTER ===== -->
     <footer>
         <h2>СФЕРА</h2>
-        <p>© 2026 — Национальная цифровая платформа</p>
+        <p data-i18n="footer.copy">© 2026 — Национальная цифровая платформа</p>
     </footer>
 
-    <!-- ========== СКРИПТЫ ========== -->
+    <!-- ===== SCRIPTS ===== -->
     <script>
+        /* ========== МУЛЬТИЯЗЫЧНОСТЬ ========== */
+        const translations = {
+            tm: {
+                'platform.sub': 'Milli sanly platforma',
+                'nav.home': 'Baş sahypa',
+                'nav.market': 'Birža',
+                'nav.pay': 'TM Pay',
+                'nav.coin': 'TM Coin',
+                'nav.bank': 'Bank',
+                'nav.ai': 'AI',
+                'nav.documents': 'Resminamalar',
+                'nav.contacts': 'Aragatnaşyk',
+                'auth.login': 'Giriş',
+                'hero.tag': 'SФERA — SANLY PLATFORMA',
+                'hero.title': 'Türkmenistanyň bitewi sanly platformasy',
+                'hero.subtitle': 'Söwda • AI • Tölegler • Bank • Resminama dolanyşygy',
+                'hero.text': 'Elektron söwdany, intellektual analitikany, maliýe hyzmatlaryny, resminama dolanyşygyny we sanly döwlet hyzmatlaryny birleşdirýän häzirki zaman döwlet sanly ekosistemasy.',
+                'hero.start': 'Işe başlamak',
+                'hero.demo': 'Demo',
+                'modules.title': 'Platformanyň esasy modullary',
+                'modules.market.title': 'Birža',
+                'modules.market.desc': 'Elektron söwda meýdançasy',
+                'modules.pay.title': 'TM Pay',
+                'modules.pay.desc': 'Milli töleg ulgamy',
+                'modules.coin.title': 'TM Coin',
+                'modules.coin.desc': 'Sanly döwlet walýutasy',
+                'modules.bank.title': 'Bank',
+                'modules.bank.desc': '"Bereket" sanly banky',
+                'modules.ai.title': 'AI',
+                'modules.ai.desc': 'Resminamalary barlamak, çaklamak, analitika',
+                'modules.documents.title': 'Resminamalar',
+                'modules.documents.desc': 'Awto wifikasiýa',
+                'stats.users': 'Ulanyjylar',
+                'stats.deals': 'Söwdalar',
+                'stats.documents': 'Resminamalar',
+                'stats.coin': 'TM Coin',
+                'news.title': 'Iň soňky täzelikler',
+                'news.item1.title': 'Platformanyň işe girizilmegi',
+                'news.item1.desc': 'Täze nesil sanly ekosistema.',
+                'news.item2.title': 'AI moduly',
+                'news.item2.desc': 'Resminamalary awtomatik barlamak.',
+                'news.item3.title': 'TM Pay',
+                'news.item3.desc': 'Milli çalt töleg ulgamy.',
+                'footer.copy': '© 2026 — Milli sanly platforma'
+            },
+            ru: {
+                'platform.sub': 'Национальная цифровая платформа',
+                'nav.home': 'Главная',
+                'nav.market': 'Биржа',
+                'nav.pay': 'TM Pay',
+                'nav.coin': 'TM Coin',
+                'nav.bank': 'Банк',
+                'nav.ai': 'ИИ',
+                'nav.documents': 'Документы',
+                'nav.contacts': 'Контакты',
+                'auth.login': 'Войти',
+                'hero.tag': 'СФЕРА — ЦИФРОВАЯ ПЛАТФОРМА',
+                'hero.title': 'Единая цифровая<br>платформа Туркменистана',
+                'hero.subtitle': 'Торговля • ИИ • Платежи • Банк • Документооборот',
+                'hero.text': 'Современная государственная цифровая экосистема, объединяющая электронную торговлю, интеллектуальную аналитику, финансовые сервисы, документооборот и цифровые государственные услуги.',
+                'hero.start': 'Начать работу',
+                'hero.demo': 'Демо',
+                'modules.title': 'Основные модули платформы',
+                'modules.market.title': 'Биржа',
+                'modules.market.desc': 'Электронная торговая площадка',
+                'modules.pay.title': 'TM Pay',
+                'modules.pay.desc': 'Национальная платежная система',
+                'modules.coin.title': 'TM Coin',
+                'modules.coin.desc': 'Цифровая государственная валюта',
+                'modules.bank.title': 'Банк',
+                'modules.bank.desc': 'Цифровой банк "Благо"',
+                'modules.ai.title': 'ИИ',
+                'modules.ai.desc': 'Проверка документов, прогнозирование, аналитика',
+                'modules.documents.title': 'Документы',
+                'modules.documents.desc': 'Автоматическая верификация',
+                'stats.users': 'Пользователей',
+                'stats.deals': 'Сделок',
+                'stats.documents': 'Документов',
+                'stats.coin': 'TM Coin',
+                'news.title': 'Последние новости',
+                'news.item1.title': 'Запуск платформы',
+                'news.item1.desc': 'Современная цифровая экосистема нового поколения.',
+                'news.item2.title': 'ИИ модуль',
+                'news.item2.desc': 'Автоматическая проверка документов.',
+                'news.item3.title': 'TM Pay',
+                'news.item3.desc': 'Национальная система мгновенных платежей.',
+                'footer.copy': '© 2026 — Национальная цифровая платформа'
+            },
+            en: {
+                'platform.sub': 'National Digital Platform',
+                'nav.home': 'Home',
+                'nav.market': 'Exchange',
+                'nav.pay': 'TM Pay',
+                'nav.coin': 'TM Coin',
+                'nav.bank': 'Bank',
+                'nav.ai': 'AI',
+                'nav.documents': 'Documents',
+                'nav.contacts': 'Contacts',
+                'auth.login': 'Sign In',
+                'hero.tag': 'SFERA — DIGITAL PLATFORM',
+                'hero.title': 'Unified Digital<br>Platform of Turkmenistan',
+                'hero.subtitle': 'Trade • AI • Payments • Bank • Document Management',
+                'hero.text': 'A modern state digital ecosystem combining e‑commerce, intelligent analytics, financial services, document management and digital government services.',
+                'hero.start': 'Get Started',
+                'hero.demo': 'Demo',
+                'modules.title': 'Core Platform Modules',
+                'modules.market.title': 'Exchange',
+                'modules.market.desc': 'Electronic trading platform',
+                'modules.pay.title': 'TM Pay',
+                'modules.pay.desc': 'National payment system',
+                'modules.coin.title': 'TM Coin',
+                'modules.coin.desc': 'Digital state currency',
+                'modules.bank.title': 'Bank',
+                'modules.bank.desc': 'Digital bank "Bereket"',
+                'modules.ai.title': 'AI',
+                'modules.ai.desc': 'Document verification, forecasting, analytics',
+                'modules.documents.title': 'Documents',
+                'modules.documents.desc': 'Automated verification',
+                'stats.users': 'Users',
+                'stats.deals': 'Deals',
+                'stats.documents': 'Documents',
+                'stats.coin': 'TM Coin',
+                'news.title': 'Latest News',
+                'news.item1.title': 'Platform Launch',
+                'news.item1.desc': 'A new generation digital ecosystem.',
+                'news.item2.title': 'AI Module',
+                'news.item2.desc': 'Automated document verification.',
+                'news.item3.title': 'TM Pay',
+                'news.item3.desc': 'National instant payment system.',
+                'footer.copy': '© 2026 — National Digital Platform'
+            }
+        };
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    // Если элемент содержит HTML, вставляем как innerHTML, иначе textContent
+                    if (el.innerHTML.includes('<')) {
+                        el.innerHTML = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+            // Обновить активную кнопку языка
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            // Сохранить язык
+            localStorage.setItem('preferredLang', lang);
+            document.documentElement.lang = lang;
+        }
+
+        // Загрузка языка
+        document.addEventListener('DOMContentLoaded', function() {
+            let lang = localStorage.getItem('preferredLang') || 'tm';
+            // Проверка, что язык поддерживается
+            if (!translations[lang]) lang = 'tm';
+            setLanguage(lang);
+        });
+
+        // Обработчики кнопок языка
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const lang = this.dataset.lang;
+                setLanguage(lang);
+            });
+        });
+
+        /* ========== ОСТАЛЬНЫЕ СКРИПТЫ (canvas, counters, etc) ========== */
+        // (код без изменений, только добавлены data-i18n)
+
         // Canvas: линии данных
         document.addEventListener('DOMContentLoaded', function() {
             const canvas = document.getElementById('heroCanvas');
@@ -935,18 +827,6 @@
             });
         });
 
-        // Переключение языка (демо)
-        const langButton = document.querySelector(".lang");
-        const langs = ["RU", "TM", "EN"];
-        let langIndex = 0;
-        if (langButton) {
-            langButton.addEventListener("click", () => {
-                langIndex++;
-                if (langIndex >= langs.length) langIndex = 0;
-                langButton.textContent = langs[langIndex];
-            });
-        }
-
         // Эффект пульсации сферы
         const core = document.querySelector(".core-center");
         if (core) {
@@ -955,7 +835,7 @@
             }, 1500);
         }
 
-        console.log("СФЕРА ПЛАТФОРМА загружена");
+        console.log("СФЕРА загружена");
     </script>
 </body>
 </html>
