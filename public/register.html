@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="tm">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>СФЕРА — Ýazylmak</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --secondary: #1f6bff;
+            --accent: #00ffa3;
+            --border: rgba(255, 255, 255, 0.25);
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #06111d, #0b2035, #102b45);
+            color: var(--white);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(0,212,255,.15), transparent 35%),
+                radial-gradient(circle at 80% 20%, rgba(0,255,170,.10), transparent 35%),
+                radial-gradient(circle at 60% 80%, rgba(32,108,255,.15), transparent 40%);
+            animation: bgmove 18s linear infinite;
+            z-index: -2;
+        }
+
+        @keyframes bgmove {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(-8%,-5%); }
+            100% { transform: translate(0,0); }
+        }
+
+        .container {
+            width: min(1400px, 92%);
+            margin: auto;
+        }
+
+        /* ================= ШАПКА ================= */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: translateY(-1px);
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .logo-svg g {
+            transform-origin: center;
+            transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .logo:hover .logo-svg g {
+            transform: rotate(45deg);
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang {
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .lang:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: var(--primary);
+        }
+
+        /* ================= РЕГИСТРАЦИЯ БОКС ================= */
+        .register-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 110px 20px 50px;
+            position: relative;
+        }
+
+        .register-box {
+            background: rgba(255, 255, 255, .07);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, .18);
+            border-radius: 24px;
+            padding: 40px 35px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, .4);
+            animation: fadeUp 0.8s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-icon-small {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon-small svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .register-box h2 {
+            text-align: center;
+            font-size: 30px;
+            margin-bottom: 8px;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .register-box .subtitle {
+            text-align: center;
+            color: #9fb5c8;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #dbe9ff;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .15);
+            background: rgba(255, 255, 255, .05);
+            color: white;
+            font-size: 15px;
+            transition: .3s;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, .25);
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle input {
+            padding-right: 48px;
+        }
+
+        .toggle-eye {
+            position: absolute;
+            right: 14px;
+            top: 36px;
+            background: transparent;
+            border: none;
+            color: #9fb5c8;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+        }
+
+        .toggle-eye:hover {
+            color: white;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #00d4ff, #008cff);
+            color: white;
+            transition: .35s;
+            box-shadow: 0 15px 35px rgba(0, 212, 255, .3);
+            margin-top: 12px;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 50px rgba(0, 212, 255, .5);
+        }
+
+        .register-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #9fb5c8;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.error {
+            display: block;
+            background: rgba(255, 0, 0, .15);
+            border: 1px solid rgba(255, 0, 0, .3);
+            color: #ff6b6b;
+        }
+
+        .message.success {
+            display: block;
+            background: rgba(0, 255, 170, .1);
+            border: 1px solid rgba(0, 255, 170, .3);
+            color: #00ffa3;
+        }
+
+        #particles {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #00d4ff;
+            opacity: .5;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { opacity: .6; }
+            80% { opacity: .6; }
+            100% { transform: translateY(-120vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="particles"></div>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00ffa3" />
+                                <stop offset="50%" stop-color="#00d4ff" />
+                                <stop offset="100%" stop-color="#1f6bff" />
+                            </linearGradient>
+                            <filter id="logoGlow" x="-30%" y="-30%" width="160%" height="160%">
+                                <feGaussianBlur stdDeviation="4" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15" filter="url(#logoGlow)" />
+                        <g filter="url(#logoGlow)">
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4" />
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6" />
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff" filter="url(#logoGlow)" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h2 data-i18n="logo_title">СФЕРА</h2>
+                </div>
+            </a>
+
+            <div class="header-buttons">
+                <button class="lang" id="langBtn">TM</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="register-page">
+        <div class="register-box">
+            <div class="logo-icon-small">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="smallGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00ffa3" />
+                            <stop offset="50%" stop-color="#00d4ff" />
+                            <stop offset="100%" stop-color="#1f6bff" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="30" fill="url(#smallGrad)" opacity="0.15" />
+                    <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#smallGrad)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="1 5" />
+                    <circle cx="48" cy="48" r="4" fill="#ffffff" />
+                </svg>
+            </div>
+
+            <h2 data-i18n="reg_title">Hasap döretmek</h2>
+            <p class="subtitle" data-i18n="reg_subtitle">SFERA ekosistemasyna goşulyň</p>
+
+            <div id="message" class="message"></div>
+
+            <form id="registerForm" novalidate>
+                <div class="form-group">
+                    <label for="username" data-i18n="reg_username_label">Ulanyjy ady</label>
+                    <input type="text" id="username" placeholder="Ulanyjy adyňyz" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="email" data-i18n="reg_email_label">Email adresiňiz</label>
+                    <input type="email" id="email" placeholder="email@example.com" required />
+                </div>
+
+                <div class="form-group password-toggle">
+                    <label for="password" data-i18n="reg_password_label">Parol</label>
+                    <input type="password" id="password" placeholder="••••••••" required />
+                    <button type="button" class="toggle-eye" id="togglePassword">👁️</button>
+                </div>
+
+                <div class="form-group password-toggle">
+                    <label for="confirmPassword" data-i18n="reg_confirm_password_label">Paroly gaýtalaň</label>
+                    <input type="password" id="confirmPassword" placeholder="••••••••" required />
+                    <button type="button" class="toggle-eye" id="toggleConfirmPassword">👁️</button>
+                </div>
+
+                <button type="submit" class="register-btn" id="registerBtn" data-i18n="reg_button">Ýazylmak</button>
+            </form>
+
+            <div class="login-link">
+                <span data-i18n="reg_has_account">Eýýäm hasabyňyz barmy?</span>
+                <a href="login.html" data-i18n="reg_login_link">Giriş</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const translations = {
+            tm: {
+                logo_title: "SFERA",
+                reg_title: "Hasap döretmek",
+                reg_subtitle: "SFERA ekosistemasyna goşulyň",
+                reg_username_label: "Ulanyjy ady",
+                reg_email_label: "Email adresiňiz",
+                reg_password_label: "Parol",
+                reg_confirm_password_label: "Paroly gaýtalaň",
+                reg_button: "Ýazylmak",
+                reg_has_account: "Eýýäm hasabyňyz barmy?",
+                reg_login_link: "Giriş",
+                reg_error_empty: "Ähli meýdançalary dolduryň",
+                reg_error_mismatch: "Parollar bir meňzeş däl",
+                reg_success: "Täsirleşdirildi! Giriş edilýär...",
+                reg_loading: "Ýazylýar..."
+            },
+            ru: {
+                logo_title: "СФЕРА",
+                reg_title: "Регистрация",
+                reg_subtitle: "Присоединяйтесь к экосистеме SFERA",
+                reg_username_label: "Имя пользователя",
+                reg_email_label: "Email адрес",
+                reg_password_label: "Пароль",
+                reg_confirm_password_label: "Повторите пароль",
+                reg_button: "Зарегистрироваться",
+                reg_has_account: "Уже есть аккаунт?",
+                reg_login_link: "Войти",
+                reg_error_empty: "Заполните все поля",
+                reg_error_mismatch: "Пароли не совпадают",
+                reg_success: "Успешно! Вход...",
+                reg_loading: "Регистрация..."
+            },
+            en: {
+                logo_title: "SFERA",
+                reg_title: "Registration",
+                reg_subtitle: "Join the SFERA ecosystem",
+                reg_username_label: "Username",
+                reg_email_label: "Email address",
+                reg_password_label: "Password",
+                reg_confirm_password_label: "Confirm Password",
+                reg_button: "Register",
+                reg_has_account: "Already have an account?",
+                reg_login_link: "Login",
+                reg_error_empty: "Please fill in all fields",
+                reg_error_mismatch: "Passwords do not match",
+                reg_success: "Success! Logging in...",
+                reg_loading: "Registering..."
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'tm';
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) el.textContent = translations[lang][key];
+            });
+            const langBtn = document.getElementById('langBtn');
+            if (langBtn) langBtn.textContent = lang.toUpperCase();
+            localStorage.setItem('lang', lang);
+        }
+
+        const langBtn = document.getElementById('langBtn');
+        const langCycle = ['tm', 'ru', 'en'];
+        let langIndex = langCycle.indexOf(currentLang);
+
+        if (langBtn) {
+            langBtn.addEventListener('click', () => {
+                langIndex = (langIndex + 1) % langCycle.length;
+                setLanguage(langCycle[langIndex]);
+            });
+        }
+
+        function setupPasswordToggle(inputId, toggleId) {
+            const input = document.getElementById(inputId);
+            const toggle = document.getElementById(toggleId);
+            if (input && toggle) {
+                toggle.addEventListener('click', () => {
+                    const isPassword = input.type === 'password';
+                    input.type = isPassword ? 'text' : 'password';
+                    toggle.textContent = isPassword ? '🙈' : '👁️';
+                });
+            }
+        }
+
+        setupPasswordToggle('password', 'togglePassword');
+        setupPasswordToggle('confirmPassword', 'toggleConfirmPassword');
+
+        const messageEl = document.getElementById('message');
+        function showMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
+            messageEl.style.display = 'block';
+            clearTimeout(window.messageTimeout);
+            window.messageTimeout = setTimeout(() => { messageEl.style.display = 'none'; }, 5000);
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            const registerBtn = document.getElementById('registerBtn');
+
+            if (!username || !email || !password || !confirmPassword) {
+                showMessage(translations[currentLang].reg_error_empty, 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage(translations[currentLang].reg_error_mismatch, 'error');
+                return;
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.textContent = translations[currentLang].reg_loading;
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('sfera_token', data.token);
+                    }
+                    if (data.user) {
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        localStorage.setItem('sfera_user', JSON.stringify(data.user));
+                        localStorage.setItem('sfera_role', data.user.role || 'user');
+                    }
+                    
+                    showMessage(translations[currentLang].reg_success, 'success');
+
+                    setTimeout(() => {
+                        window.location.href = (data.user && data.user.role === 'admin') ? 'admin.html' : 'dashboard.html';
+                    }, 1200);
+                } else {
+                    showMessage(data.message || 'Error occurred during registration', 'error');
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = translations[currentLang].reg_button;
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                registerBtn.disabled = false;
+                registerBtn.textContent = translations[currentLang].reg_button;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage(currentLang);
+            const particles = document.getElementById('particles');
+            if (particles) {
+                for (let i = 0; i < 60; i++) {
+                    const p = document.createElement('span');
+                    p.className = 'particle';
+                    p.style.left = Math.random() * 100 + '%';
+                    p.style.top = Math.random() * 100 + '%';
+                    p.style.animationDuration = (6 + Math.random() * 12) + 's';
+                    p.style.animationDelay = Math.random() * 5 + 's';
+                    particles.appendChild(p);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

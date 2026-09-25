@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="tm">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SFERA — TM Bank</title>
+
+    <!-- SFERA V19 visual foundation: backdrop, grid, canvas, particles, glass layers -->
+    <style id="sfera-v19-foundation">
+        /* ==========================================================================
+           1. ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ (THEME & COLOR VARIABLES)
+           ========================================================================== */
+        :root {
+            --primary: #00d4ff;
+            --secondary: #1f6bff;
+            --accent: #00ffa3;
+            --dark-bg: #03080e;
+            --glass-bg: rgba(255, 255, 255, 0.035);
+            --glass-border: rgba(0, 212, 255, 0.18);
+            --glass-hover-bg: rgba(0, 212, 255, 0.08);
+            --glass-hover-border: rgba(0, 212, 255, 0.45);
+            --header-footer-bg: rgba(5, 14, 26, 0.75);
+            --white: #ffffff;
+            --text: #dbe9ff;
+            --text-muted: #9bb3cc;
+            --radius: 22px;
+        }
+
+        /* ==========================================================================
+           2. СТИЛИЗАЦИЯ ПОЛЗУНКА ПРОКРУТКИ (NEON SCROLLBAR MODULE)
+           ========================================================================== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #03080e;
+            border-left: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.4), rgba(31, 107, 255, 0.5));
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00d4ff, #00ffa3);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.8);
+        }
+
+        /* ==========================================================================
+           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ (GLASSMORPHISM & GRADIENTS)
+           ========================================================================== */
+        .full-glass-backdrop {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.16), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 163, 0.12), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(31, 107, 255, 0.1), transparent 60%),
+                rgba(3, 8, 14, 0.72);
+            backdrop-filter: blur(65px) saturate(180%);
+            -webkit-backdrop-filter: blur(65px) saturate(180%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .card, .news-card, .stat {
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            position: relative;
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(0, 212, 255, 0.15), rgba(255, 255, 255, 0.03));
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border-radius: 24px;
+            padding: 42px;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+        }
+
+        .card:hover, .news-card:hover, .stat:hover {
+            transform: translateY(-8px);
+            border-color: var(--glass-hover-border);
+            box-shadow: 0 30px 60px rgba(0, 212, 255, 0.25);
+        }
+
+        /* ==========================================================================
+           4. ПЛАВАЮЩИЕ ТОЧКИ И НЕОНОВАЯ СЕТКА (PARTICLES & NEON FX)
+           ========================================================================== */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.85;
+        }
+
+        #particles {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 3;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatParticle linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(105vh) translateX(0) scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.85;
+            }
+            80% {
+                opacity: 0.85;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(15px) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        /* ==========================================================================
+           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И СТРУКТУРА (LAYOUT & UI COMPONENTS)
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 212, 255, 0.4) #03080e;
+        }
+
+        html { 
+            scroll-behavior: smooth; 
+            background-color: var(--dark-bg);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--white);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: min(1400px, 92%);
+            margin: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            background: var(--header-footer-bg);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s ease;
+            transform: translateZ(0);
+            will-change: transform;
+            contain: layout paint style;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .logo-icon {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .logo-svg g {
+            transform-origin: 50px 50px;
+            animation: spinLogo 16s linear infinite;
+        }
+
+        @keyframes spinLogo {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .logo-text h2 {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #00ffa3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text p {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            margin: 4px 0 0 0;
+            color: #9fb5c8;
+            text-transform: uppercase;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 28px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+            text-shadow: 0 0 12px rgba(0, 212, 255, 0.7);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: white;
+            backdrop-filter: blur(10px);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.35s ease;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 54px;
+        }
+
+        .lang-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .login {
+            text-decoration: none;
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(31, 107, 255, 0.45));
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            color: var(--white);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+            transition: transform 0.35s ease, background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+            cursor: pointer;
+            white-space: nowrap;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        .login:hover {
+            background: linear-gradient(135deg, #00d4ff 0%, #1f6bff 100%);
+            border-color: #00ffa3;
+            color: #ffffff;
+            transform: translateY(-2px) translateZ(0);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .hero {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            padding: 160px 7% 90px;
+            gap: 60px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 12;
+            max-width: 700px;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            padding: 8px 22px;
+            border-radius: 30px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 25px;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
+            backdrop-filter: blur(15px);
+        }
+
+        .hero-content h1 {
+            font-size: 58px;
+            font-weight: 900;
+            line-height: 1.12;
+            margin-bottom: 22px;
+            background: linear-gradient(135deg, #ffffff 20%, #b4d7ff 60%, #00ffa3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.6));
+        }
+
+        .hero-subtitle {
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            font-weight: 600;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.35);
+        }
+
+        .hero-text {
+            font-size: 17px;
+            line-height: 1.8;
+            color: var(--text-muted);
+            max-width: 560px;
+            margin-bottom: 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hero-buttons a {
+            padding: 18px 40px;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #008cff 100%);
+            color: white;
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.35);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 22px 45px rgba(0, 212, 255, 0.55);
+        }
+
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            color: white;
+        }
+
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(0, 212, 255, 0.6);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.25);
+        }
+
+        .hero-visual {
+            position: relative;
+            z-index: 12;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .core {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .core-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            animation: spinRing linear infinite;
+        }
+
+        .ring-1 {
+            width: 100%;
+            height: 100%;
+            animation-duration: 22s;
+            border-color: rgba(0, 212, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.15);
+        }
+
+        .ring-2 {
+            width: 125%;
+            height: 125%;
+            animation-duration: 16s;
+            animation-direction: reverse;
+            border-color: rgba(0, 255, 163, 0.22);
+            border-style: dashed;
+        }
+
+        .ring-3 {
+            width: 145%;
+            height: 145%;
+            animation-duration: 28s;
+            border-color: rgba(31, 107, 255, 0.2);
+        }
+
+        @keyframes spinRing { to { transform: rotate(360deg); } }
+
+        .core-center {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, rgba(0, 212, 255, 0.4) 0%, rgba(10, 25, 40, 0.85) 70%, rgba(5, 12, 20, 0.95) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 0 45px rgba(0, 212, 255, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulseCore 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseCore {
+            0% { transform: scale(1); box-shadow: 0 0 35px rgba(0, 212, 255, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.2); }
+            100% { transform: scale(1.06); box-shadow: 0 0 60px rgba(0, 212, 255, 0.45), 0 0 25px rgba(0, 255, 163, 0.3); }
+        }
+
+        .modules, .statistics, .news {
+            position: relative;
+            z-index: 10;
+            padding: 90px 7%;
+        }
+
+        .modules h2, .news h2 {
+            text-align: center;
+            font-size: 44px;
+            margin-bottom: 60px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grid, .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+        }
+
+        .icon {
+            font-size: 52px;
+            margin-bottom: 22px;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.4));
+        }
+
+        .card h3, .news-card h3 { font-size: 24px; margin-bottom: 14px; font-weight: 700; color: #ffffff; }
+        .card p, .news-card p { line-height: 1.75; color: var(--text-muted); font-size: 16px; }
+
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 35px;
+        }
+
+        .stat { text-align: center; padding: 40px 20px; }
+
+        .stat h1 {
+            font-size: 52px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff 0%, #00ffa3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+        }
+
+        .stat p { font-size: 16px; color: var(--text-muted); font-weight: 500; }
+
+        footer {
+            position: relative;
+            z-index: 20;
+            margin-top: 60px;
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            background: var(--header-footer-bg);
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        footer .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 28px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        footer p { color: #c0d8f0; font-size: 14px; }
+
+        @media(max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 140px 5% 60px;
+            }
+            .hero-content { max-width: 100%; }
+            .hero-text { margin: 0 auto 40px; }
+            .hero-buttons { justify-content: center; }
+            .hero-content h1 { font-size: 40px; }
+        }
+    
+    </style>
+
+    <!-- Общий CSS -->
+    <link rel="stylesheet" href="/css/style.css" />
+
+    <style>
+        /* ===== СПЕЦИФИЧНЫЕ СТИЛИ ДЛЯ БАНКА ===== */
+        .bank-page {
+            padding: 128px 0 70px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+        .bank-page > .container {
+            width: min(1120px, 92%);
+        }
+        /* Balance is a summary block, not a full-width screen panel. */
+        .balance-card {
+            max-width: 920px;
+            margin: 0 0 28px;
+        }
+        .bank-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .bank-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .bank-header .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #008cff);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,212,255,.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0,212,255,.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.2);
+            color: white;
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,.05);
+            border-color: #00d4ff;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #00ffa3, #00b894);
+            color: #08131d;
+        }
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0,255,170,.3);
+        }
+        .btn-danger {
+            background: rgba(200,0,0,.15);
+            border: 1px solid rgba(200,0,0,.3);
+            color: #ff6b6b;
+        }
+        .btn-danger:hover {
+            background: rgba(200,0,0,.25);
+        }
+
+        /* Балансовая карта */
+        .balance-card {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.12);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 30px 35px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .balance-card .balance-label {
+            font-size: 16px;
+            color: #bdd0df;
+        }
+        .balance-card .balance-amount {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #00ffa3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .balance-card .balance-currency {
+            font-size: 22px;
+            color: #bdd0df;
+            margin-left: 8px;
+        }
+        .balance-card .account-number {
+            font-size: 14px;
+            color: #9fb5c8;
+        }
+
+        /* Вкладки */
+        .bank-tabs {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            padding-bottom: 4px;
+        }
+        .bank-tabs button {
+            background: transparent;
+            border: none;
+            color: #9fb5c8;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .3s;
+            border-bottom: 3px solid transparent;
+        }
+        .bank-tabs button.active {
+            color: #00d4ff;
+            border-bottom-color: #00d4ff;
+        }
+        .bank-tabs button:hover {
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeUp .4s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Карточки счёта */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .account-card {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 18px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            transition: .3s;
+        }
+        .account-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-4px);
+        }
+        .account-card .acct-type {
+            font-size: 14px;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .account-card .acct-balance {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 12px 0 4px;
+        }
+        .account-card .acct-number {
+            font-size: 13px;
+            color: #9fb5c8;
+        }
+
+        /* Карты */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card-item {
+            background: linear-gradient(135deg, rgba(0,212,255,.1), rgba(31,107,255,.05));
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid rgba(0,212,255,.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        .card-item .card-type {
+            font-size: 12px;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .card-item .card-number {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin: 12px 0 8px;
+        }
+        .card-item .card-expiry {
+            font-size: 14px;
+            color: #9fb5c8;
+        }
+        .card-item .card-logo {
+            font-size: 30px;
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        /* Форма перевода */
+        .transfer-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .transfer-form .form-group {
+            margin-bottom: 16px;
+        }
+        .transfer-form .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #dbe9ff;
+            margin-bottom: 6px;
+        }
+        .transfer-form .form-group input,
+        .transfer-form .form-group select,
+        .transfer-form .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(255,255,255,.05);
+            color: white;
+            font-size: 15px;
+            transition: .3s;
+            outline: none;
+        }
+        .transfer-form .form-group input:focus,
+        .transfer-form .form-group select:focus,
+        .transfer-form .form-group textarea:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0,212,255,.1);
+        }
+        .transfer-form .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .transfer-form .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        /* История */
+        .transactions-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .transactions-list li {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .transactions-list li:last-child {
+            border-bottom: none;
+        }
+        .tx-type {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        .tx-type.credit { background: rgba(0,255,170,.15); color: #00ffa3; }
+        .tx-type.debit { background: rgba(255,0,0,.15); color: #ff6b6b; }
+        .tx-type.transfer { background: rgba(0,212,255,.15); color: #00d4ff; }
+        .tx-amount.positive { color: #00ffa3; }
+        .tx-amount.negative { color: #ff6b6b; }
+        .tx-date { color: #9fb5c8; font-size: 12px; }
+        .tx-description { flex: 1; margin: 0 12px; color: #bdd0df; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #bdd0df;
+        }
+        .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        .message.error { display: block; background: rgba(255,0,0,.1); border: 1px solid rgba(255,0,0,.2); color: #ff6b6b; }
+        .message.success { display: block; background: rgba(0,255,170,.1); border: 1px solid rgba(0,255,170,.2); color: #00ffa3; }
+
+        /* Уведомления */
+        .notification-badge {
+            background: #00d4ff;
+            color: #08131d;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .balance-card .balance-amount { font-size: 32px; }
+            .bank-tabs button { padding: 10px 14px; font-size: 13px; }
+        }
+
+        /* ===== SFERA V19 UI MATCH: HEADER + FORM CONTROLS ===== */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .glass-header-btn,
+        .lang-btn {
+            min-height: 38px;
+            padding: 9px 16px;
+            border-radius: 12px;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--white);
+            background: rgba(255,255,255,.045);
+            border: 1px solid rgba(0,212,255,.24);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            box-shadow: 0 4px 15px rgba(0,0,0,.18);
+            transition: transform .3s ease, background .3s ease, border-color .3s ease, box-shadow .3s ease;
+            white-space: nowrap;
+        }
+
+        .glass-header-btn:hover,
+        .lang-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(0,212,255,.12);
+            border-color: rgba(0,212,255,.55);
+            box-shadow: 0 8px 24px rgba(0,212,255,.18);
+        }
+
+        .lang-btn {
+            min-width: 52px;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            cursor: pointer;
+        }
+
+        .btn-switch {
+            cursor: pointer;
+        }
+
+        /* Bank action buttons follow the same glass/neon language as SFERA V19. */
+        .bank-header .btn,
+        .transfer-form .btn {
+            min-height: 42px;
+            padding: 11px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(0,212,255,.28);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            box-shadow: 0 6px 20px rgba(0,0,0,.2);
+        }
+
+        .bank-header .btn-outline {
+            background: rgba(255,255,255,.045);
+            color: var(--white);
+            border-color: rgba(0,212,255,.24);
+        }
+
+        .bank-header .btn-outline:hover {
+            background: rgba(0,212,255,.12);
+            border-color: rgba(0,212,255,.55);
+            box-shadow: 0 10px 28px rgba(0,212,255,.18);
+        }
+
+        .transfer-form .btn-primary {
+            background: linear-gradient(135deg, rgba(0,212,255,.88), rgba(31,107,255,.88));
+            color: #fff;
+            border-color: rgba(0,212,255,.55);
+            box-shadow: 0 10px 28px rgba(0,212,255,.24);
+        }
+
+        .transfer-form .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(0,212,255,.35);
+        }
+
+        /* Native controls: keep text and dropdown options inside the dark glass palette. */
+        .transfer-form .form-group input,
+        .transfer-form .form-group select,
+        .transfer-form .form-group textarea {
+            color: #ffffff;
+            color-scheme: dark;
+            background: rgba(255,255,255,.045);
+            border-color: rgba(0,212,255,.18);
+        }
+
+        .transfer-form .form-group input::placeholder,
+        .transfer-form .form-group textarea::placeholder {
+            color: rgba(219,233,255,.52);
+        }
+
+        .transfer-form .form-group select {
+            color-scheme: dark;
+            appearance: auto;
+        }
+
+        .transfer-form .form-group select option {
+            background-color: #08131d !important;
+            color: #ffffff !important;
+        }
+
+        .transfer-form .form-group select option:checked,
+        .transfer-form .form-group select option:hover {
+            background: #0d2b3b;
+            color: #ffffff;
+        }
+
+        .transfer-form .form-group input[type="number"] {
+            color: #ffffff;
+            -webkit-text-fill-color: #ffffff;
+        }
+
+        .transfer-form .form-group input[type="number"]::-webkit-inner-spin-button,
+        .transfer-form .form-group input[type="number"]::-webkit-outer-spin-button {
+            filter: invert(1) opacity(.8);
+        }
+
+        /* Preserve the approved proportions on desktop, while keeping mobile fluid. */
+        .balance-card {
+            width: min(920px, 100%);
+        }
+
+        @media (max-width: 768px) {
+            .header-right { gap: 8px; }
+            .glass-header-btn, .lang-btn { padding: 9px 12px; }
+            .balance-card { width: 100%; }
+        }
+
+        /* V19 particle glow — stronger, but still behind all UI */
+        #particles .particle {
+            width: var(--particle-size, 3px);
+            height: var(--particle-size, 3px);
+            left: var(--particle-left, 50%);
+            bottom: -10vh;
+            background: radial-gradient(circle, rgba(0,255,163,.95) 0%, rgba(0,212,255,.65) 35%, rgba(0,212,255,0) 75%);
+            box-shadow: 0 0 7px rgba(0,212,255,.75), 0 0 18px rgba(0,255,163,.38);
+            animation: bankFloatParticle var(--particle-duration, 13s) linear infinite;
+            animation-delay: var(--particle-delay, 0s);
+        }
+        @keyframes bankFloatParticle {
+            0% { transform: translate3d(0, 12vh, 0) scale(.45); opacity: 0; }
+            12% { opacity: .75; }
+            50% { transform: translate3d(var(--particle-drift, 18px), -48vh, 0) scale(1); opacity: .9; }
+            88% { opacity: .7; }
+            100% { transform: translate3d(calc(var(--particle-drift, 18px) * -1), -118vh, 0) scale(.7); opacity: 0; }
+        }
+    </style>
+    <script src="/js/api.js"></script>
+    <script src="/js/i18n.js"></script>
+</head>
+<body>
+    <!-- V19 BACKGROUND LAYERS — порядок не менять -->
+    <div class="full-glass-backdrop"></div>
+    <div class="bg-grid"></div>
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+    <div id="particles" aria-hidden="true"></div>
+
+    <!-- ШАПКА (единая) -->
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00ffa3"/>
+                                <stop offset="50%" stop-color="#00d4ff"/>
+                                <stop offset="100%" stop-color="#1f6bff"/>
+                            </linearGradient>
+                            <filter id="logoGlow" x="-30%" y="-30%" width="160%" height="160%">
+                                <feGaussianBlur stdDeviation="4" result="blur"/>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                            </filter>
+                        </defs>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15" filter="url(#logoGlow)"/>
+                        <g filter="url(#logoGlow)">
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff" filter="url(#logoGlow)"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h2>SFERA</h2>
+                    <p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p>
+                </div>
+            </a>
+
+            <div class="header-right">
+                <span class="user-info">👤 <strong id="username">User</strong></span>
+                <button class="lang lang-btn" id="langBtn" type="button" aria-label="Language">TM</button>
+                <button class="logout-btn glass-header-btn" id="logoutBtn" type="button" data-i18n="logout">🚪 Çykmak</button>
+                <a href="#" id="backLink" class="btn-switch glass-header-btn" data-i18n="back">← Yza</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <section class="bank-page">
+        <div class="container">
+            <div class="bank-header">
+                <h1 data-i18n="page_title">🏦 TM Bank</h1>
+                <div class="actions">
+                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">⟳ Täzele</button>
+                </div>
+            </div>
+
+            <!-- Балансовая карта -->
+            <div class="balance-card">
+                <div>
+                    <div class="balance-label" data-i18n="total_balance">Jemi balans</div>
+                    <div>
+                        <span class="balance-amount" id="totalBalance">0.00</span>
+                        <span class="balance-currency">TMT</span>
+                    </div>
+                    <div class="account-number" data-i18n="account_label">Hasap: <span id="mainAccount">1234 5678 9012 3456</span></div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:14px; color:#bdd0df;" data-i18n="premium_label">★ Premium hyzmat</div>
+                    <div style="font-size:12px; color:#9fb5c8;" data-i18n="active_since_label">Işjeň: <span id="activeSince">2024</span></div>
+                </div>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <!-- Вкладки -->
+            <div class="bank-tabs">
+                <button class="active" data-tab="accounts" data-i18n="tab_accounts">Hasap</button>
+                <button data-tab="cards" data-i18n="tab_cards">Kartlar</button>
+                <button data-tab="transfer" data-i18n="tab_transfer">Geçiriş</button>
+                <button data-tab="history" data-i18n="tab_history">Taryh</button>
+                <button data-tab="notifications" data-i18n="tab_notifications">Bildirişler</button>
+            </div>
+
+            <!-- Содержимое вкладок -->
+            <div class="tab-content active" id="tab-accounts">
+                <div class="accounts-grid" id="accountsGrid"></div>
+            </div>
+
+            <div class="tab-content" id="tab-cards">
+                <div class="cards-grid" id="cardsGrid"></div>
+            </div>
+
+            <div class="tab-content" id="tab-transfer">
+                <div class="transfer-form">
+                    <form id="transferForm">
+                        <div class="form-group">
+                            <label for="fromAccount" data-i18n="from_account">Nireden</label>
+                            <select id="fromAccount" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="toAccount" data-i18n="to_account">Nirä (hasap belgisi ýa-da ulanyjy)</label>
+                            <input type="text" id="toAccount" placeholder="Mysal: 1234 5678 9012 3456 ýa-da ulanyjy ady" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="transferAmount" data-i18n="amount">Mukdar (TMT)</label>
+                            <input type="number" id="transferAmount" step="0.01" min="0.01" required placeholder="100.00" />
+                        </div>
+                        <div class="form-group">
+                            <label for="transferDesc" data-i18n="description">Düşündiriş</label>
+                            <textarea id="transferDesc" placeholder="Geçiriş sebäbi..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="transferBtn" data-i18n="send_transfer">Geçir</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-history">
+                <ul class="transactions-list" id="transactionsList"></ul>
+                <div class="empty-state" id="emptyTx" style="display:none;">
+                    <div class="icon">📭</div>
+                    <p data-i18n="no_transactions">Hiç hili amal ýok</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-notifications">
+                <div id="notificationsList"></div>
+                <div class="empty-state" id="emptyNotif" style="display:none;">
+                    <div class="icon">🔔</div>
+                    <p data-i18n="no_notifications">Täze bildiriş ýok</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        /* ============================================================
+           SFERA BANK — approval candidate v22
+           Visual DOM/CSS preserved; demo financial mutations removed.
+           ============================================================ */
+        const langButton = document.getElementById('langBtn');
+        if (langButton) langButton.textContent = 'TM';
+
+        const bankState = {
+            accounts: [],
+            cards: [],
+            transactions: [],
+            notifications: [],
+            activeTab: 'accounts'
+        };
+
+        const $ = (id) => document.getElementById(id);
+        const t = (key, fallback) => {
+            if (window.i18n && typeof window.i18n.t === 'function') return window.i18n.t(key, fallback);
+            return fallback || key;
+        };
+
+        function renderParticles() {
+            const host = $('particles');
+            if (!host || host.childElementCount) return;
+            const count = 65;
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('span');
+                el.className = 'particle';
+                el.style.setProperty('--particle-left', `${Math.random() * 100}%`);
+                el.style.setProperty('--particle-size', `${1.5 + Math.random() * 3.5}px`);
+                el.style.setProperty('--particle-duration', `${9 + Math.random() * 13}s`);
+                el.style.setProperty('--particle-delay', `${-Math.random() * 18}s`);
+                el.style.setProperty('--particle-drift', `${-35 + Math.random() * 70}px`);
+                host.appendChild(el);
+            }
+        }
+
+        function initBackgroundCanvas() {
+            const canvas = $('bgCanvas');
+            if (!canvas || canvas.dataset.ready) return;
+            canvas.dataset.ready = '1';
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            const points = Array.from({length: 60}, () => ({
+                x: Math.random(), y: Math.random(),
+                vx: (Math.random() - .5) * .00022,
+                vy: (Math.random() - .5) * .00022
+            }));
+            function resize() {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+            function frame() {
+                ctx.clearRect(0,0,innerWidth,innerHeight);
+                for (const p of points) {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > 1) p.vx *= -1;
+                    if (p.y < 0 || p.y > 1) p.vy *= -1;
+                    const x = p.x * innerWidth, y = p.y * innerHeight;
+                    ctx.beginPath(); ctx.arc(x,y,1.4,0,Math.PI*2);
+                    ctx.fillStyle = 'rgba(0,212,255,.72)'; ctx.fill();
+                }
+                for (let i=0;i<points.length;i++) for (let j=i+1;j<points.length;j++) {
+                    const a=points[i], b=points[j], dx=(a.x-b.x)*innerWidth, dy=(a.y-b.y)*innerHeight;
+                    const d=Math.hypot(dx,dy);
+                    if (d < 180) {
+                        ctx.strokeStyle = `rgba(0,212,255,${(1-d/180)*.10})`;
+                        ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(a.x*innerWidth,a.y*innerHeight); ctx.lineTo(b.x*innerWidth,b.y*innerHeight); ctx.stroke();
+                    }
+                }
+                requestAnimationFrame(frame);
+            }
+            resize(); addEventListener('resize', resize, {passive:true}); frame();
+        }
+
+        function showMessage(text, type='success') {
+            const el=$('message'); if(!el) return;
+            el.textContent=text; el.className=`message ${type}`; el.style.display='block';
+            clearTimeout(window.__bankMsg); window.__bankMsg=setTimeout(()=>el.style.display='none',4000);
+        }
+
+        function activateTab(tab, updateHash=true) {
+            const valid = ['accounts','cards','transfer','history','notifications'];
+            if (!valid.includes(tab)) tab='accounts';
+            bankState.activeTab=tab;
+            document.querySelectorAll('.bank-tabs button').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===tab));
+            document.querySelectorAll('.tab-content').forEach(panel=>panel.classList.toggle('active',panel.id===`tab-${tab}`));
+            if (updateHash) history.replaceState(null,'',`#${tab}`);
+        }
+
+        document.querySelectorAll('.bank-tabs button').forEach(btn=>btn.addEventListener('click',()=>activateTab(btn.dataset.tab)));
+
+        // Hash navigation makes the lower bank links real destinations:
+        // bank.html#accounts, #cards, #transfer, #history, #notifications.
+        const initialTab = location.hash.slice(1);
+        activateTab(initialTab || 'accounts', false);
+        addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
+
+        // Central SFERA language manager is the only language authority.
+        addEventListener('sfera:language-changed',()=>{
+            document.title=t('bank_page_title','SFERA — TM Bank');
+            renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
+        });
+
+        function renderAccounts() {
+            const grid=$('accountsGrid'); if(!grid) return;
+            grid.replaceChildren();
+            if(!bankState.accounts.length) {
+                const p=document.createElement('p'); p.className='empty-state'; p.textContent=t('no_accounts','Hasaplar elýeterli däl'); grid.appendChild(p); return;
+            }
+            bankState.accounts.forEach(acc=>{
+                const card=document.createElement('div'); card.className='account-card';
+                const type=document.createElement('div'); type.className='acct-type'; type.textContent=t(`account_type_${acc.type}`,acc.name||acc.type);
+                const bal=document.createElement('div'); bal.className='acct-balance'; bal.textContent=Number(acc.balance||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+' '+(acc.currency||'TMT');
+                const num=document.createElement('div'); num.className='acct-number'; num.textContent=acc.number||'';
+                card.append(type,bal,num); grid.appendChild(card);
+            });
+        }
+
+        function renderCards() {
+            const grid=$('cardsGrid'); if(!grid) return; grid.replaceChildren();
+            if(!bankState.cards.length){ const p=document.createElement('p'); p.className='empty-state'; p.textContent=t('no_cards','Kartlar elýeterli däl'); grid.appendChild(p); return; }
+            bankState.cards.forEach(c=>{
+                const card=document.createElement('div'); card.className='card-item';
+                const type=document.createElement('div'); type.className='card-type'; type.textContent=t(`card_type_${c.type}`,c.type||'Card');
+                const num=document.createElement('div'); num.className='card-number'; num.textContent=c.maskedNumber||'•••• •••• •••• ••••';
+                const exp=document.createElement('div'); exp.className='card-expiry'; exp.textContent=c.expiry||'';
+                const logo=document.createElement('div'); logo.className='card-logo'; logo.textContent='💳';
+                card.append(type,num,exp,logo); grid.appendChild(card);
+            });
+        }
+
+        function renderHistory() {
+            const list=$('transactionsList'); if(!list) return; list.replaceChildren();
+            if(!bankState.transactions.length){ $('emptyTx').style.display='block'; return; }
+            $('emptyTx').style.display='none';
+            bankState.transactions.forEach(tx=>{
+                const li=document.createElement('li');
+                li.textContent=`${tx.description||'Transaction'} — ${Number(tx.amount||0).toFixed(2)} ${tx.currency||'TMT'}`;
+                list.appendChild(li);
+            });
+        }
+
+        function renderNotifications() {
+            const list=$('notificationsList'); if(!list) return; list.replaceChildren();
+            if(!bankState.notifications.length){ $('emptyNotif').style.display='block'; return; }
+            $('emptyNotif').style.display='none';
+            bankState.notifications.forEach(n=>{
+                const item=document.createElement('div'); item.className='notification-item'; item.textContent=n.message||''; list.appendChild(item);
+            });
+        }
+
+        function populateFromAccounts(){
+            const select=$('fromAccount'); if(!select) return; select.replaceChildren();
+            bankState.accounts.filter(a=>a.currency==='TMT').forEach(a=>{
+                const opt=document.createElement('option'); opt.value=a.id; opt.textContent=`${a.name||a.id} — ${Number(a.balance||0).toFixed(2)} TMT`; select.appendChild(opt);
+            });
+        }
+
+        function updateTotalBalance(){
+            const tmt=bankState.accounts.filter(a=>a.currency==='TMT').reduce((s,a)=>s+Number(a.balance||0),0);
+            $('totalBalance').textContent=tmt.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+            const main=bankState.accounts.find(a=>a.currency==='TMT'); if(main) $('mainAccount').textContent=main.number||'';
+        }
+
+        async function loadBankData(){
+            // Backend contract remains the source of truth; no client-side financial mutation.
+            if(!window.api || typeof window.api.request!=='function') {
+                showMessage(t('bank_api_unavailable','Bank API elýeterli däl'),'error'); return;
+            }
+            try {
+                const response=await window.api.request('/bank/balance');
+                const data=response?.data ?? response ?? {};
+                bankState.accounts=Array.isArray(data.accounts)?data.accounts:(data.account?[data.account]:[]);
+                bankState.cards=Array.isArray(data.cards)?data.cards:[];
+                bankState.transactions=Array.isArray(data.transactions)?data.transactions:[];
+                bankState.notifications=Array.isArray(data.notifications)?data.notifications:[];
+                renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
+            } catch(err) {
+                showMessage(err.message || t('bank_load_error','Bank maglumatlaryny ýüklemek başartmady'),'error');
+            }
+        }
+
+        $('refreshBtn')?.addEventListener('click',loadBankData);
+        $('transferForm')?.addEventListener('submit',(e)=>{
+            e.preventDefault();
+            showMessage(t('bank_transfer_contract_pending','Geçiriş API şertnamasy tassyklanylýança amal ýapyk'),'error');
+        });
+
+        $('logoutBtn')?.addEventListener('click',async()=>{
+            try { if(window.api?.logout) await window.api.logout(); } finally { location.href='login.html'; }
+        });
+
+        // Back destination: ordinary users return to Dashboard; admins return to Admin.
+        // The link remains a normal navigation target even if the profile request is unavailable.
+        const backLink = $('backLink');
+        if (backLink) {
+            backLink.href = 'dashboard.html';
+            if (window.api?.getCurrentUser) {
+                Promise.resolve(window.api.getCurrentUser()).then(user => {
+                    if (user?.role === 'admin' || user?.role === 'system_admin') backLink.href = 'admin.html';
+                }).catch(() => {});
+            }
+        }
+
+        // Visual/approval candidate: authentication is handled by the real app shell.
+        renderParticles();
+        initBackgroundCanvas();
+        renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
+        loadBankData();
+    </script>
+</body>
+</html>

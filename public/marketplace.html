@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СФЕРА — Marketpleýs</title>
+    
+    <!-- Модульные стили проекта -->
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/glass.css">
+    <link rel="stylesheet" href="/css/ui.css">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <style>
+        /* ===== ОБЩИЕ СТИЛИ ДЛЯ МАРКЕТПЛЕЙСА ===== */
+        .marketplace { padding: 140px 0 60px; min-height: 100vh; }
+        .mp-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        .mp-header h1 { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, #fff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .mp-header p { color: #9fb5c8; font-size: 14px; }
+
+        .segment-selector { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; background: rgba(255,255,255,0.04); padding: 8px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); }
+        .segment-btn { flex: 1; min-width: 100px; padding: 10px 16px; border: none; border-radius: 12px; background: transparent; color: #9fb5c8; font-weight: 600; font-size: 14px; cursor: pointer; transition: .3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .segment-btn.active { background: linear-gradient(135deg, #00d4ff, #1f6bff); color: #fff; box-shadow: 0 8px 20px rgba(0,212,255,0.3); }
+        .segment-btn:hover:not(.active) { background: rgba(255,255,255,0.08); color: #fff; }
+
+        .category-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+        .category-btn { padding: 6px 16px; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; background: transparent; color: #bdd0df; cursor: pointer; transition: .3s; font-size: 13px; }
+        .category-btn.active { background: rgba(0,212,255,0.15); border-color: #00d4ff; color: #00d4ff; }
+        .category-btn:hover { background: rgba(255,255,255,0.05); }
+
+        .search-bar { display: flex; gap: 12px; margin-bottom: 25px; }
+        .search-bar input { flex: 1; padding: 12px 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: #fff; font-size: 15px; outline: none; transition: .3s; }
+        .search-bar input:focus { border-color: #00d4ff; box-shadow: 0 0 15px rgba(0,212,255,0.2); }
+
+        .mp-tabs { display: flex; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 25px; flex-wrap: wrap; }
+        .mp-tabs button { padding: 10px 20px; background: transparent; border: none; color: #9fb5c8; font-size: 16px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: .3s; }
+        .mp-tabs button.active { color: #00d4ff; border-bottom-color: #00d4ff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .product-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 16px; backdrop-filter: blur(15px); transition: .3s; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+        .product-card:hover { transform: translateY(-5px); border-color: rgba(0,212,255,0.4); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+        .product-card .badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; z-index: 2; }
+        .badge-b2c { background: rgba(0,212,255,0.2); color: #00d4ff; border: 1px solid rgba(0,212,255,0.4); }
+        .badge-b2b { background: rgba(0,255,163,0.2); color: #00ffa3; border: 1px solid rgba(0,255,163,0.4); }
+        .badge-b2g { background: rgba(255,184,0,0.2); color: #ffb800; border: 1px solid rgba(255,184,0,0.4); }
+        .product-card .image { width: 100%; height: 150px; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+        .product-card .image img { width: 100%; height: 100%; object-fit: cover; }
+        .product-card .image .no-img { font-size: 40px; opacity: 0.5; }
+        .product-card .name { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .product-card .price { font-size: 20px; font-weight: 800; color: #00ffa3; }
+        .product-card .seller { font-size: 12px; color: #9fb5c8; margin: 4px 0 12px; }
+        .product-card .favorite-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 22px; cursor: pointer; color: #9fb5c8; transition: .2s; z-index: 2; }
+        .product-card .favorite-btn.active { color: #ffd700; }
+
+        .cart-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 12px 18px; border-radius: 12px; margin-bottom: 10px; }
+        .cart-item .info { flex: 1; }
+        .cart-item .info strong { color: #fff; }
+        .cart-item .info .meta { font-size: 12px; color: #9fb5c8; }
+        .cart-item .actions { display: flex; align-items: center; gap: 12px; }
+        .cart-item .actions .qty-btn { background: rgba(255,255,255,0.08); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: 700; transition: .2s; }
+        .cart-item .actions .qty-btn:hover { background: #00d4ff; color: #000; }
+        .cart-item .actions .remove-btn { background: rgba(255,77,77,0.2); border: none; color: #ff4d4d; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: .2s; }
+        .cart-item .actions .remove-btn:hover { background: #ff4d4d; color: #fff; }
+        .cart-total { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; text-align: right; margin-top: 20px; }
+        .cart-total .total-price { font-size: 22px; font-weight: 700; color: #00ffa3; }
+
+        .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .profile-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px; }
+        .profile-card h3 { font-size: 18px; margin-bottom: 16px; color: #00d4ff; display: flex; justify-content: space-between; align-items: center; }
+        .profile-card .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+
+        .admin-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px; }
+        .admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .admin-form .form-group label { display: block; font-size: 13px; color: #9fb5c8; margin-bottom: 4px; }
+        .admin-form .form-group input,
+        .admin-form .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.2);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: .3s;
+        }
+        .admin-form .form-group select option { background: #0b2035; color: #fff; }
+
+        .empty-state { text-align: center; padding: 40px; color: #9fb5c8; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 10px; }
+
+        .order-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.7); backdrop-filter: blur(10px); justify-content: center; align-items: center; z-index: 1000; }
+        .order-modal.active { display: flex; }
+        .order-modal .modal-box { background: rgba(20,30,45,0.95); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,.15); border-radius: 24px; padding: 30px; max-width: 500px; width: 95%; max-height: 90vh; overflow-y: auto; }
+        .order-modal .modal-box h2 { color: #fff; margin-bottom: 20px; }
+
+        .message { padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 600; }
+        .message.success { background: rgba(0,255,163,0.15); border: 1px solid rgba(0,255,163,0.4); color: #00ffa3; }
+        .message.error { background: rgba(255,77,77,0.15); border: 1px solid rgba(255,77,77,0.4); color: #ff4d4d; }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            background: rgba(255,255,255,0.06);
+            color: white;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: linear-gradient(135deg, #00d4ff, #008cff); color: white; border: none; box-shadow: 0 10px 30px rgba(0,212,255,0.25); }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.25); color: white; }
+        .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: #00d4ff; color: #00d4ff; }
+        .btn-success { background: linear-gradient(135deg, #00ffa3, #00b894); color: #08131d; border: none; }
+        
+        header {
+            background: rgba(255, 255, 255, 0.06) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        .header-right .btn-switch, .header-right .lang, .header-right .logout-btn {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #fff !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles"></div>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00ffa3"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#1f6bff"/></linearGradient></defs>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15"/>
+                        <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3"/>
+                        <circle cx="48" cy="48" r="3.5" fill="#ffffff"/>
+                    </svg>
+                </div>
+                <div class="logo-text"><h2>SFERA</h2><p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p></div>
+            </a>
+            <div class="header-right">
+                <span class="user-info">👤 <strong id="username">User</strong></span>
+                <button class="lang" id="langBtn">RU</button>
+                <button class="logout-btn" id="logoutBtn" data-i18n="logout">🚪 Çykmak</button>
+                <a href="#" id="backLink" class="btn-switch" data-i18n="back">← Yza</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="marketplace">
+        <div class="container">
+            <div class="mp-header">
+                <div><h1 data-i18n="mp_title">🛒 SFERA Marketpleýs</h1><p data-i18n="mp_subtitle">Частные продажи • Бизнес-поставки • Госзакупки</p></div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-outline" id="resetProductsBtn" title="Сбросить товары к демо">↺ Сброс данных</button>
+                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">⟳ Täzele</button>
+                </div>
+            </div>
+
+            <div id="message" class="message" style="display:none;"></div>
+
+            <!-- Сегменты -->
+            <div class="segment-selector">
+                <button class="segment-btn active" data-segment="all" data-i18n="segment_all">🌐 Ähli</button>
+                <button class="segment-btn" data-segment="b2c" data-i18n="segment_b2c">👤 B2C</button>
+                <button class="segment-btn" data-segment="b2b" data-i18n="segment_b2b">🏢 B2B</button>
+                <button class="segment-btn" data-segment="b2g" data-i18n="segment_b2g">🏛️ B2G</button>
+            </div>
+
+            <!-- Категории -->
+            <div class="category-selector" id="categorySelector">
+                <button class="category-btn active" data-category="all" data-i18n="category_all">Ähli kategoriýa</button>
+                <button class="category-btn" data-category="electronics">📱 Электроника</button>
+                <button class="category-btn" data-category="food">🍎 Продукты</button>
+                <button class="category-btn" data-category="industry">⚙️ Промышленность</button>
+                <button class="category-btn" data-category="agriculture">🌾 Сельское хозяйство</button>
+                <button class="category-btn" data-category="gov_tenders">📋 Гос. тендеры</button>
+            </div>
+
+            <!-- Поиск -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Harytlary gözlemek..." />
+            </div>
+
+            <!-- Табы -->
+            <div class="mp-tabs">
+                <button class="active" data-tab="catalog" data-i18n="tab_catalog">Katalog</button>
+                <button data-tab="cart" data-i18n="tab_cart">Sebet (<span id="cartCount">0</span>)</button>
+                <button data-tab="profile" data-i18n="tab_profile">Şahsy kabinet</button>
+                <button data-tab="wishlist" data-i18n="tab_wishlist">⭐ Söýliler</button>
+                <button id="adminTab" data-tab="admin" style="display:inline-block; color:#00ffa3;" data-i18n="tab_admin">Admin</button>
+            </div>
+
+            <!-- Каталог -->
+            <div class="tab-content active" id="tab-catalog"><div id="catalogContent"></div></div>
+
+            <!-- Корзина -->
+            <div class="tab-content" id="tab-cart">
+                <div id="cartContent">
+                    <div class="empty-state" id="emptyCart"><div class="icon">🛒</div><p data-i18n="cart_empty">Sebet boş</p></div>
+                    <div id="cartItems" style="display:none;"></div>
+                    <div id="cartTotal" style="display:none;">
+                        <div class="cart-total">
+                            <p data-i18n="total">Jemi:</p>
+                            <span class="total-price" id="totalAmount">0.00</span> TMT
+                            <button class="btn btn-primary" id="checkoutBtn" style="margin-top:10px; max-width:200px; display:inline-block;" data-i18n="checkout">Sargyt et</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Профиль -->
+            <div class="tab-content" id="tab-profile">
+                <div class="profile-grid">
+                    <div class="profile-card">
+                        <h3><span data-i18n="profile_info">Profil maglumatlary</span></h3>
+                        <div id="profileDisplay">
+                            <div class="row"><span data-i18n="username_label">Ulanyjy ady:</span><span id="profileUsername">User</span></div>
+                            <div class="row"><span data-i18n="email_label">Email:</span><span id="profileEmail">user@example.com</span></div>
+                            <div class="row"><span data-i18n="phone_label">Telefon:</span><span id="profilePhone">+993 65 000000</span></div>
+                            <div class="row"><span data-i18n="address_label">Adres:</span><span id="profileAddress">Aşgabat</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Избранное -->
+            <div class="tab-content" id="tab-wishlist">
+                <div id="wishlistContent"><div class="empty-state"><div class="icon">⭐</div><p data-i18n="wishlist_empty">Söýli harytlar ýok</p></div></div>
+            </div>
+
+            <!-- Админ-панель -->
+            <div class="tab-content" id="tab-admin">
+                <div class="admin-panel">
+                    <h3 data-i18n="admin_title">Управление каталогом</h3>
+                    <form id="adminProductForm">
+                        <div class="admin-form">
+                            <div class="form-group"><label data-i18n="admin_segment">Сегмент</label><select id="adminSegment" class="form-select"><option value="b2c">B2C</option><option value="b2b">B2B</option><option value="b2g">B2G</option></select></div>
+                            <div class="form-group"><label data-i18n="admin_category">Kategoriýa</label><select id="adminCategory" class="form-select"><option value="electronics">Электроника</option><option value="industry">Промышленность</option><option value="food">Продукты</option><option value="agriculture">Сельское хозяйство</option><option value="gov_tenders">Гос. тендеры</option></select></div>
+                            <div class="form-group"><label data-i18n="admin_name">Ady</label><input type="text" id="adminName" placeholder="Наименование товара" class="form-input" required /></div>
+                            <div class="form-group"><label data-i18n="admin_price">Bahasy (TMT)</label><input type="number" id="adminPrice" step="0.01" class="form-input" required placeholder="0.00" /></div>
+                            <div class="form-group"><label data-i18n="admin_seller">Satyjy</label><input type="text" id="adminSeller" class="form-input" required placeholder="ООО / ИП" /></div>
+                            <div class="form-group"><label data-i18n="admin_image">Surat URL</label><input type="url" id="adminImageUrl" class="form-input" placeholder="https://..." /></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="max-width:200px;" data-i18n="admin_add">Goşmak</button>
+                    </form>
+                    <div style="margin-top:30px;"><h4 data-i18n="admin_list">Ähli harytlar</h4><div id="adminProductsList" style="margin-top:15px;"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подключение скриптов с обработкой отсутствия локальных модулей -->
+    <script src="/js/auth-check.js" onerror="console.warn('auth-check.js not found')"></script>
+    <script src="/js/api.js" onerror="console.warn('api.js not found')"></script>
+    <script src="/js/theme.js" onerror="console.warn('theme.js not found')"></script>
+    <script src="/js/spotlight.js" onerror="console.warn('spotlight.js not found')"></script>
+    <script src="/js/particles.js" onerror="console.warn('particles.js not found')"></script>
+    <script src="/js/particles-init.js" onerror="console.warn('particles-init.js not found')"></script>
+    <script src="/js/animations.js" onerror="console.warn('animations.js not found')"></script>
+
+    <script>
+        // Начальный набор демо-товаров
+        const DEFAULT_PRODUCTS = [
+            { id: "1", name: "Смартфон Sfera Phone X", price: 3499.00, segment: "b2c", category: "electronics", seller: "Sfera Tech", image: "" },
+            { id: "2", name: "Серверное оборудование Dell PowerEdge", price: 45000.00, segment: "b2b", category: "industry", seller: "TechServer LLC", image: "" },
+            { id: "3", name: "Пшеница высшего сорта (10 тонн)", price: 18000.00, segment: "b2g", category: "agriculture", seller: "Agro Holding", image: "" },
+            { id: "4", name: "Ноутбук Asus ZenBook Pro", price: 12500.00, segment: "b2c", category: "electronics", seller: "Asus Store", image: "" },
+            { id: "5", name: "Консервированная продукция (Партия)", price: 5400.00, segment: "b2b", category: "food", seller: "FoodLine Corp", image: "" }
+        ];
+
+        // Локальные данные (фоллбэк)
+        function loadLocalProducts() {
+            return []; // демо-товары отключены: каталог только из базы
+            try {
+                const stored = localStorage.getItem('mp_products');
+                if (!stored) return [...DEFAULT_PRODUCTS];
+                const parsed = JSON.parse(stored);
+                return (Array.isArray(parsed) && parsed.length > 0) ? parsed : [...DEFAULT_PRODUCTS];
+            } catch (e) {
+                console.error("Ошибка чтения товаров:", e);
+                return [...DEFAULT_PRODUCTS];
+            }
+        }
+
+        // Асинхронная загрузка с сервера MongoDB через window.api
+        async function fetchServerProducts() {
+            if (!window.api || typeof window.api.request !== 'function') return loadLocalProducts();
+            try {
+                const rawListings = await window.api.request('/marketplace');
+                if (!Array.isArray(rawListings)) return [];
+                return rawListings.map(item => ({
+                    id: String(item._id || item.id),
+                    name: item.title || item.name || 'Без названия',
+                    price: Number(item.price) || 0,
+                    segment: item.segment || 'b2c',
+                    category: item.category || 'electronics',
+                    seller: typeof item.seller === 'object' ? (item.seller?.username || 'Sfera Seller') : (item.seller || 'Sfera Seller'),
+                    sellerId: typeof item.seller === 'object' ? String(item.seller?._id || '') : String(item.seller || ''),
+                    image: (item.images && item.images[0]) ? (item.images[0].url || item.images[0]) : (item.image || '')
+                }));
+            } catch (err) {
+                console.warn('[Marketplace] Загрузка с сервера не удалась:', err.message);
+                showMessage(err.message, 'error');
+                return [];
+            }
+        }
+
+        let products = loadLocalProducts();
+        let cart = JSON.parse(localStorage.getItem('mp_cart') || '[]');
+        let wishlist = JSON.parse(localStorage.getItem('mp_wishlist') || '[]');
+        let currentSegment = 'all';
+        let currentCategory = 'all';
+        let currentLang = localStorage.getItem('lang') || 'ru';
+
+        function showMessage(msg, type = 'success') {
+            const el = document.getElementById('message');
+            if (!el) return;
+            el.textContent = msg;
+            el.className = `message ${type}`;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 3500);
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderCatalog();
+            renderCart();
+            renderAdminList();
+            renderWishlist();
+
+            // Автоматическое обновление данных из базы MongoDB
+            const serverProducts = await fetchServerProducts();
+            if (serverProducts && serverProducts.length > 0) {
+                products = serverProducts;
+                localStorage.setItem('mp_products', JSON.stringify(products));
+                renderCatalog();
+                renderAdminList();
+            }
+        });
+
+        const translations = {
+            ru: {
+                logo_subtitle: "Национальная Цифровая Платформа", logout: "🚪 Выйти", back: "← Назад",
+                mp_title: "🛒 SFERA Marketpleýs", mp_subtitle: "Частные продажи • Бизнес-поставки • Госзакупки",
+                refresh: "⟳ Обновить", segment_all: "🌐 Все", segment_b2c: "👤 B2C", segment_b2b: "🏢 B2B", segment_b2g: "🏛️ B2G",
+                category_all: "Все категории",
+                tab_catalog: "Каталог", tab_cart: "Корзина", tab_profile: "Профиль", tab_wishlist: "⭐ Избранное", tab_admin: "Админка",
+                search_placeholder: "Поиск товаров...", cart_empty: "Корзина пуста", total: "Итого:", checkout: "Оформить заказ",
+                profile_info: "Информация профиля", username_label: "Имя пользователя:", email_label: "Email:",
+                phone_label: "Телефон:", address_label: "Адрес:",
+                wishlist_empty: "Нет избранных товаров",
+                admin_title: "Управление каталогом", admin_segment: "Сегмент", admin_category: "Категория",
+                admin_name: "Наименование", admin_price: "Цена (TMT)", admin_seller: "Продавец", admin_image: "URL картинки",
+                admin_add: "Добавить товар", admin_list: "Все товары в системе",
+                add_to_cart: "В корзину", product_added: "Товар добавлен в корзину!"
+            },
+            tm: {
+                logo_subtitle: "Milli Sanly Platforma", logout: "🚪 Çykmak", back: "← Yza",
+                mp_title: "🛒 SFERA Marketpleýs", mp_subtitle: "Şahsy satuwlar • Biznes üpjünçilik • Döwlet satyn alyşlar",
+                refresh: "⟳ Täzele", segment_all: "🌐 Ähli", segment_b2c: "👤 B2C", segment_b2b: "🏢 B2B", segment_b2g: "🏛️ B2G",
+                category_all: "Ähli kategoriýa",
+                tab_catalog: "Katalog", tab_cart: "Sebet", tab_profile: "Şahsy kabinet", tab_wishlist: "⭐ Söýliler", tab_admin: "Admin",
+                search_placeholder: "Harytlary gözlemek...", cart_empty: "Sebet boş", total: "Jemi:", checkout: "Sargyt et",
+                profile_info: "Profil maglumatlary", username_label: "Ulanyjy ady:", email_label: "Email:",
+                phone_label: "Telefon:", address_label: "Adres:",
+                wishlist_empty: "Söýli harytlar ýok",
+                admin_title: "Katalog dolandyrmak", admin_segment: "Segment", admin_category: "Kategoriýa",
+                admin_name: "Ady", admin_price: "Bahasy (TMT)", admin_seller: "Satyjy", admin_image: "Surat URL",
+                admin_add: "Haryt goşmak", admin_list: "Ähli harytlar",
+                add_to_cart: "Sebete goş", product_added: "Haryt sebeta goşuldy!"
+            }
+        };
+
+        // Главный рендер каталога
+        function renderCatalog() {
+            const container = document.getElementById('catalogContent');
+            if (!container) return;
+
+            const searchInput = document.getElementById('searchInput');
+            const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+            const filtered = products.filter(p => {
+                if (!p) return false;
+                const matchSeg = currentSegment === 'all' || p.segment === currentSegment;
+                const matchCat = currentCategory === 'all' || p.category === currentCategory;
+                const pName = (p.name || '').toLowerCase();
+                const pSeller = (p.seller || '').toLowerCase();
+                const matchQuery = !query || pName.includes(query) || pSeller.includes(query);
+                return matchSeg && matchCat && matchQuery;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>Товары не найдены</p></div>`;
+                return;
+            }
+
+            const btnText = translations[currentLang] ? translations[currentLang].add_to_cart : 'В корзину';
+
+            container.innerHTML = `<div class="products-grid">` + filtered.map(p => {
+                const isFav = wishlist.includes(String(p.id));
+                return `
+                    <div class="product-card">
+                        <span class="badge badge-${p.segment || 'b2c'}">${(p.segment || 'b2c').toUpperCase()}</span>
+                        <button class="favorite-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${p.id}')">★</button>
+                        <div class="image">
+                            ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div class="no-img">🛍️</div>`}
+                        </div>
+                        <div class="name">${p.name}</div>
+                        <div class="seller">🏢 ${p.seller || 'Продавец'}</div>
+                        <div class="price">${Number(p.price || 0).toFixed(2)} TMT</div>
+                        <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="addToCart('${p.id}')">
+                            ${btnText}
+                        </button>
+                    </div>
+                `;
+            }).join('') + `</div>`;
+        }
+
+        // Управление списком товаров в админке
+        function renderAdminList() {
+            const container = document.getElementById('adminProductsList');
+            if (!container) return;
+
+            if (products.length === 0) {
+                container.innerHTML = '<p style="color:#9fb5c8;">Список пуст</p>';
+                return;
+            }
+
+            container.innerHTML = products.map(p => `
+                <div class="cart-item">
+                    <div class="info">
+                        <strong>${p.name}</strong> 
+                        <div class="meta">${(p.segment||'').toUpperCase()} | ${p.category} | ${p.price} TMT | Satyjy: ${p.seller}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="remove-btn" onclick="deleteProduct('${p.id}')">Удалить</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Удаление товара с интеграцией MongoDB API
+        window.deleteProduct = async function(id) {
+            try {
+                if (window.api && typeof window.api.request === 'function') {
+                    await window.api.request(`/marketplace/${id}`, { method: 'DELETE' });
+                }
+                products = products.filter(p => String(p.id) !== String(id));
+                localStorage.setItem('mp_products', JSON.stringify(products));
+                renderCatalog();
+                renderAdminList();
+                showMessage('Товар удален', 'success');
+            } catch (err) {
+                showMessage(err.message || 'Error', 'error');
+            }
+        };
+
+        // Добавление товара через форму в MongoDB и локальный массив
+        document.getElementById('adminProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('adminName').value.trim(),
+                name: document.getElementById('adminName').value.trim(),
+                price: parseFloat(document.getElementById('adminPrice').value) || 0,
+                segment: document.getElementById('adminSegment').value,
+                category: document.getElementById('adminCategory').value,
+                seller: document.getElementById('adminSeller').value.trim(),
+                images: [document.getElementById('adminImageUrl').value.trim()].filter(Boolean)
+            };
+
+            try {
+                if (window.api && typeof window.api.request === 'function') {
+                    await window.api.request('/marketplace', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                }
+                products = await fetchServerProducts();
+                localStorage.setItem('mp_products', JSON.stringify(products));
+                renderCatalog();
+                renderAdminList();
+                document.getElementById('adminProductForm').reset();
+                showMessage('OK', 'success');
+            } catch (err) {
+                showMessage(err.status === 401 ? 'Login required' : (err.message || 'Error'), 'error');
+                return;
+                const localNew = {
+                    id: Date.now().toString(),
+                    name: payload.title,
+                    price: payload.price,
+                    segment: payload.segment,
+                    category: payload.category,
+                    seller: payload.seller,
+                    image: payload.images[0]
+                };
+                products.push(localNew);
+                localStorage.setItem('mp_products', JSON.stringify(products));
+                renderCatalog();
+                renderAdminList();
+                document.getElementById('adminProductForm').reset();
+                showMessage('Товар добавлен локально!', 'success');
+            }
+        });
+
+        // Корзина
+        window.addToCart = function(id) {
+            const strId = String(id);
+            const item = cart.find(c => String(c.id) === strId);
+            if (item) item.qty++;
+            else cart.push({ id: strId, qty: 1 });
+            localStorage.setItem('mp_cart', JSON.stringify(cart));
+            renderCart();
+            showMessage('Товар добавлен в корзину!', 'success');
+        };
+
+        function renderCart() {
+            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cartCount').textContent = totalCount;
+
+            const emptyCart = document.getElementById('emptyCart');
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+
+            if (cart.length === 0) {
+                emptyCart.style.display = 'block';
+                cartItems.style.display = 'none';
+                cartTotal.style.display = 'none';
+                return;
+            }
+
+            emptyCart.style.display = 'none';
+            cartItems.style.display = 'block';
+            cartTotal.style.display = 'block';
+
+            let grandTotal = 0;
+            cartItems.innerHTML = cart.map(c => {
+                const prod = products.find(p => String(p.id) === String(c.id));
+                if (!prod) return '';
+                const itemTotal = prod.price * c.qty;
+                grandTotal += itemTotal;
+                return `
+                    <div class="cart-item">
+                        <div class="info">
+                            <strong>${prod.name}</strong>
+                            <div class="meta">${prod.price.toFixed(2)} TMT × ${c.qty} = ${itemTotal.toFixed(2)} TMT</div>
+                        </div>
+                        <div class="actions">
+                            <button class="qty-btn" onclick="changeQty('${c.id}', -1)">-</button>
+                            <span style="color:#fff; font-weight:700;">${c.qty}</span>
+                            <button class="qty-btn" onclick="changeQty('${c.id}', 1)">+</button>
+                            <button class="remove-btn" onclick="removeFromCart('${c.id}')">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('totalAmount').textContent = grandTotal.toFixed(2);
+        }
+
+        window.changeQty = function(id, delta) {
+            const strId = String(id);
+            const item = cart.find(c => String(c.id) === strId);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                cart = cart.filter(c => String(c.id) !== strId);
+            }
+            localStorage.setItem('mp_cart', JSON.stringify(cart));
+            renderCart();
+        };
+
+        window.removeFromCart = function(id) {
+            const strId = String(id);
+            cart = cart.filter(c => String(c.id) !== strId);
+            localStorage.setItem('mp_cart', JSON.stringify(cart));
+            renderCart();
+        };
+
+        // Избранное
+        window.toggleFavorite = function(id) {
+            const strId = String(id);
+            if (wishlist.includes(strId)) {
+                wishlist = wishlist.filter(item => item !== strId);
+            } else {
+                wishlist.push(strId);
+            }
+            localStorage.setItem('mp_wishlist', JSON.stringify(wishlist));
+            renderCatalog();
+            renderWishlist();
+        };
+
+        function renderWishlist() {
+            const container = document.getElementById('wishlistContent');
+            if (!container) return;
+
+            const favProducts = products.filter(p => wishlist.includes(String(p.id)));
+            if (favProducts.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="icon">⭐</div><p data-i18n="wishlist_empty">Söýli harytlar ýok</p></div>`;
+                return;
+            }
+
+            container.innerHTML = `<div class="products-grid">` + favProducts.map(p => `
+                <div class="product-card">
+                    <span class="badge badge-${p.segment || 'b2c'}">${(p.segment || 'b2c').toUpperCase()}</span>
+                    <button class="favorite-btn active" onclick="toggleFavorite('${p.id}')">★</button>
+                    <div class="image">
+                        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div class="no-img">🛍️</div>`}
+                    </div>
+                    <div class="name">${p.name}</div>
+                    <div class="seller">🏢 ${p.seller || 'Продавец'}</div>
+                    <div class="price">${Number(p.price || 0).toFixed(2)} TMT</div>
+                    <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="addToCart('${p.id}')">В корзину</button>
+                </div>
+            `).join('') + `</div>`;
+        }
+
+        // Кнопки Обновить и Сброс
+        document.getElementById('refreshBtn').addEventListener('click', async () => {
+            const updated = await fetchServerProducts();
+            if (updated && updated.length > 0) {
+                products = updated;
+                localStorage.setItem('mp_products', JSON.stringify(products));
+                renderCatalog();
+                renderAdminList();
+                showMessage('Данные успешно обновлены!', 'success');
+            }
+        });
+
+        document.getElementById('resetProductsBtn').addEventListener('click', async () => {
+            products = await fetchServerProducts();
+            localStorage.setItem('mp_products', JSON.stringify(products));
+            renderCatalog();
+            renderAdminList();
+            showMessage('Каталог обновлён', 'success');
+        });
+
+        // Оформление заказа
+        document.getElementById('checkoutBtn').addEventListener('click', async () => {
+            if (cart.length === 0) return;
+            try {
+                const result = await window.api.request('/marketplace/orders', {
+                    method: 'POST',
+                    body: JSON.stringify({ items: cart.map(c => ({ listingId: c.id, qty: c.qty })) })
+                });
+                const failed = new Set((result.errors || []).map(e => String(e.listingId)));
+                cart = cart.filter(c => failed.has(String(c.id)));
+                localStorage.setItem('mp_cart', JSON.stringify(cart));
+                renderCart();
+                products = await fetchServerProducts();
+                renderCatalog();
+                showMessage(failed.size ? 'Part of the order failed: ' + result.errors.map(e => e.message).join(', ') : 'OK ✓', failed.size ? 'error' : 'success');
+            } catch (err) {
+                showMessage(err.status === 401 ? 'Login required' : (err.message || 'Error'), 'error');
+            }
+        });
+        // Переключение сегментов
+        document.querySelectorAll('.segment-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSegment = btn.getAttribute('data-segment');
+                renderCatalog();
+            });
+        });
+
+        // Переключение категорий
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.getAttribute('data-category');
+                renderCatalog();
+            });
+        });
+
+        // Живой поиск
+        document.getElementById('searchInput').addEventListener('input', renderCatalog);
+
+        // Переключение табов
+        document.querySelectorAll('.mp-tabs button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mp-tabs button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                const target = document.getElementById(`tab-${tabId}`);
+                if (target) target.classList.add('active');
+            });
+        });
+    </script>
+    <script src="js/auth-check.js"></script>
+</body>
+</html>

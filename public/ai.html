@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>СФЕРА — AI analitika</title>
+
+    <!-- Общий CSS -->
+    <link rel="stylesheet" href="/css/style.css" />
+
+    <!-- Chart.js для графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        /* ===== СПЕЦИФИЧНЫЕ СТИЛИ ДЛЯ AI МОДУЛЯ ===== */
+        .ai-page {
+            padding: 140px 7% 60px;
+            min-height: 100vh;
+        }
+        .ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .ai-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .ai-header .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #008cff);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,212,255,.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0,212,255,.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.25);
+            color: white;
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,.1);
+            border-color: #00d4ff;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #00ffa3, #00b894);
+            color: #08131d;
+        }
+
+        .ai-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            padding-bottom: 12px;
+        }
+        .ai-tabs button {
+            background: transparent;
+            border: none;
+            color: #9fb5c8;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .3s;
+        }
+        .ai-tabs button.active {
+            background: rgba(0,212,255,.12);
+            color: #00d4ff;
+        }
+        .ai-tabs button:hover {
+            background: rgba(255,255,255,.05);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeUp 0.5s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-glass {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.12);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        .card-glass h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .forecast-period {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .forecast-period button {
+            padding: 6px 16px;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 20px;
+            background: transparent;
+            color: #bdd0df;
+            cursor: pointer;
+            transition: .2s;
+            font-size: 14px;
+        }
+        .forecast-period button.active {
+            background: rgba(0,212,255,.15);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .forecast-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .forecast-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255,255,255,.04);
+            border-radius: 12px;
+            border-left: 4px solid #00d4ff;
+        }
+        .forecast-item .date {
+            color: #9fb5c8;
+            font-size: 14px;
+        }
+        .forecast-item .price {
+            font-weight: 700;
+            color: #00d4ff;
+        }
+        .forecast-item .confidence {
+            font-size: 13px;
+            color: #bdd0df;
+        }
+
+        /* ===== ИСПРАВЛЕННЫЕ КНОПКИ ВЫБОРА ПЕРИОДА (единый стеклянный дизайн) ===== */
+        .report-period {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .report-period button {
+            padding: 8px 20px;
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 30px;
+            background: rgba(255,255,255,.05);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            color: #bdd0df;
+            cursor: pointer;
+            transition: .3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .report-period button:hover {
+            background: rgba(255,255,255,.1);
+            border-color: #00d4ff;
+            color: white;
+        }
+        .report-period button.active {
+            background: rgba(0,212,255,.2);
+            border-color: #00d4ff;
+            color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0,212,255,.2);
+        }
+
+        .report-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .report-form .form-group {
+            margin-bottom: 16px;
+        }
+        .report-form .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #dbe9ff;
+            margin-bottom: 6px;
+        }
+        .report-form .form-group input,
+        .report-form .form-group select,
+        .report-form .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(255,255,255,.05);
+            color: white;
+            font-size: 15px;
+            transition: .3s;
+            outline: none;
+        }
+        .report-form .form-group input:focus,
+        .report-form .form-group select:focus,
+        .report-form .form-group textarea:focus {
+            border-color: #00d4ff;
+        }
+        .report-form .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .report-form .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .report-status {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-sent { background: rgba(0,212,255,.15); color: #00d4ff; }
+        .status-approved { background: rgba(0,255,170,.15); color: #00ffa3; }
+        .status-rejected { background: rgba(255,0,0,.15); color: #ff6b6b; }
+
+        .reports-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .reports-list li {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        .message.error {
+            display: block;
+            background: rgba(255,0,0,.1);
+            border: 1px solid rgba(255,0,0,.2);
+            color: #ff6b6b;
+        }
+        .message.success {
+            display: block;
+            background: rgba(0,255,170,.1);
+            border: 1px solid rgba(0,255,170,.2);
+            color: #00ffa3;
+        }
+
+        /* Чат */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 420px;
+            background: rgba(0,0,0,.2);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .chat-messages-ai {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .msg {
+            padding: 12px 18px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .msg.user {
+            align-self: flex-end;
+            background: rgba(0,212,255,.2);
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+        .msg.bot {
+            align-self: flex-start;
+            background: rgba(255,255,255,.08);
+            color: white;
+            border-bottom-left-radius: 6px;
+        }
+        .chat-input {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255,255,255,.08);
+            background: rgba(0,0,0,.1);
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(255,255,255,.05);
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+        .chat-input input:focus {
+            border-color: #00d4ff;
+        }
+        .chat-input button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #00d4ff, #008cff);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .3s;
+        }
+        .chat-input button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0,212,255,.3);
+        }
+
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed rgba(255,255,255,.2);
+            border-radius: 18px;
+            padding: 40px;
+            text-align: center;
+            color: #bdd0df;
+            transition: .3s;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            border-color: #00d4ff;
+            background: rgba(0,212,255,.05);
+        }
+        .upload-area .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .ai-tabs button { padding: 8px 14px; font-size: 13px; }
+            .forecast-period button { font-size: 12px; padding: 4px 12px; }
+            .report-period button { font-size: 12px; padding: 6px 14px; }
+            .ai-header h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles"></div>
+
+    <!-- ШАПКА (единая) -->
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00ffa3"/>
+                                <stop offset="50%" stop-color="#00d4ff"/>
+                                <stop offset="100%" stop-color="#1f6bff"/>
+                            </linearGradient>
+                            <filter id="logoGlow" x="-30%" y="-30%" width="160%" height="160%">
+                                <feGaussianBlur stdDeviation="4" result="blur"/>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                            </filter>
+                        </defs>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15" filter="url(#logoGlow)"/>
+                        <g filter="url(#logoGlow)">
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff" filter="url(#logoGlow)"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h2>SFERA</h2>
+                    <p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p>
+                </div>
+            </a>
+
+            <div class="header-right">
+                <span class="user-info">👤 <strong id="username">User</strong></span>
+                <button class="lang" id="langBtn">RU</button>
+                <button class="logout-btn" id="logoutBtn" data-i18n="logout">🚪 Çykmak</button>
+                <a href="#" id="backLink" class="btn-switch" style="display:inline-block; padding:8px 16px; background:transparent; border:1px solid rgba(255,255,255,.15); color:white; border-radius:12px; text-decoration:none;" data-i18n="back">← Yza</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <section class="ai-page">
+        <div class="container">
+            <div class="ai-header">
+                <h1 data-i18n="page_title">🤖 AI analitika & Kömekçi</h1>
+                <div class="actions">
+                    <button class="btn btn-outline" id="refreshAiBtn" data-i18n="refresh">⟳ Täzele</button>
+                </div>
+            </div>
+
+            <!-- Вкладки -->
+            <div class="ai-tabs">
+                <button class="active" data-tab="assistant" data-i18n="tab_assistant">💬 Kömekçi</button>
+                <button data-tab="analytics" data-i18n="tab_analytics">📊 Analitika</button>
+                <button data-tab="forecasts" data-i18n="tab_forecasts">📈 Prokgnozlar</button>
+                <button data-tab="reports" data-i18n="tab_reports">📄 Hasabatlar</button>
+                <button data-tab="documents" data-i18n="tab_documents">🔍 Resmiýet barlag</button>
+            </div>
+
+            <!-- ===== ВКЛАДКА 1: ПОМОЩНИК ===== -->
+            <div class="tab-content active" id="tab-assistant">
+                <div class="card-glass">
+                    <h3 data-i18n="assistant_title">Platforma boýunça kömekçi</h3>
+                    <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="assistant_desc">Sfera platformasynyň ähli meseleleri boýunça sorag beriň.</p>
+                    <div class="chat-container">
+                        <div class="chat-messages-ai" id="chatMessagesAi">
+                            <div class="msg bot" id="welcomeMsg">Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin)</div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="aiChatInput" placeholder="Soragyňyzy ýazyň..." />
+                            <button id="aiChatSendBtn">Iber</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ВКЛАДКА 2: АНАЛИТИКА ===== -->
+            <div class="tab-content" id="tab-analytics">
+                <div class="card-glass">
+                    <h3 data-i18n="analytics_title">Hasabatlar</h3>
+                    <div class="report-period" id="reportPeriod">
+                        <button class="active" data-period="day" data-i18n="period_day">Gün</button>
+                        <button data-period="week" data-i18n="period_week">Hepde</button>
+                        <button data-period="month" data-i18n="period_month">Aý</button>
+                        <button data-period="quarter" data-i18n="period_quarter">Kvartal</button>
+                        <button data-period="year" data-i18n="period_year">Ýyl</button>
+                    </div>
+                    <div class="chart-container" style="position:relative; height:250px; margin-top:10px;">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                    <div class="stats-grid" id="analyticsStats" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:16px; margin-top:20px;">
+                        <div class="stat-item" style="background:rgba(255,255,255,.04); border-radius:16px; padding:16px; text-align:center;">
+                            <div class="number" id="statTotal" style="font-size:28px; font-weight:700; color:#00d4ff;">0</div>
+                            <div class="label" style="font-size:13px; color:#9fb5c8;" data-i18n="total_activity">Jemi işjeňlik</div>
+                        </div>
+                        <div class="stat-item" style="background:rgba(255,255,255,.04); border-radius:16px; padding:16px; text-align:center;">
+                            <div class="number" id="statUsers" style="font-size:28px; font-weight:700; color:#00d4ff;">0</div>
+                            <div class="label" style="font-size:13px; color:#9fb5c8;" data-i18n="users">Ulanyjylar</div>
+                        </div>
+                        <div class="stat-item" style="background:rgba(255,255,255,.04); border-radius:16px; padding:16px; text-align:center;">
+                            <div class="number" id="statOrders" style="font-size:28px; font-weight:700; color:#00d4ff;">0</div>
+                            <div class="label" style="font-size:13px; color:#9fb5c8;" data-i18n="orders">Söwdalar</div>
+                        </div>
+                        <div class="stat-item" style="background:rgba(255,255,255,.04); border-radius:16px; padding:16px; text-align:center;">
+                            <div class="number" id="statRevenue" style="font-size:28px; font-weight:700; color:#00d4ff;">0 TMT</div>
+                            <div class="label" style="font-size:13px; color:#9fb5c8;" data-i18n="revenue">Girdeji</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ВКЛАДКА 3: ПРОГНОЗЫ ===== -->
+            <div class="tab-content" id="tab-forecasts">
+                <div class="card-glass">
+                    <h3 data-i18n="forecasts_title">TM Coin prokgnozlary</h3>
+                    <div class="forecast-period" id="forecastPeriod">
+                        <button class="active" data-period="7d" data-i18n="forecast_7d">7 gün</button>
+                        <button data-period="6m" data-i18n="forecast_6m">6 aý</button>
+                        <button data-period="1y" data-i18n="forecast_1y">1 ýyl</button>
+                    </div>
+                    <div class="forecast-list" id="forecastList"></div>
+                    <div class="chart-container" style="height:200px; margin-top:20px;">
+                        <canvas id="forecastChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ВКЛАДКА 4: ОТЧЁТЫ ===== -->
+            <div class="tab-content" id="tab-reports">
+                <div class="card-glass">
+                    <h3 data-i18n="reports_title">Hasabatlar (Prezident & Kabmin)</h3>
+                    <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="reports_desc">Administrasiýa we Kabinet Ministrleri üçin hasabat dörediň we iberiň.</p>
+                    <form id="reportForm" class="report-form">
+                        <div class="form-group">
+                            <label for="reportRecipient" data-i18n="recipient">Aljy</label>
+                            <select id="reportRecipient" required>
+                                <option value="president" data-i18n="recipient_president">Türkmenistanyň Prezidenti</option>
+                                <option value="cabinet" data-i18n="recipient_cabinet">Türkmenistanyň Kabinet Ministrleri</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reportTitle" data-i18n="report_title">Hasabatyň ady</label>
+                            <input type="text" id="reportTitle" placeholder="Mysal: 2026-njy ýylyň I çärýegi üçin hasabat" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="reportPeriod" data-i18n="report_period">Döwür</label>
+                            <select id="reportPeriod">
+                                <option value="month" data-i18n="period_month">Aý</option>
+                                <option value="quarter" data-i18n="period_quarter">Kvartal</option>
+                                <option value="year" selected data-i18n="period_year">Ýyl</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reportContent" data-i18n="report_content">Mazmuny</label>
+                            <textarea id="reportContent" placeholder="Hasabatyň jikme-jik beýany..." rows="5" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="submitReportBtn" data-i18n="send_report">Hasabat iber</button>
+                        </div>
+                    </form>
+                    <div style="margin-top:30px;">
+                        <h4 data-i18n="sent_reports">Iberilen hasabatlar</h4>
+                        <ul class="reports-list" id="reportsList"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ВКЛАДКА 5: ПРОВЕРКА ДОКУМЕНТОВ ===== -->
+            <div class="tab-content" id="tab-documents">
+                <div class="card-glass">
+                    <h3 data-i18n="doc_verify_title">Resmiýetleriň dogrulygyny barlamak</h3>
+                    <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="doc_verify_desc">Faýly ýüklemek bilen onuň hakykylygyny barlap bilersiňiz.</p>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="icon">📤</div>
+                        <p data-i18n="upload_hint">Faýly bu ýere süýşüriň ýa-da basyň</p>
+                        <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.jpg,.png" style="display:none;" />
+                    </div>
+                    <div class="verification-result" id="verificationResult" style="margin-top:20px; padding:16px 20px; border-radius:16px; display:none; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);"></div>
+                    <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
+                        <button class="btn btn-primary" id="verifyBtn" data-i18n="verify_btn">Barlamak</button>
+                        <button class="btn btn-outline" id="clearDocBtn" data-i18n="clear_btn">Arassala</button>
+                    </div>
+                    <div style="margin-top:16px; color:#9fb5c8; font-size:14px;">
+                        <strong data-i18n="supported_formats">Mümkin bolan formatlar:</strong> PDF, DOC, DOCX, JPG, PNG (100MB çenli)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        // ============================================================
+        // ПЕРЕВОДЫ
+        // ============================================================
+        const translations = {
+            ru: {
+                logo_subtitle: "Национальная Цифровая Платформа",
+                logout: "🚪 Выйти",
+                back: "← Назад",
+                refresh: "⟳ Обновить",
+                page_title: "🤖 AI аналитика & Помощник",
+                tab_assistant: "💬 Помощник",
+                tab_analytics: "📊 Аналитика",
+                tab_forecasts: "📈 Прогнозы",
+                tab_reports: "📄 Отчёты",
+                tab_documents: "🔍 Проверка документов",
+                assistant_title: "Помощник по платформе",
+                assistant_desc: "Задайте вопрос по всем модулям платформы Sfera.",
+                analytics_title: "Отчёты",
+                period_day: "День",
+                period_week: "Неделя",
+                period_month: "Месяц",
+                period_quarter: "Квартал",
+                period_year: "Год",
+                total_activity: "Всего активность",
+                users: "Пользователи",
+                orders: "Сделки",
+                revenue: "Доход",
+                forecasts_title: "Прогнозы TM Coin",
+                forecast_7d: "7 дней",
+                forecast_6m: "6 месяцев",
+                forecast_1y: "1 год",
+                reports_title: "Отчёты (Президент & Кабмин)",
+                reports_desc: "Создайте и отправьте отчёт в Администрацию Президента или Кабинет Министров.",
+                recipient: "Получатель",
+                recipient_president: "Президент Туркменистана",
+                recipient_cabinet: "Кабинет Министров Туркменистана",
+                report_title: "Название отчёта",
+                report_period: "Период",
+                report_content: "Содержание",
+                send_report: "Отправить отчёт",
+                sent_reports: "Отправленные отчёты",
+                doc_verify_title: "Проверка документов",
+                doc_verify_desc: "Загрузите файл и проверьте его подлинность.",
+                upload_hint: "Перетащите файл или нажмите для выбора",
+                verify_btn: "Проверить",
+                clear_btn: "Очистить",
+                supported_formats: "Поддерживаемые форматы:",
+                status_sent: "Отправлен",
+                status_approved: "Утверждён",
+                status_rejected: "Отклонён",
+                no_reports: "Нет отправленных отчётов.",
+                report_sent: "Отчёт успешно отправлен!",
+                report_error: "Ошибка отправки отчёта.",
+                verify_success: "Документ действителен!",
+                verify_fail: "Документ не прошёл проверку!",
+                welcome_msg: "Здравствуйте! Я помощник платформы Sfera. Чем могу помочь? (Маркетплейс, Банк, Почта, Мессенджер, Документы, TM Coin)"
+            },
+            tm: {
+                logo_subtitle: "Milli Sanly Platforma",
+                logout: "🚪 Çykmak",
+                back: "← Yza",
+                refresh: "⟳ Täzele",
+                page_title: "🤖 AI analitika & Kömekçi",
+                tab_assistant: "💬 Kömekçi",
+                tab_analytics: "📊 Analitika",
+                tab_forecasts: "📈 Prokgnozlar",
+                tab_reports: "📄 Hasabatlar",
+                tab_documents: "🔍 Resmiýet barlag",
+                assistant_title: "Platforma boýunça kömekçi",
+                assistant_desc: "Sfera platformasynyň ähli meseleleri boýunça sorag beriň.",
+                analytics_title: "Hasabatlar",
+                period_day: "Gün",
+                period_week: "Hepde",
+                period_month: "Aý",
+                period_quarter: "Kvartal",
+                period_year: "Ýyl",
+                total_activity: "Jemi işjeňlik",
+                users: "Ulanyjylar",
+                orders: "Söwdalar",
+                revenue: "Girdeji",
+                forecasts_title: "TM Coin prokgnozlary",
+                forecast_7d: "7 gün",
+                forecast_6m: "6 aý",
+                forecast_1y: "1 ýyl",
+                reports_title: "Hasabatlar (Prezident & Kabmin)",
+                reports_desc: "Administrasiýa we Kabinet Ministrleri üçin hasabat dörediň we iberiň.",
+                recipient: "Aljy",
+                recipient_president: "Türkmenistanyň Prezidenti",
+                recipient_cabinet: "Türkmenistanyň Kabinet Ministrleri",
+                report_title: "Hasabatyň ady",
+                report_period: "Döwür",
+                report_content: "Mazmuny",
+                send_report: "Hasabat iber",
+                sent_reports: "Iberilen hasabatlar",
+                doc_verify_title: "Resmiýetleriň dogrulygyny barlamak",
+                doc_verify_desc: "Faýly ýüklemek bilen onuň hakykylygyny barlap bilersiňiz.",
+                upload_hint: "Faýly bu ýere süýşüriň ýa-da basyň",
+                verify_btn: "Barlamak",
+                clear_btn: "Arassala",
+                supported_formats: "Mümkin bolan formatlar:",
+                status_sent: "Iberilen",
+                status_approved: "Tassyklandy",
+                status_rejected: "Ret edildi",
+                no_reports: "Hiç hili hasabat ýok.",
+                report_sent: "Hasabat üstünlikli iberildi!",
+                report_error: "Hasabat iberilmedi.",
+                verify_success: "Resmiýet dogry!",
+                verify_fail: "Resmiýet nädogry!",
+                welcome_msg: "Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin)"
+            },
+            en: {
+                logo_subtitle: "National Digital Platform",
+                logout: "🚪 Logout",
+                back: "← Back",
+                refresh: "⟳ Refresh",
+                page_title: "🤖 AI Analytics & Assistant",
+                tab_assistant: "💬 Assistant",
+                tab_analytics: "📊 Analytics",
+                tab_forecasts: "📈 Forecasts",
+                tab_reports: "📄 Reports",
+                tab_documents: "🔍 Document verification",
+                assistant_title: "Platform Assistant",
+                assistant_desc: "Ask any question about Sfera platform modules.",
+                analytics_title: "Reports",
+                period_day: "Day",
+                period_week: "Week",
+                period_month: "Month",
+                period_quarter: "Quarter",
+                period_year: "Year",
+                total_activity: "Total activity",
+                users: "Users",
+                orders: "Transactions",
+                revenue: "Revenue",
+                forecasts_title: "TM Coin forecasts",
+                forecast_7d: "7 days",
+                forecast_6m: "6 months",
+                forecast_1y: "1 year",
+                reports_title: "Reports (President & Cabinet)",
+                reports_desc: "Create and send reports to the President's Administration or Cabinet of Ministers.",
+                recipient: "Recipient",
+                recipient_president: "President of Turkmenistan",
+                recipient_cabinet: "Cabinet of Ministers of Turkmenistan",
+                report_title: "Report title",
+                report_period: "Period",
+                report_content: "Content",
+                send_report: "Send report",
+                sent_reports: "Sent reports",
+                doc_verify_title: "Document verification",
+                doc_verify_desc: "Upload a file to verify its authenticity.",
+                upload_hint: "Drag & drop or click to select",
+                verify_btn: "Verify",
+                clear_btn: "Clear",
+                supported_formats: "Supported formats:",
+                status_sent: "Sent",
+                status_approved: "Approved",
+                status_rejected: "Rejected",
+                no_reports: "No sent reports.",
+                report_sent: "Report sent successfully!",
+                report_error: "Failed to send report.",
+                verify_success: "Document is valid!",
+                verify_fail: "Document verification failed!",
+                welcome_msg: "Hello! I am the Sfera platform assistant. How can I help you? (Marketplace, Bank, Mail, Messenger, Documents, TM Coin)"
+            }
+        };
+
+        // ============================================================
+        // УСТАНОВКА ЯЗЫКА
+        // ============================================================
+        let currentLang = localStorage.getItem('lang') || 'ru';
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    if (el.tagName === 'INPUT' && el.getAttribute('placeholder')) {
+                        el.placeholder = translations[lang][key];
+                    } else if (el.tagName === 'SELECT') {
+                        // опции обновляются отдельно
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+            // Обновляем select опции
+            document.querySelectorAll('select [data-i18n]').forEach(opt => {
+                const key = opt.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    opt.textContent = translations[lang][key];
+                }
+            });
+            // Приветствие в чате
+            const welcomeMsg = document.getElementById('welcomeMsg');
+            if (welcomeMsg) {
+                welcomeMsg.textContent = translations[lang].welcome_msg;
+            }
+            document.getElementById('langBtn').textContent = lang.toUpperCase();
+            localStorage.setItem('lang', lang);
+            // Обновить данные (перерисовать графики, прогнозы)
+            if (currentTab === 'analytics') initAnalytics();
+            if (currentTab === 'forecasts') renderForecasts(currentForecastPeriod);
+            if (currentTab === 'reports') renderReports();
+        }
+
+        document.getElementById('langBtn').addEventListener('click', function() {
+            const cycle = ['ru', 'tm', 'en'];
+            let idx = cycle.indexOf(currentLang);
+            idx = (idx + 1) % cycle.length;
+            setLanguage(cycle[idx]);
+        });
+
+        // ============================================================
+        // АВТОРИЗАЦИЯ И НАВИГАЦИЯ
+        // ============================================================
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        const user = JSON.parse(localStorage.getItem('user') || '{"username":"User","role":"user"}');
+        document.getElementById('username').textContent = user.username || 'User';
+
+        // Ссылка "Назад" в зависимости от роли
+        const backLink = document.getElementById('backLink');
+        if (user.role === 'admin') {
+            backLink.href = 'admin-dashboard.html';
+        } else {
+            backLink.href = 'user-dashboard.html';
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        // ============================================================
+        // ВКЛАДКИ
+        // ============================================================
+        let currentTab = 'assistant';
+        document.querySelectorAll('.ai-tabs button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.ai-tabs button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const tab = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                document.getElementById('tab-' + tab).classList.add('active');
+                currentTab = tab;
+                if (tab === 'analytics') initAnalytics();
+                if (tab === 'forecasts') renderForecasts(currentForecastPeriod);
+                if (tab === 'documents') resetDocumentUpload();
+            });
+        });
+
+        // ============================================================
+        // ПОМОЩНИК (чат-бот)
+        // ============================================================
+        const chatMessages = document.getElementById('chatMessagesAi');
+        const chatInput = document.getElementById('aiChatInput');
+        const chatSend = document.getElementById('aiChatSendBtn');
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = 'msg ' + sender;
+            div.textContent = text;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function getBotResponse(message, lang) {
+            const lower = message.toLowerCase();
+            const t = translations[lang];
+            if (lower.includes('salam') || lower.includes('hello') || lower.includes('привет')) {
+                return t.welcome_msg || 'Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin?';
+            }
+            if (lower.includes('market') || lower.includes('söwda') || lower.includes('бирж')) {
+                return 'Marketpleýs moduly – elektron söwda meýdançasy. Bu ýerde harytlary satyp we satyn alyp bilersiňiz. Täze bildiriş goşmak üçin "Marketpleýs" bölümine giriň.';
+            }
+            if (lower.includes('bank') || lower.includes('pul')) {
+                return 'TM Bank – sanly bank hyzmatlary. Balansyňyzy barlaýarsyňyz, pul geçirişleri edip we amallary görüp bilersiňiz.';
+            }
+            if (lower.includes('poçta') || lower.includes('mail') || lower.includes('почт')) {
+                return 'TM Poçta – içki poçta ulgamy. Hatlar iberip we kabul edip bilersiňiz, goşundylary goşup.';
+            }
+            if (lower.includes('mesenjer') || lower.includes('chat') || lower.includes('мессендж')) {
+                return 'Messenjer – çalt habarlaşma üçin ulgam. Şahsy söhbetler we gruppalar döredip, ses we wideo jaňlar edip bilersiňiz.';
+            }
+            if (lower.includes('resmiýet') || lower.includes('document') || lower.includes('документ')) {
+                return 'Resmiýetler moduly – awtomatik tassyklama. Faýly ýükläp, onuň dogrulygyny barlap bilersiňiz. AI ulgamy resmiýetiň hakykylygyny kesgitleýär.';
+            }
+            if (lower.includes('tm coin') || lower.includes('coín') || lower.includes('монета')) {
+                return 'TM Coin – sanly döwlet walýutasy. Ony platformada tölegler üçin ulanyp, şeýle hem prokgnozlary görüp bilersiňiz.';
+            }
+            if (lower.includes('analitika') || lower.includes('analytics') || lower.includes('отчёт')) {
+                return 'Analitika bölüminde gün, hepde, aý, kvartal we ýyl üçin hasabatlar görkezilýär. Graphikler we statistikalar bilen tanyşyp bilersiňiz.';
+            }
+            if (lower.includes('prezident') || lower.includes('kabmin') || lower.includes('hasabat')) {
+                return 'Hasabatlar bölüminde Prezident we Kabinet Ministrleri üçin hasabat döredip we iberip bilersiňiz.';
+            }
+            return 'Täze sorag üçin minnetdar. Men size näme barada maglumat bermegimi isleýärsiňiz? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin, Analitika, Hasabatlar)';
+        }
+
+        chatSend.addEventListener('click', function() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            addMessage(text, 'user');
+            chatInput.value = '';
+            setTimeout(() => {
+                const reply = getBotResponse(text, currentLang);
+                addMessage(reply, 'bot');
+            }, 400);
+        });
+
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') chatSend.click();
+        });
+
+        // ============================================================
+        // АНАЛИТИКА (графики)
+        // ============================================================
+        let currentPeriod = 'day';
+        let analyticsChart = null;
+
+        function generateAnalyticsData(period) {
+            const labels = [];
+            const values = [];
+            const days = period === 'day' ? 7 : period === 'week' ? 4 : period === 'month' ? 30 : period === 'quarter' ? 12 : 12;
+            const multiplier = period === 'day' ? 10 : period === 'week' ? 50 : period === 'month' ? 200 : period === 'quarter' ? 800 : 3000;
+            for (let i = 0; i < days; i++) {
+                const date = new Date();
+                if (period === 'day') date.setDate(date.getDate() - (days - i));
+                else if (period === 'week') date.setDate(date.getDate() - (days - i) * 7);
+                else if (period === 'month') date.setMonth(date.getMonth() - (days - i));
+                else if (period === 'quarter') date.setMonth(date.getMonth() - (days - i) * 3);
+                else date.setFullYear(date.getFullYear() - (days - i));
+                labels.push(date.toLocaleDateString('tm-TM', { month: 'short', day: 'numeric' }));
+                values.push(Math.floor(Math.random() * multiplier + 50));
+            }
+            return { labels, values };
+        }
+
+        function initAnalytics() {
+            const data = generateAnalyticsData(currentPeriod);
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            if (analyticsChart) analyticsChart.destroy();
+            analyticsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Işjeňlik',
+                        data: data.values,
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0,212,255,0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#bdd0df' } } },
+                    scales: {
+                        x: { ticks: { color: '#9fb5c8' } },
+                        y: { ticks: { color: '#9fb5c8' } }
+                    }
+                }
+            });
+            const total = data.values.reduce((a, b) => a + b, 0);
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statUsers').textContent = Math.floor(total * 0.3 + 200);
+            document.getElementById('statOrders').textContent = Math.floor(total * 0.15 + 50);
+            document.getElementById('statRevenue').textContent = (Math.floor(total * 0.8 + 1000)) + ' TMT';
+        }
+
+        // Обработчики кнопок периода (уже используют улучшенные стили)
+        document.querySelectorAll('#reportPeriod button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#reportPeriod button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentPeriod = this.dataset.period;
+                initAnalytics();
+            });
+        });
+
+        // ============================================================
+        // ПРОГНОЗЫ
+        // ============================================================
+        let currentForecastPeriod = '7d';
+        let forecastChart = null;
+
+        function generateForecastData(period) {
+            const forecasts = [];
+            const basePrice = 120;
+            let count = 0;
+            if (period === '7d') count = 7;
+            else if (period === '6m') count = 6;
+            else if (period === '1y') count = 12;
+            for (let i = 0; i < count; i++) {
+                const date = new Date();
+                if (period === '7d') date.setDate(date.getDate() + i);
+                else if (period === '6m') date.setMonth(date.getMonth() + i);
+                else if (period === '1y') date.setMonth(date.getMonth() + i);
+                const change = (Math.random() - 0.4) * 15;
+                const price = Math.max(50, basePrice + change + i * 0.8);
+                const confidence = (0.65 + Math.random() * 0.3).toFixed(2);
+                let label;
+                if (period === '7d') label = date.toLocaleDateString('tm-TM', { weekday: 'short', day: 'numeric', month: 'short' });
+                else label = date.toLocaleDateString('tm-TM', { month: 'short', year: 'numeric' });
+                forecasts.push({ label, price: price.toFixed(2), confidence });
+            }
+            return forecasts;
+        }
+
+        function renderForecasts(period) {
+            currentForecastPeriod = period;
+            const data = generateForecastData(period);
+            const list = document.getElementById('forecastList');
+            list.innerHTML = data.map(f => `
+                <div class="forecast-item">
+                    <span class="date">${f.label}</span>
+                    <span class="price">${f.price} TMT</span>
+                    <span class="confidence">Ynam: ${(f.confidence * 100).toFixed(0)}%</span>
+                </div>
+            `).join('');
+
+            const ctx = document.getElementById('forecastChart').getContext('2d');
+            if (forecastChart) forecastChart.destroy();
+            forecastChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(f => f.label),
+                    datasets: [{
+                        label: 'Çaklama baha',
+                        data: data.map(f => parseFloat(f.price)),
+                        borderColor: '#00ffa3',
+                        backgroundColor: 'rgba(0,255,170,0.1)',
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#bdd0df' } } },
+                    scales: {
+                        x: { ticks: { color: '#9fb5c8' } },
+                        y: { ticks: { color: '#9fb5c8' } }
+                    }
+                }
+            });
+        }
+
+        document.querySelectorAll('#forecastPeriod button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#forecastPeriod button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderForecasts(this.dataset.period);
+            });
+        });
+
+        // ============================================================
+        // ОТЧЁТЫ
+        // ============================================================
+        let reports = JSON.parse(localStorage.getItem('ai_reports') || '[]');
+
+        function renderReports() {
+            const list = document.getElementById('reportsList');
+            if (!reports.length) {
+                list.innerHTML = `<li style="color:#9fb5c8; padding:20px 0; text-align:center;">${translations[currentLang].no_reports}</li>`;
+                return;
+            }
+            const statusMap = {
+                sent: translations[currentLang].status_sent,
+                approved: translations[currentLang].status_approved,
+                rejected: translations[currentLang].status_rejected
+            };
+            list.innerHTML = reports.map(r => `
+                <li>
+                    <div>
+                        <strong>${r.title}</strong><br />
+                        <span style="font-size:13px; color:#9fb5c8;">${r.recipient} • ${r.period}</span>
+                    </div>
+                    <span class="report-status status-${r.status}">${statusMap[r.status] || r.status}</span>
+                </li>
+            `).join('');
+        }
+
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const recipient = document.getElementById('reportRecipient').value;
+            const title = document.getElementById('reportTitle').value.trim();
+            const period = document.getElementById('reportPeriod').value;
+            const content = document.getElementById('reportContent').value.trim();
+
+            if (!title || !content) {
+                showMessage(translations[currentLang].report_error, 'error');
+                return;
+            }
+
+            const recipientLabel = recipient === 'president' ?
+                translations[currentLang].recipient_president :
+                translations[currentLang].recipient_cabinet;
+
+            const periodLabel = period === 'month' ?
+                translations[currentLang].period_month :
+                period === 'quarter' ?
+                translations[currentLang].period_quarter :
+                translations[currentLang].period_year;
+
+            const newReport = {
+                id: 'r' + Date.now(),
+                recipient: recipientLabel,
+                title,
+                period: periodLabel,
+                content,
+                status: 'sent',
+                date: new Date()
+            };
+            reports.unshift(newReport);
+            localStorage.setItem('ai_reports', JSON.stringify(reports));
+            renderReports();
+            this.reset();
+            showMessage(translations[currentLang].report_sent, 'success');
+        });
+
+        // ============================================================
+        // ПРОВЕРКА ДОКУМЕНТОВ
+        // ============================================================
+        let selectedFile = null;
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const clearDocBtn = document.getElementById('clearDocBtn');
+        const resultDiv = document.getElementById('verificationResult');
+
+        function resetDocumentUpload() {
+            selectedFile = null;
+            fileInput.value = '';
+            uploadArea.querySelector('p').textContent = translations[currentLang].upload_hint;
+            resultDiv.style.display = 'none';
+        }
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = '#00d4ff'; });
+        uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = 'rgba(255,255,255,.2)'; });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'rgba(255,255,255,.2)';
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+        fileInput.addEventListener('change', function() {
+            if (this.files.length) handleFileSelect(this.files[0]);
+        });
+
+        function handleFileSelect(file) {
+            selectedFile = file;
+            uploadArea.querySelector('p').textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+            resultDiv.style.display = 'none';
+            resultDiv.className = 'verification-result';
+        }
+
+        verifyBtn.addEventListener('click', function() {
+            if (!selectedFile) {
+                resultDiv.textContent = translations[currentLang].upload_hint;
+                resultDiv.className = 'verification-result';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            resultDiv.textContent = '⏳ Barlanýar...';
+            resultDiv.style.display = 'block';
+            setTimeout(() => {
+                const isValid = Math.random() > 0.3;
+                if (isValid) {
+                    resultDiv.textContent = '✅ ' + translations[currentLang].verify_success;
+                    resultDiv.style.color = '#00ffa3';
+                } else {
+                    resultDiv.textContent = '❌ ' + translations[currentLang].verify_fail;
+                    resultDiv.style.color = '#ff6b6b';
+                }
+                resultDiv.className = 'verification-result';
+            }, 1500);
+        });
+
+        clearDocBtn.addEventListener('click', resetDocumentUpload);
+
+        // ============================================================
+        // ОБНОВЛЕНИЕ СТРАНИЦЫ
+        // ============================================================
+        document.getElementById('refreshAiBtn').addEventListener('click', function() {
+            if (currentTab === 'analytics') initAnalytics();
+            if (currentTab === 'forecasts') renderForecasts(currentForecastPeriod);
+            if (currentTab === 'assistant') {
+                chatMessages.innerHTML = '';
+                const welcome = document.createElement('div');
+                welcome.className = 'msg bot';
+                welcome.id = 'welcomeMsg';
+                welcome.textContent = translations[currentLang].welcome_msg;
+                chatMessages.appendChild(welcome);
+            }
+            if (currentTab === 'documents') resetDocumentUpload();
+            if (currentTab === 'reports') renderReports();
+        });
+
+        // ============================================================
+        // СООБЩЕНИЯ
+        // ============================================================
+        const messageEl = document.createElement('div');
+        messageEl.className = 'message';
+        messageEl.id = 'globalMessage';
+        document.querySelector('.container').prepend(messageEl);
+
+        function showMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
+            messageEl.style.display = 'block';
+            setTimeout(() => { messageEl.style.display = 'none'; }, 4000);
+        }
+
+        // ============================================================
+        // ЧАСТИЦЫ
+        // ============================================================
+        const particles = document.getElementById('particles');
+        if (particles && particles.children.length === 0) {
+            for (let i = 0; i < 60; i++) {
+                const p = document.createElement('span');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDuration = (6 + Math.random() * 12) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+                particles.appendChild(p);
+            }
+        }
+
+        // ============================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ============================================================
+        setLanguage(currentLang);
+        initAnalytics();
+        renderForecasts('7d');
+        renderReports();
+        console.log('✅ AI module with unified design');
+    </script>
+</body>
+</html>

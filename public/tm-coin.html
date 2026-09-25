@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>СФЕРА — TM Coin</title>
+
+    <!-- Общий CSS -->
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- Chart.js для графика -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        /* ===== СПЕЦИФИЧНЫЕ СТИЛИ ДЛЯ TM COIN ===== */
+        .coin-page {
+            padding: 140px 7% 60px;
+            min-height: 100vh;
+        }
+        .coin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .coin-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .coin-header .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #008cff);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,212,255,.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0,212,255,.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.2);
+            color: white;
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,.05);
+            border-color: #00d4ff;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #00ffa3, #00b894);
+            color: #08131d;
+        }
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0,255,170,.3);
+        }
+        .btn-danger {
+            background: rgba(200,0,0,.15);
+            border: 1px solid rgba(200,0,0,.3);
+            color: #ff6b6b;
+        }
+        .btn-danger:hover {
+            background: rgba(200,0,0,.25);
+        }
+
+        /* Балансовая карта */
+        .balance-card {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.12);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 30px 35px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .balance-card .balance-label {
+            font-size: 16px;
+            color: #bdd0df;
+        }
+        .balance-card .balance-amount {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #00ffa3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .balance-card .balance-currency {
+            font-size: 22px;
+            color: #bdd0df;
+            margin-left: 8px;
+        }
+        .balance-card .wallet-address {
+            font-size: 14px;
+            color: #9fb5c8;
+            word-break: break-all;
+        }
+
+        .price-ticker {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,.04);
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,.06);
+        }
+        .price-ticker .pair {
+            font-size: 15px;
+        }
+        .price-ticker .value {
+            font-weight: 700;
+            color: #00d4ff;
+        }
+        .price-ticker .change {
+            font-size: 14px;
+        }
+        .price-ticker .change.up { color: #00ffa3; }
+        .price-ticker .change.down { color: #ff6b6b; }
+        .portfolio-usd {
+            font-size: 16px;
+            color: #bdd0df;
+            text-align: right;
+            margin-top: 8px;
+        }
+        .portfolio-usd span {
+            font-weight: 700;
+            color: #00d4ff;
+            font-size: 22px;
+        }
+
+        /* График */
+        .chart-container {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            height: 240px;
+        }
+
+        .coin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .coin-item {
+            background: rgba(255,255,255,.04);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,.06);
+        }
+        .coin-item .symbol {
+            font-size: 14px;
+            color: #00d4ff;
+            text-transform: uppercase;
+        }
+        .coin-item .balance {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .coin-item .value {
+            font-size: 13px;
+            color: #9fb5c8;
+        }
+
+        .coin-tabs {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            padding-bottom: 4px;
+        }
+        .coin-tabs button {
+            background: transparent;
+            border: none;
+            color: #9fb5c8;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .3s;
+            border-bottom: 3px solid transparent;
+        }
+        .coin-tabs button.active {
+            color: #00d4ff;
+            border-bottom-color: #00d4ff;
+        }
+        .coin-tabs button:hover {
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeUp .4s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .transfer-form {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+        .transfer-form .form-group {
+            margin-bottom: 16px;
+        }
+        .transfer-form .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #dbe9ff;
+            margin-bottom: 6px;
+        }
+        .transfer-form .form-group input,
+        .transfer-form .form-group select,
+        .transfer-form .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(255,255,255,.05);
+            color: white;
+            font-size: 15px;
+            transition: .3s;
+            outline: none;
+        }
+        .transfer-form .form-group input:focus,
+        .transfer-form .form-group select:focus,
+        .transfer-form .form-group textarea:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0,212,255,.1);
+        }
+        .transfer-form .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .transfer-form .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .staking-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .staking-card {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .staking-card .apy {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00ffa3;
+        }
+        .staking-card .term {
+            font-size: 14px;
+            color: #bdd0df;
+        }
+        .staking-card .locked-amount {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+        .staking-card .btn {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .transactions-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .transactions-list li {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .transactions-list .tx-type {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        .tx-type.received { background: rgba(0,255,170,.15); color: #00ffa3; }
+        .tx-type.sent { background: rgba(255,0,0,.15); color: #ff6b6b; }
+        .tx-type.swap { background: rgba(0,212,255,.15); color: #00d4ff; }
+        .tx-type.staking { background: rgba(255,184,0,.15); color: #ffb800; }
+        .tx-amount.positive { color: #00ffa3; }
+        .tx-amount.negative { color: #ff6b6b; }
+        .tx-date { color: #9fb5c8; font-size: 12px; }
+        .tx-description { flex: 1; margin: 0 12px; color: #bdd0df; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #bdd0df;
+        }
+        .empty-state .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        /* Тосты */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(13,28,41,.95);
+            border: 1px solid rgba(0,212,255,.3);
+            border-radius: 16px;
+            padding: 16px 24px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 20px 40px rgba(0,0,0,.4);
+            z-index: 2000;
+            animation: slideUp 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .toast.success { border-left: 4px solid #00ffa3; }
+        .toast.error { border-left: 4px solid #ff6b6b; }
+        .toast.info { border-left: 4px solid #00d4ff; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .balance-card .balance-amount { font-size: 32px; }
+            .coin-tabs button { padding: 10px 14px; font-size: 13px; }
+            .chart-container { height: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles"></div>
+
+    <!-- ШАПКА (единая) -->
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00ffa3"/>
+                                <stop offset="50%" stop-color="#00d4ff"/>
+                                <stop offset="100%" stop-color="#1f6bff"/>
+                            </linearGradient>
+                            <filter id="logoGlow" x="-30%" y="-30%" width="160%" height="160%">
+                                <feGaussianBlur stdDeviation="4" result="blur"/>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                            </filter>
+                        </defs>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15" filter="url(#logoGlow)"/>
+                        <g filter="url(#logoGlow)">
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff" filter="url(#logoGlow)"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h2>SFERA</h2>
+                    <p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p>
+                </div>
+            </a>
+
+            <div class="header-right">
+                <span class="user-info">👤 <strong id="username">User</strong></span>
+                <button class="lang" id="langBtn">RU</button>
+                <button class="logout-btn" id="logoutBtn" data-i18n="logout">🚪 Çykmak</button>
+                <a href="#" id="backLink" class="btn-switch" style="display:inline-block; padding:8px 16px; background:transparent; border:1px solid rgba(255,255,255,.15); color:white; border-radius:12px; text-decoration:none;" data-i18n="back">← Yza</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <section class="coin-page">
+        <div class="container">
+            <div class="coin-header">
+                <h1 data-i18n="page_title">₮ TM Coin</h1>
+                <div class="actions">
+                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">⟳ Täzele</button>
+                </div>
+            </div>
+
+            <!-- Тикер цен + портфель -->
+            <div class="price-ticker" id="priceTicker">
+                <div class="pair" data-i18n="tmc_pair">TM Coin / TMT: <span class="value" id="tmcPrice">125.75</span> <span class="change up" id="priceChange">+2.3%</span></div>
+                <div class="pair" data-i18n="btc_pair">BTC / USD: <span class="value" id="btcPrice">67250</span> <span class="change up">+0.8%</span></div>
+                <div class="pair" data-i18n="eth_pair">ETH / USD: <span class="value" id="ethPrice">3450</span> <span class="change down">-0.5%</span></div>
+                <div class="portfolio-usd" data-i18n="portfolio_usd">🏦 Jemi portfel: <span id="totalPortfolioUsd">0.00</span> USD</div>
+            </div>
+
+            <!-- График цены TM Coin -->
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+
+            <!-- Баланс -->
+            <div class="balance-card">
+                <div>
+                    <div class="balance-label" data-i18n="total_balance">Jemi balans</div>
+                    <div>
+                        <span class="balance-amount" id="totalBalance">0.00</span>
+                        <span class="balance-currency">TM Coin</span>
+                    </div>
+                    <div class="wallet-address" id="walletAddress">0x3f5b...7e9a</div>
+                </div>
+                <div style="text-align:right;">
+                    <button class="btn btn-outline" id="copyAddressBtn" data-i18n="copy_address">Kopiýa</button>
+                </div>
+            </div>
+
+            <!-- Мультивалютный кошелёк -->
+            <div class="coin-grid" id="coinGrid"></div>
+
+            <div id="message" class="message" style="display:none;"></div>
+
+            <!-- Вкладки -->
+            <div class="coin-tabs">
+                <button class="active" data-tab="send" data-i18n="tab_send">Iber</button>
+                <button data-tab="receive" data-i18n="tab_receive">Al</button>
+                <button data-tab="swap" data-i18n="tab_swap">Çalyş</button>
+                <button data-tab="staking" data-i18n="tab_staking">Staking</button>
+                <button data-tab="history" data-i18n="tab_history">Taryh</button>
+            </div>
+
+            <!-- Вкладка: отправка -->
+            <div class="tab-content active" id="tab-send">
+                <div class="transfer-form">
+                    <form id="sendForm">
+                        <div class="form-group">
+                            <label for="sendCoin" data-i18n="coin">Kripto</label>
+                            <select id="sendCoin">
+                                <option value="TM Coin">TM Coin</option>
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ETH)</option>
+                                <option value="USDT">Tether (USDT)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sendAddress" data-i18n="address">Adres</label>
+                            <input type="text" id="sendAddress" placeholder="0x... ýa-da bc1..." required />
+                        </div>
+                        <div class="form-group">
+                            <label for="sendAmount" data-i18n="amount">Mukdar</label>
+                            <input type="number" id="sendAmount" step="0.0001" min="0.0001" required placeholder="1.00" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sendDesc" data-i18n="description">Düşündiriş (islege görä)</label>
+                            <textarea id="sendDesc" placeholder="Geçiriş sebäbi..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="sendBtn" data-i18n="send">Iber</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Вкладка: получение -->
+            <div class="tab-content" id="tab-receive">
+                <div class="transfer-form">
+                    <div class="form-group">
+                        <label for="receiveCoin" data-i18n="coin">Kripto</label>
+                        <select id="receiveCoin">
+                            <option value="TM Coin">TM Coin</option>
+                            <option value="BTC">Bitcoin (BTC)</option>
+                            <option value="ETH">Ethereum (ETH)</option>
+                            <option value="USDT">Tether (USDT)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="your_address">Siziň adresiňiz</label>
+                        <div style="background:rgba(255,255,255,.05); padding:12px 16px; border-radius:12px; word-break:break-all; color:#bdd0df;" id="receiveAddressDisplay">0x3f5b...7e9a</div>
+                    </div>
+                    <button class="btn btn-outline" id="copyReceiveBtn" data-i18n="copy_address">Kopiýa</button>
+                </div>
+            </div>
+
+            <!-- Вкладка: обмен -->
+            <div class="tab-content" id="tab-swap">
+                <div class="transfer-form">
+                    <form id="swapForm">
+                        <div class="form-group">
+                            <label for="swapFrom" data-i18n="from_coin">Nireden</label>
+                            <select id="swapFrom">
+                                <option value="TM Coin">TM Coin</option>
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ETH)</option>
+                                <option value="USDT">Tether (USDT)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="swapTo" data-i18n="to_coin">Nirä</label>
+                            <select id="swapTo">
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ETH)</option>
+                                <option value="USDT">Tether (USDT)</option>
+                                <option value="TM Coin">TM Coin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="swapAmount" data-i18n="amount">Mukdar</label>
+                            <input type="number" id="swapAmount" step="0.0001" min="0.0001" required placeholder="1.00" />
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-success" id="swapBtn" data-i18n="swap">Çalyş</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Вкладка: стейкинг -->
+            <div class="tab-content" id="tab-staking">
+                <div class="transfer-form">
+                    <div class="form-group">
+                        <label for="stakeAmount" data-i18n="stake_amount">Staking üçin mukdar (TM Coin)</label>
+                        <input type="number" id="stakeAmount" step="0.0001" min="0.0001" required placeholder="100" />
+                    </div>
+                    <div class="form-group">
+                        <label for="stakeTerm" data-i18n="stake_term">Möhlet (gün)</label>
+                        <select id="stakeTerm">
+                            <option value="30">30 gün (5% APY)</option>
+                            <option value="60">60 gün (7% APY)</option>
+                            <option value="90">90 gün (10% APY)</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" id="stakeBtn" data-i18n="stake">Staking et</button>
+                    </div>
+                </div>
+                <div style="margin-top:30px;">
+                    <h4 data-i18n="active_stakes">Işjeň stakingler</h4>
+                    <div class="staking-grid" id="stakingGrid"></div>
+                </div>
+            </div>
+
+            <!-- Вкладка: история -->
+            <div class="tab-content" id="tab-history">
+                <ul class="transactions-list" id="transactionsList"></ul>
+                <div class="empty-state" id="emptyTx" style="display:none;">
+                    <div class="icon">📭</div>
+                    <p data-i18n="no_transactions">Hiç hili amal ýok</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        // ============================================================
+        // ПЕРЕВОДЫ (расширенные)
+        // ============================================================
+        const translations = {
+            ru: {
+                logo_subtitle: "Национальная Цифровая Платформа",
+                logout: "🚪 Выйти",
+                back: "← Назад",
+                refresh: "⟳ Обновить",
+                page_title: "₮ TM Coin",
+                tmc_pair: "TM Coin / TMT:",
+                btc_pair: "BTC / USD:",
+                eth_pair: "ETH / USD:",
+                portfolio_usd: "🏦 Общий портфель:",
+                total_balance: "Общий баланс",
+                copy_address: "Копировать адрес",
+                tab_send: "Отправить",
+                tab_receive: "Получить",
+                tab_swap: "Обменять",
+                tab_staking: "Стейкинг",
+                tab_history: "История",
+                coin: "Монета",
+                address: "Адрес",
+                amount: "Сумма",
+                description: "Описание",
+                send: "Отправить",
+                swap: "Обменять",
+                from_coin: "Откуда",
+                to_coin: "Куда",
+                your_address: "Ваш адрес",
+                no_transactions: "Нет транзакций",
+                transfer_success: "Перевод выполнен успешно!",
+                transfer_error: "Ошибка перевода.",
+                insufficient: "Недостаточно средств.",
+                invalid_address: "Неверный адрес.",
+                invalid_amount: "Некорректная сумма.",
+                stake_amount: "Сумма для стейкинга (TM Coin)",
+                stake_term: "Срок (дни)",
+                stake: "Заблокировать",
+                active_stakes: "Активные стейкинги",
+                stake_success: "Стейкинг выполнен!",
+                stake_error: "Недостаточно средств для стейкинга.",
+                no_stakes: "Нет активных стейкингов",
+                apy: "APY",
+                term_days: "дней",
+                locked: "Заблокировано",
+                unstake: "Снять",
+                unstake_success: "Стейкинг снят!"
+            },
+            tm: {
+                logo_subtitle: "Milli Sanly Platforma",
+                logout: "🚪 Çykmak",
+                back: "← Yza",
+                refresh: "⟳ Täzele",
+                page_title: "₮ TM Coin",
+                tmc_pair: "TM Coin / TMT:",
+                btc_pair: "BTC / USD:",
+                eth_pair: "ETH / USD:",
+                portfolio_usd: "🏦 Jemi portfel:",
+                total_balance: "Jemi balans",
+                copy_address: "Adresi kopiýala",
+                tab_send: "Iber",
+                tab_receive: "Al",
+                tab_swap: "Çalyş",
+                tab_staking: "Staking",
+                tab_history: "Taryh",
+                coin: "Kripto",
+                address: "Adres",
+                amount: "Mukdar",
+                description: "Düşündiriş",
+                send: "Iber",
+                swap: "Çalyş",
+                from_coin: "Nireden",
+                to_coin: "Nirä",
+                your_address: "Siziň adresiňiz",
+                no_transactions: "Hiç hili amal ýok",
+                transfer_success: "Geçiriş üstünlikli tamamlandy!",
+                transfer_error: "Geçiriş baş tutmady.",
+                insufficient: "Balans ýeterlik däl.",
+                invalid_address: "Adres ýalňyş.",
+                invalid_amount: "Mukdar ýalňyş.",
+                stake_amount: "Staking üçin mukdar (TM Coin)",
+                stake_term: "Möhlet (gün)",
+                stake: "Blokirle",
+                active_stakes: "Işjeň stakingler",
+                stake_success: "Staking tamamlandy!",
+                stake_error: "Staking üçin ýeterlik serişde ýok.",
+                no_stakes: "Işjeň staking ýok",
+                apy: "APY",
+                term_days: "gün",
+                locked: "Blokirlenen",
+                unstake: "Çykar",
+                unstake_success: "Staking çykaryldy!"
+            },
+            en: {
+                logo_subtitle: "National Digital Platform",
+                logout: "🚪 Logout",
+                back: "← Back",
+                refresh: "⟳ Refresh",
+                page_title: "₮ TM Coin",
+                tmc_pair: "TM Coin / TMT:",
+                btc_pair: "BTC / USD:",
+                eth_pair: "ETH / USD:",
+                portfolio_usd: "🏦 Total portfolio:",
+                total_balance: "Total balance",
+                copy_address: "Copy address",
+                tab_send: "Send",
+                tab_receive: "Receive",
+                tab_swap: "Swap",
+                tab_staking: "Staking",
+                tab_history: "History",
+                coin: "Coin",
+                address: "Address",
+                amount: "Amount",
+                description: "Description",
+                send: "Send",
+                swap: "Swap",
+                from_coin: "From",
+                to_coin: "To",
+                your_address: "Your address",
+                no_transactions: "No transactions",
+                transfer_success: "Transfer successful!",
+                transfer_error: "Transfer failed.",
+                insufficient: "Insufficient balance.",
+                invalid_address: "Invalid address.",
+                invalid_amount: "Invalid amount.",
+                stake_amount: "Amount to stake (TM Coin)",
+                stake_term: "Term (days)",
+                stake: "Stake",
+                active_stakes: "Active stakes",
+                stake_success: "Stake successful!",
+                stake_error: "Insufficient balance for staking.",
+                no_stakes: "No active stakes",
+                apy: "APY",
+                term_days: "days",
+                locked: "Locked",
+                unstake: "Unstake",
+                unstake_success: "Stake withdrawn!"
+            }
+        };
+
+        // ============================================================
+        // УСТАНОВКА ЯЗЫКА
+        // ============================================================
+        let currentLang = localStorage.getItem('lang') || 'ru';
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    if (el.tagName === 'INPUT' && el.getAttribute('placeholder')) {
+                        el.placeholder = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+            document.getElementById('langBtn').textContent = lang.toUpperCase();
+            localStorage.setItem('lang', lang);
+            updateUI();
+        }
+
+        function updateUI() {
+            // Обновляем вкладки
+            document.querySelectorAll('.coin-tabs button').forEach(btn => {
+                const key = btn.dataset.i18n;
+                if (translations[currentLang][key]) btn.textContent = translations[currentLang][key];
+            });
+            renderCoins();
+            renderTransactions();
+            renderStaking();
+            updatePortfolio(); // явно обновляем портфель при смене языка
+        }
+
+        document.getElementById('langBtn').addEventListener('click', function() {
+            const cycle = ['ru', 'tm', 'en'];
+            let idx = cycle.indexOf(currentLang);
+            idx = (idx + 1) % cycle.length;
+            setLanguage(cycle[idx]);
+        });
+
+        // ============================================================
+        // АВТОРИЗАЦИЯ И НАВИГАЦИЯ
+        // ============================================================
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        const user = JSON.parse(localStorage.getItem('user') || '{"username":"User","role":"user"}');
+        document.getElementById('username').textContent = user.username || 'User';
+
+        const backLink = document.getElementById('backLink');
+        if (user.role === 'admin') {
+            backLink.href = 'admin-dashboard.html';
+        } else {
+            backLink.href = 'user-dashboard.html';
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        // ============================================================
+        // ДАННЫЕ (localStorage)
+        // ============================================================
+        let coins = [];
+        let transactions = [];
+        let stakes = [];
+        let walletAddress = '0x3f5b7e9a1c4d2f8b6e3a';
+        let priceHistory = [];
+        let chart = null;
+
+        function loadData() {
+            // Загружаем монеты
+            const storedCoins = localStorage.getItem('tm_coin_coins');
+            if (storedCoins) {
+                try { coins = JSON.parse(storedCoins); } catch(e) { coins = []; }
+            }
+            if (!coins || coins.length === 0) {
+                coins = [
+                    { symbol: 'TM Coin', balance: 1250.75, usdValue: 157000 },
+                    { symbol: 'BTC', balance: 0.045, usdValue: 3026.25 },
+                    { symbol: 'ETH', balance: 1.2, usdValue: 4140 },
+                    { symbol: 'USDT', balance: 5000, usdValue: 5000 }
+                ];
+                saveCoins();
+            }
+
+            // Загружаем транзакции
+            const storedTx = localStorage.getItem('tm_coin_transactions');
+            if (storedTx) {
+                try { transactions = JSON.parse(storedTx); } catch(e) { transactions = []; }
+            }
+            if (!transactions || transactions.length === 0) {
+                transactions = [
+                    { id: 'tx1', type: 'sent', coin: 'TM Coin', amount: 50, to: '0x1a2b...', status: 'completed', date: new Date(Date.now() - 3600000 * 2).toISOString(), description: 'Satyjyna töleg' },
+                    { id: 'tx2', type: 'received', coin: 'BTC', amount: 0.01, from: 'bc1q...', status: 'confirmed', date: new Date(Date.now() - 3600000 * 5).toISOString(), description: 'Aýlyk girdeji' },
+                    { id: 'tx3', type: 'swap', coin: 'ETH', amount: 0.5, to: 'USDT', status: 'completed', date: new Date(Date.now() - 3600000 * 24).toISOString(), description: 'Çalyşma' }
+                ];
+                saveTransactions();
+            }
+
+            // Загружаем стейкинги
+            const storedStakes = localStorage.getItem('tm_coin_stakes');
+            if (storedStakes) {
+                try { stakes = JSON.parse(storedStakes); } catch(e) { stakes = []; }
+            } else {
+                stakes = [];
+                saveStakes();
+            }
+
+            // Генерируем историю цен
+            generatePriceHistory();
+            // Обновляем портфель после загрузки
+            updatePortfolio();
+        }
+
+        function saveCoins() {
+            localStorage.setItem('tm_coin_coins', JSON.stringify(coins));
+        }
+
+        function saveTransactions() {
+            localStorage.setItem('tm_coin_transactions', JSON.stringify(transactions));
+        }
+
+        function saveStakes() {
+            localStorage.setItem('tm_coin_stakes', JSON.stringify(stakes));
+        }
+
+        function generatePriceHistory() {
+            priceHistory = [];
+            const now = Date.now();
+            let price = 120 + Math.random() * 10;
+            for (let i = 0; i < 30; i++) {
+                const change = (Math.random() - 0.45) * 6;
+                price = Math.max(80, price + change);
+                priceHistory.push({ date: new Date(now - (29 - i) * 24 * 3600000).toISOString(), price: price });
+            }
+        }
+
+        function updateTotalBalance() {
+            const total = coins.reduce((sum, c) => sum + (c.symbol === 'TM Coin' ? c.balance : 0), 0);
+            document.getElementById('totalBalance').textContent = total.toFixed(4);
+            // Также показываем общий портфель в USD (обновляется отдельно)
+            updatePortfolio();
+            document.getElementById('walletAddress').textContent = walletAddress;
+            document.getElementById('receiveAddressDisplay').textContent = walletAddress;
+        }
+
+        function updatePortfolio() {
+            const el = document.getElementById('totalPortfolioUsd');
+            if (!el) return;
+            let totalUsd = 0;
+            // Условные цены для пересчёта (в USD)
+            const rates = {
+                'TM Coin': 125.75,
+                'BTC': 67250,
+                'ETH': 3450,
+                'USDT': 1
+            };
+            coins.forEach(c => {
+                const rate = rates[c.symbol] || 0;
+                totalUsd += c.balance * rate;
+            });
+            el.textContent = totalUsd.toFixed(2);
+        }
+
+        // ============================================================
+        // ОТРИСОВКА
+        // ============================================================
+        function renderCoins() {
+            const container = document.getElementById('coinGrid');
+            container.innerHTML = coins.map(c => `
+                <div class="coin-item">
+                    <div class="symbol">${c.symbol}</div>
+                    <div class="balance">${c.balance.toFixed(4)}</div>
+                    <div class="value">≈ $${c.usdValue.toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderTransactions() {
+            const list = document.getElementById('transactionsList');
+            const empty = document.getElementById('emptyTx');
+            if (!transactions.length) {
+                list.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+            const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            list.innerHTML = sorted.map(tx => {
+                const isReceived = tx.type === 'received';
+                const sign = isReceived ? '+' : '-';
+                const amountClass = isReceived ? 'positive' : 'negative';
+                const typeClass = tx.type;
+                const typeLabel = tx.type.charAt(0).toUpperCase() + tx.type.slice(1);
+                return `
+                    <li>
+                        <span>
+                            <span class="tx-type ${typeClass}">${typeLabel}</span>
+                            <span class="tx-description">${tx.description || ''}</span>
+                        </span>
+                        <span>
+                            <span class="tx-amount ${amountClass}">${sign} ${Math.abs(tx.amount).toFixed(4)} ${tx.coin}</span>
+                            <span class="tx-date">${new Date(tx.date).toLocaleDateString()}</span>
+                        </span>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function renderStaking() {
+            const container = document.getElementById('stakingGrid');
+            if (!stakes || stakes.length === 0) {
+                container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">🔒</div><p>${translations[currentLang].no_stakes}</p></div>`;
+                return;
+            }
+            container.innerHTML = stakes.map(s => {
+                const apy = s.term === 30 ? 5 : s.term === 60 ? 7 : 10;
+                return `
+                    <div class="staking-card">
+                        <div class="apy">${apy}%</div>
+                        <div class="term">${s.term} ${translations[currentLang].term_days}</div>
+                        <div class="locked-amount">${s.amount.toFixed(2)} TM Coin</div>
+                        <div style="font-size:12px; color:#9fb5c8;">${new Date(s.startDate).toLocaleDateString()}</div>
+                        <button class="btn btn-danger unstake-btn" data-id="${s.id}" data-i18n="unstake">${translations[currentLang].unstake}</button>
+                    </div>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.unstake-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    unstake(id);
+                });
+            });
+        }
+
+        // ============================================================
+        // ГРАФИК
+        // ============================================================
+        function renderChart() {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            if (chart) chart.destroy();
+            const labels = priceHistory.map(p => new Date(p.date).toLocaleDateString());
+            const data = priceHistory.map(p => p.price);
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'TM Coin / TMT',
+                        data: data,
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0,212,255,0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#bdd0df' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#9fb5c8', maxTicksLimit: 8 } },
+                        y: { ticks: { color: '#9fb5c8' } }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        // АВТООБНОВЛЕНИЕ ЦЕН
+        // ============================================================
+        function updatePrices() {
+            // Изменяем цены случайными колебаниями
+            const tmcPrice = document.getElementById('tmcPrice');
+            const btcPrice = document.getElementById('btcPrice');
+            const ethPrice = document.getElementById('ethPrice');
+            const priceChange = document.getElementById('priceChange');
+
+            let currentTmc = parseFloat(tmcPrice.textContent);
+            let change = (Math.random() - 0.45) * 4;
+            currentTmc = Math.max(80, currentTmc + change);
+            tmcPrice.textContent = currentTmc.toFixed(2);
+            priceChange.textContent = (change > 0 ? '+' : '') + change.toFixed(2) + '%';
+            priceChange.className = 'change ' + (change >= 0 ? 'up' : 'down');
+
+            let btc = parseFloat(btcPrice.textContent);
+            btc += (Math.random() - 0.48) * 200;
+            btc = Math.max(60000, btc);
+            btcPrice.textContent = btc.toFixed(0);
+
+            let eth = parseFloat(ethPrice.textContent);
+            eth += (Math.random() - 0.48) * 30;
+            eth = Math.max(3200, eth);
+            ethPrice.textContent = eth.toFixed(0);
+
+            // Обновить портфель
+            updatePortfolio();
+            // Добавить точку в график (имитация)
+            const lastPrice = priceHistory[priceHistory.length - 1].price;
+            const newPrice = Math.max(80, lastPrice + (Math.random() - 0.45) * 3);
+            priceHistory.shift();
+            priceHistory.push({ date: new Date().toISOString(), price: newPrice });
+            renderChart();
+        }
+
+        // ============================================================
+        // ОТПРАВКА (SEND)
+        // ============================================================
+        document.getElementById('sendForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const coin = document.getElementById('sendCoin').value;
+            const address = document.getElementById('sendAddress').value.trim();
+            const amount = parseFloat(document.getElementById('sendAmount').value);
+            const desc = document.getElementById('sendDesc').value.trim();
+
+            if (!address || !amount || amount <= 0) {
+                showToast(translations[currentLang].invalid_amount, 'error');
+                return;
+            }
+            const c = coins.find(c => c.symbol === coin);
+            if (!c || c.balance < amount) {
+                showToast(translations[currentLang].insufficient, 'error');
+                return;
+            }
+            c.balance -= amount;
+            c.usdValue = c.balance * getPrice(c.symbol);
+            saveCoins();
+
+            transactions.push({
+                id: 'tx' + Date.now(),
+                type: 'sent',
+                coin: coin,
+                amount: amount,
+                to: address,
+                status: 'pending',
+                date: new Date().toISOString(),
+                description: desc || 'Geçiriş'
+            });
+            saveTransactions();
+
+            updateTotalBalance();
+            renderCoins();
+            renderTransactions();
+            showToast(translations[currentLang].transfer_success, 'success');
+            this.reset();
+            updatePortfolio(); // обновить портфель после отправки
+        });
+
+        // ============================================================
+        // ОБМЕН (SWAP)
+        // ============================================================
+        document.getElementById('swapForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fromCoin = document.getElementById('swapFrom').value;
+            const toCoin = document.getElementById('swapTo').value;
+            const amount = parseFloat(document.getElementById('swapAmount').value);
+
+            if (!amount || amount <= 0) {
+                showToast(translations[currentLang].invalid_amount, 'error');
+                return;
+            }
+            const from = coins.find(c => c.symbol === fromCoin);
+            const to = coins.find(c => c.symbol === toCoin);
+            if (!from || !to || from.balance < amount) {
+                showToast(translations[currentLang].insufficient, 'error');
+                return;
+            }
+
+            // Курс обмена (упрощённо)
+            const rates = {
+                'TM Coin': 1,
+                'BTC': 0.00002,
+                'ETH': 0.0003,
+                'USDT': 0.8
+            };
+            const fromRate = rates[fromCoin] || 1;
+            const toRate = rates[toCoin] || 1;
+            const received = (amount * fromRate) / toRate;
+
+            from.balance -= amount;
+            to.balance += received;
+            from.usdValue = from.balance * getPrice(fromCoin);
+            to.usdValue = to.balance * getPrice(toCoin);
+            saveCoins();
+
+            transactions.push({
+                id: 'tx' + Date.now(),
+                type: 'swap',
+                coin: fromCoin,
+                amount: amount,
+                to: toCoin,
+                status: 'completed',
+                date: new Date().toISOString(),
+                description: `${fromCoin} → ${toCoin}`
+            });
+            saveTransactions();
+
+            updateTotalBalance();
+            renderCoins();
+            renderTransactions();
+            showToast('Çalyşma tamamlandy!', 'success');
+            this.reset();
+            updatePortfolio(); // обновить портфель после обмена
+        });
+
+        function getPrice(symbol) {
+            const prices = {
+                'TM Coin': 125.75,
+                'BTC': 67250,
+                'ETH': 3450,
+                'USDT': 1
+            };
+            return prices[symbol] || 1;
+        }
+
+        // ============================================================
+        // СТЕЙКИНГ
+        // ============================================================
+        document.getElementById('stakeBtn').addEventListener('click', function() {
+            const amount = parseFloat(document.getElementById('stakeAmount').value);
+            const term = parseInt(document.getElementById('stakeTerm').value);
+
+            if (!amount || amount <= 0) {
+                showToast(translations[currentLang].invalid_amount, 'error');
+                return;
+            }
+            const tmCoin = coins.find(c => c.symbol === 'TM Coin');
+            if (!tmCoin || tmCoin.balance < amount) {
+                showToast(translations[currentLang].stake_error, 'error');
+                return;
+            }
+            tmCoin.balance -= amount;
+            tmCoin.usdValue = tmCoin.balance * getPrice('TM Coin');
+            saveCoins();
+
+            const stake = {
+                id: 'stake_' + Date.now(),
+                amount: amount,
+                term: term,
+                startDate: new Date().toISOString(),
+                apy: term === 30 ? 5 : term === 60 ? 7 : 10
+            };
+            stakes.push(stake);
+            saveStakes();
+
+            transactions.push({
+                id: 'tx' + Date.now(),
+                type: 'staking',
+                coin: 'TM Coin',
+                amount: amount,
+                status: 'locked',
+                date: new Date().toISOString(),
+                description: `Staking ${term} gün`
+            });
+            saveTransactions();
+
+            updateTotalBalance();
+            renderCoins();
+            renderStaking();
+            renderTransactions();
+            showToast(translations[currentLang].stake_success, 'success');
+            document.getElementById('stakeAmount').value = '';
+            updatePortfolio(); // обновить портфель после стейкинга
+        });
+
+        function unstake(id) {
+            const index = stakes.findIndex(s => s.id === id);
+            if (index === -1) return;
+            const stake = stakes[index];
+            // Возвращаем средства с "процентами" (имитация)
+            const tmCoin = coins.find(c => c.symbol === 'TM Coin');
+            if (tmCoin) {
+                const reward = stake.amount * (stake.apy / 100) * (stake.term / 365);
+                const total = stake.amount + reward;
+                tmCoin.balance += total;
+                tmCoin.usdValue = tmCoin.balance * getPrice('TM Coin');
+                saveCoins();
+            }
+            stakes.splice(index, 1);
+            saveStakes();
+
+            transactions.push({
+                id: 'tx' + Date.now(),
+                type: 'received',
+                coin: 'TM Coin',
+                amount: stake.amount,
+                status: 'completed',
+                date: new Date().toISOString(),
+                description: 'Staking çykaryldy'
+            });
+            saveTransactions();
+
+            updateTotalBalance();
+            renderCoins();
+            renderStaking();
+            renderTransactions();
+            showToast(translations[currentLang].unstake_success, 'success');
+            updatePortfolio(); // обновить портфель после снятия
+        }
+
+        // ============================================================
+        // КОПИРОВАНИЕ АДРЕСОВ
+        // ============================================================
+        document.getElementById('copyAddressBtn').addEventListener('click', function() {
+            navigator.clipboard.writeText(walletAddress).then(() => {
+                showToast('Adres kopiýalandy!', 'success');
+            });
+        });
+        document.getElementById('copyReceiveBtn').addEventListener('click', function() {
+            navigator.clipboard.writeText(walletAddress).then(() => {
+                showToast('Adres kopiýalandy!', 'success');
+            });
+        });
+
+        // ============================================================
+        // ВКЛАДКИ
+        // ============================================================
+        document.querySelectorAll('.coin-tabs button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.coin-tabs button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const tab = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                document.getElementById('tab-' + tab).classList.add('active');
+                if (tab === 'staking') renderStaking();
+                if (tab === 'history') renderTransactions();
+            });
+        });
+
+        // ============================================================
+        // ОБНОВЛЕНИЕ (кнопка refresh)
+        // ============================================================
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            renderCoins();
+            renderTransactions();
+            renderStaking();
+            updateTotalBalance();
+            updatePrices();
+            showToast('Täzelendi!', 'success');
+            updatePortfolio(); // дополнительно обновить портфель
+        });
+
+        // ============================================================
+        // УВЕДОМЛЕНИЯ (TOAST)
+        // ============================================================
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // ============================================================
+        // АВТООБНОВЛЕНИЕ (каждые 30 секунд)
+        // ============================================================
+        let autoUpdateInterval = null;
+
+        function startAutoUpdate() {
+            if (autoUpdateInterval) clearInterval(autoUpdateInterval);
+            autoUpdateInterval = setInterval(() => {
+                updatePrices();
+                updatePortfolio(); // обновляем портфель при каждом автообновлении
+            }, 30000);
+        }
+
+        // ============================================================
+        // ЧАСТИЦЫ
+        // ============================================================
+        const particles = document.getElementById('particles');
+        if (particles && particles.children.length === 0) {
+            for (let i = 0; i < 60; i++) {
+                const p = document.createElement('span');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDuration = (6 + Math.random() * 12) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+                particles.appendChild(p);
+            }
+        }
+
+        // ============================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ============================================================
+        loadData();
+        setLanguage(currentLang);
+        updateTotalBalance();
+        renderCoins();
+        renderTransactions();
+        renderStaking();
+        renderChart();
+        updatePrices();
+        startAutoUpdate();
+        // Финишное обновление портфеля
+        setTimeout(() => updatePortfolio(), 100);
+        console.log('✅ TM Coin module with chart, staking and auto-update loaded');
+    </script>
+</body>
+</html>

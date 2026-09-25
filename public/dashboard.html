@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="tm">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="dashboard_page_title">СФЕРА — Дашборд</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ==========================================================================
+           1. ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ (ЭТАЛОН)
+           ========================================================================== */
+        :root {
+            --primary: #00d4ff;
+            --secondary: #1f6bff;
+            --accent: #00ffa3;
+            --dark-bg: #03080e;
+            --glass-bg: rgba(255, 255, 255, 0.035);
+            --glass-border: rgba(0, 212, 255, 0.18);
+            --glass-hover-bg: rgba(0, 212, 255, 0.08);
+            --glass-hover-border: rgba(0, 212, 255, 0.45);
+            --header-footer-bg: rgba(5, 14, 26, 0.75);
+            --white: #ffffff;
+            --text: #dbe9ff;
+            --text-muted: #9bb3cc;
+            --radius: 22px;
+        }
+
+        /* ==========================================================================
+           2. СТИЛИЗАЦИЯ ПОЛЗУНКА ПРОКРУТКИ (NEON SCROLLBAR)
+           ========================================================================== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #03080e;
+            border-left: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.4), rgba(31, 107, 255, 0.5));
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00d4ff, #00ffa3);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.8);
+        }
+
+        /* ==========================================================================
+           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ (GLASSMORPHISM)
+           ========================================================================== */
+        .full-glass-backdrop {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.16), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 163, 0.12), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(31, 107, 255, 0.1), transparent 60%),
+                rgba(3, 8, 14, 0.72);
+            backdrop-filter: blur(65px) saturate(180%);
+            -webkit-backdrop-filter: blur(65px) saturate(180%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ==========================================================================
+           4. ПЛАВАЮЩИЕ ТОЧКИ И НЕОНОВАЯ СЕТКА
+           ========================================================================== */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.85;
+        }
+
+        #particles {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 3;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatParticle linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(105vh) translateX(0) scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.85;
+            }
+            80% {
+                opacity: 0.85;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(15px) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        /* ==========================================================================
+           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И ШАПКА
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 212, 255, 0.4) #03080e;
+        }
+
+        html { 
+            scroll-behavior: smooth; 
+            background-color: var(--dark-bg);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--white);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: min(1400px, 92%);
+            margin: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            background: var(--header-footer-bg);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s ease;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-wrap: nowrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .logo:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .logo-svg g {
+            transform-origin: 50px 50px;
+            animation: spinLogo 16s linear infinite;
+        }
+
+        @keyframes spinLogo {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .logo-text h2 {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #00ffa3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text p {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            margin: 4px 0 0 0;
+            color: #9fb5c8;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            white-space: nowrap;
+        }
+
+        .back-btn, .lang, .logout-btn {
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: white;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.35s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .back-btn:hover, .lang:hover, .logout-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+            transform: translateY(-2px);
+            color: var(--white);
+        }
+
+        /* ==========================================================================
+           6. СТИЛИ ДАШБОРДА И КАРТОЧЕК
+           ========================================================================== */
+        .dashboard {
+            padding: 150px 0 80px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        .dashboard h1 {
+            font-size: 46px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 20%, #b4d7ff 60%, #00ffa3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.6));
+        }
+
+        .dashboard .welcome {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 45px;
+            font-weight: 500;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            position: relative;
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(0, 212, 255, 0.15), rgba(255, 255, 255, 0.03));
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border-radius: 24px;
+            padding: 35px 25px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--glass-hover-border);
+            box-shadow: 0 30px 60px rgba(0, 212, 255, 0.25);
+        }
+
+        .card .icon {
+            font-size: 52px;
+            margin-bottom: 18px;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.4));
+        }
+
+        .card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard h1 { font-size: 32px; }
+            .grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+            .header-right { gap: 6px; }
+            .back-btn, .lang, .logout-btn { padding: 8px 12px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Сплошной сквозной слой матового стекла и неоновая сетка -->
+    <div class="full-glass-backdrop"></div>
+    <div class="bg-grid"></div>
+
+    <!-- Интерактивные нейросети и светящиеся точки -->
+    <canvas id="bgCanvas"></canvas>
+    <div id="particles"></div>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00ffa3"/>
+                                <stop offset="50%" stop-color="#00d4ff"/>
+                                <stop offset="100%" stop-color="#1f6bff"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15"/>
+                        <g>
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" 
+                                  stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h2 data-i18n="logo_title">SFERA</h2>
+                    <p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p>
+                </div>
+            </a>
+
+            <!-- Кнопки справа: Назад -> Профиль -> Перевод -> Выход -->
+            <div class="header-right">
+                <button class="back-btn" id="backBtn" data-i18n="btn_back">⬅️ Yza</button>
+                <span class="user-info">👤 <strong id="username">User</strong></span>
+                <button class="lang" id="langBtn">TM</button>
+                <button class="logout-btn" id="logoutBtn" data-i18n="logout">🚪 Çykmak</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="dashboard">
+        <div class="container">
+            <h1><span data-i18n="welcome_title">👋 Hoş geldiňiz</span>, <span id="greetingUser">User</span>!</h1>
+            <p class="welcome" data-i18n="welcome_subtitle">Platformanyň modullaryna giriş etmek üçin aşakdaky kartlardan saýlaň.</p>
+            
+            <div class="grid" id="dashboardGrid">
+                <!-- Карточка Администратора (по умолчанию скрыта, проявляется только для роли admin) -->
+                <a href="admin.html" class="card" id="adminCard" style="display: none; border: 1px solid rgba(0, 255, 163, 0.4);">
+                    <div class="icon">⚡</div>
+                    <h3 data-i18n="card_admin">Admin Panel</h3>
+                    <p data-i18n="desc_admin">Ulgam dolandyryş paneli</p>
+                </a>
+
+                <a href="marketplace.html" class="card">
+                    <div class="icon">🛒</div>
+                    <h3 data-i18n="card_marketplace">Marketpleýs</h3>
+                    <p data-i18n="desc_marketplace">Birža we söwda meýdançasy</p>
+                </a>
+                <a href="bank.html" class="card">
+                    <div class="icon">🏦</div>
+                    <h3 data-i18n="card_bank">TM Bank</h3>
+                    <p data-i18n="desc_bank">Sanly bank hyzmatlary</p>
+                </a>
+                <a href="messenger.html" class="card">
+                    <div class="icon">💬</div>
+                    <h3 data-i18n="card_messenger">Messenger</h3>
+                    <p data-i18n="desc_messenger">Çalt habarlaşma</p>
+                </a>
+                <a href="mailtm.html" class="card">
+                    <div class="icon">✉️</div>
+                    <h3 data-i18n="card_mail">TM Poçta</h3>
+                    <p data-i18n="desc_mail">Içki poçta ulgamy</p>
+                </a>
+                <a href="ai.html" class="card">
+                    <div class="icon">🤖</div>
+                    <h3 data-i18n="card_ai">AI analitika</h3>
+                    <p data-i18n="desc_ai">TM Coin prokgnozlary, trendler</p>
+                </a>
+                <a href="documents.html" class="card">
+                    <div class="icon">📄</div>
+                    <h3 data-i18n="card_docs">Resmiýetler</h3>
+                    <p data-i18n="desc_docs">Awtomatik tassyklama</p>
+                </a>
+                <a href="tm-pay.html" class="card">
+                    <div class="icon">💳</div>
+                    <h3 data-i18n="card_tmpay">TM Pay</h3>
+                    <p data-i18n="desc_tmpay">Milli töleg ulgamy</p>
+                </a>
+                <a href="tm-coin.html" class="card">
+                    <div class="icon">₮</div>
+                    <h3 data-i18n="card_tmcoin">TM Coin</h3>
+                    <p data-i18n="desc_tmcoin">Sanly döwlet walýutasy</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ПОДКЛЮЧЕНИЕ АВТО-ПЕРЕВОДЧИКА И ПРОВЕРКИ АВТОРИЗАЦИИ С КНОПКОЙ НАЗАД -->
+    <script src="/scripts/auto_translate_i18n.js"></script>
+    <script src="/js/auth-check.js"></script>
+
+    <script>
+        // Управление системной локализацией (по умолчанию tm)
+        let currentLang = localStorage.getItem('selected_lang') || 'tm';
+        localStorage.setItem('selected_lang', currentLang);
+
+        const langBtn = document.getElementById('langBtn');
+        if (langBtn) {
+            langBtn.textContent = currentLang.toUpperCase();
+            langBtn.addEventListener('click', () => {
+                currentLang = currentLang === 'tm' ? 'ru' : (currentLang === 'ru' ? 'en' : 'tm');
+                localStorage.setItem('selected_lang', currentLang);
+                langBtn.textContent = currentLang.toUpperCase();
+                if (typeof changeLanguage === 'function') {
+                    changeLanguage(currentLang);
+                } else {
+                    location.reload();
+                }
+            });
+        }
+
+        // Проверка авторизации и логика единого дашборда
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const token = localStorage.getItem('token');
+
+        if (!token || !user || !user.username) {
+            window.location.href = 'register.html';
+        }
+
+        // Подстановка логина и отображение прав роли
+        const usernameDisplay = user.username || 'User';
+        const roleText = user.role === 'admin' ? ' (Admin)' : '';
+        
+        document.getElementById('username').textContent = usernameDisplay + roleText;
+        document.getElementById('greetingUser').textContent = usernameDisplay;
+
+        // Переход для кнопки Назад (строго на главную страницу)
+        document.getElementById('backBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
+        // Если вошел Администратор — показываем статически встроенный модуль администрирования
+        if (user.role === 'admin') {
+            const adminCard = document.getElementById('adminCard');
+            if (adminCard) {
+                adminCard.style.display = 'block';
+            }
+        }
+
+        // Выход из системы — строго на страницу регистрации
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'register.html';
+        });
+
+        // Инициализация графических эффектов эталонного дизайна
+        document.addEventListener('DOMContentLoaded', () => {
+            // Инициализация выбранного языка автопереводчиком при загрузке
+            if (typeof changeLanguage === 'function') {
+                changeLanguage(currentLang);
+            }
+
+            // Эффект движения мыши по карточкам
+            const initCardHover = () => {
+                document.querySelectorAll(".card").forEach(card => {
+                    card.addEventListener("mousemove", e => {
+                        const rect = card.getBoundingClientRect();
+                        card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+                        card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+                    });
+                });
+            };
+            initCardHover();
+
+            // Светящиеся частицы
+            const particlesContainer = document.getElementById("particles");
+            if (particlesContainer) {
+                particlesContainer.innerHTML = "";
+                const colors = ['#00d4ff', '#00ffa3', '#1f6bff', '#ffffff'];
+                for (let i = 0; i < 65; i++) {
+                    const particle = document.createElement("div");
+                    particle.className = "particle";
+                    const size = Math.random() * 2.2 + 1.0; 
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+
+                    particle.style.width = size + "px";
+                    particle.style.height = size + "px";
+                    particle.style.backgroundColor = color;
+                    particle.style.boxShadow = `0 0 ${size * 3}px ${color}`;
+                    particle.style.left = (Math.random() * 92 + 4) + "%";
+                    particle.style.top = "0px";
+
+                    particle.style.animationDuration = (10 + Math.random() * 12) + "s";
+                    particle.style.animationDelay = (Math.random() * -20) + "s";
+                    particlesContainer.appendChild(particle);
+                }
+            }
+
+            // Интерактивный Canvas-фон нейросети
+            const canvas = document.getElementById('bgCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let w, h;
+
+                function resize() {
+                    w = canvas.width = window.innerWidth;
+                    h = canvas.height = window.innerHeight;
+                }
+                resize();
+                window.addEventListener('resize', resize);
+
+                const points = Array.from({ length: 60 }, () => ({
+                    x: Math.random() * (w - 45) + 20,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.6,
+                    vy: (Math.random() - 0.5) * 0.6,
+                    radius: Math.random() * 1.2 + 0.8
+                }));
+
+                function drawCanvas() {
+                    ctx.clearRect(0, 0, w, h);
+                    for (let i = 0; i < points.length; i++) {
+                        let p = points[i];
+                        p.x += p.vx;
+                        p.y += p.vy;
+
+                        if (p.x < 20 || p.x > w - 25) p.vx *= -1;
+                        if (p.y < 0 || p.y > h) p.vy *= -1;
+
+                        for (let j = i + 1; j < points.length; j++) {
+                            let p2 = points[j];
+                            let dx = p.x - p2.x, dy = p.y - p2.y;
+                            let dist = Math.sqrt(dx * dx + dy * dy);
+
+                            if (dist < 180) {
+                                ctx.beginPath();
+                                ctx.moveTo(p.x, p.y);
+                                ctx.lineTo(p2.x, p2.y);
+                                ctx.strokeStyle = `rgba(0, 212, 255, ${0.18 * (1 - dist / 180)})`;
+                                ctx.lineWidth = 1;
+                                ctx.stroke();
+                            }
+                        }
+
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(0, 255, 163, 0.85)';
+                        ctx.shadowBlur = 6;
+                        ctx.shadowColor = '#00ffa3';
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                    requestAnimationFrame(drawCanvas);
+                }
+                drawCanvas();
+            }
+        });
+    </script>
+</body>
+</html>

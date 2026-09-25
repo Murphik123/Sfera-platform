@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="tm">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>СФЕРА — Giriş</title>
+
+    <!-- Шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Подключение центральной системы стилей -->
+    <link rel="stylesheet" href="css/main.css" />
+
+    <!-- Проверка авторизации и перехват токенов для всех запросов -->
+    <script src="js/auth-check.js"></script>
+
+    <style>
+        body::before {
+            content: "";
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 30%, rgba(0,212,255,.15), transparent 35%), radial-gradient(circle at 80% 20%, rgba(0,255,170,.10), transparent 35%), radial-gradient(circle at 60% 80%, rgba(32,108,255,.15), transparent 40%);
+            animation: bgmove 18s linear infinite;
+            z-index: -2;
+        }
+
+        @keyframes bgmove {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(-8%,-5%); }
+            100% { transform: translate(0,0); }
+        }
+
+        /* Специфичные стили для контейнера входа */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-box {
+            background: radial-gradient(circle at 50% 30%, rgba(0, 212, 255, 0.15), rgba(255, 255, 255, 0.03));
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid var(--border, rgba(255, 255, 255, 0.18));
+            border-radius: 24px;
+            padding: 40px 35px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 35px rgba(0, 212, 255, 0.18);
+            animation: fadeUp 0.8s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-icon-small {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon-small svg {
+            width: 64px;
+            height: 64px;
+            animation: spinSpiral 20s linear infinite;
+        }
+
+        @keyframes spinSpiral {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .login-box h2 {
+            text-align: center;
+            font-size: 30px;
+            margin-bottom: 8px;
+            font-weight: 800;
+            background: linear-gradient(to right, #ffffff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-box .subtitle {
+            text-align: center;
+            color: #9fb5c8;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #dbe9ff;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 15px;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary, #00d4ff);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle input {
+            padding-right: 48px;
+        }
+
+        .toggle-eye {
+            position: absolute;
+            right: 14px;
+            top: 36px;
+            background: transparent;
+            border: none;
+            color: #9fb5c8;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+        }
+
+        .toggle-eye:hover {
+            color: #ffffff;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #00d4ff, #008cff);
+            color: #ffffff;
+            transition: 0.35s;
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.3);
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 50px rgba(0, 212, 255, 0.5);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 22px;
+            color: #9fb5c8;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.error {
+            display: block;
+            background: rgba(255, 0, 0, 0.15);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+        }
+
+        .message.success {
+            display: block;
+            background: rgba(0, 255, 170, 0.1);
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            color: #00ffa3;
+        }
+
+        /* Переключатель языков в углу формы */
+        .top-lang-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .lang-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #00d4ff;
+        }
+        #particles { z-index: 0; }
+
+        .particle { width: 4px; height: 4px; background: rgba(255, 255, 255, 0.75); box-shadow: 0 0 10px rgba(0, 212, 255, 0.9), 0 0 18px rgba(0, 212, 255, 0.55); }
+    </style>
+</head>
+<body>
+
+    <!-- Частицы и свечение заднего фона -->
+    <div id="particles"></div>
+
+    <section class="login-page">
+        <div class="login-box">
+            <div class="top-lang-bar">
+                <button class="lang-btn" id="langBtn">TM</button>
+            </div>
+
+            <!-- Иконка с анимированной спиралью -->
+            <div class="logo-icon-small">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="smallGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00ffa3" />
+                            <stop offset="50%" stop-color="#00d4ff" />
+                            <stop offset="100%" stop-color="#1f6bff" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="30" fill="url(#smallGrad)" opacity="0.15" />
+                    <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#smallGrad)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="1 5" />
+                    <circle cx="48" cy="48" r="4" fill="#ffffff" />
+                </svg>
+            </div>
+
+            <h2 data-i18n="login_title">Giriş</h2>
+            <p class="subtitle" data-i18n="login_subtitle">Platforma girmek üçin hasabyňyzy ulanyň</p>
+
+            <div id="message" class="message"></div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="email" data-i18n="login_email_label">Email ýa-da ulanyjy ady</label>
+                    <input type="email" id="email" name="email" autocomplete="username" placeholder="email@example.com" required />
+                </div>
+
+                <div class="form-group password-toggle">
+                    <label for="password" data-i18n="login_password_label">Parol</label>
+                    <input type="password" id="password" placeholder="••••••••" required />
+                    <button type="button" class="toggle-eye" id="togglePassword">👁️</button>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn" data-i18n="login_button">Girmek</button>
+            </form>
+
+            <div class="register-link">
+                <span data-i18n="login_no_account">Hasabyňyz ýokmy?</span>
+                <a href="register.html" data-i18n="login_register_link">Hasap dörediň</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Встроенные переводы для быстрой отрисовки
+        const translations = {
+            tm: {
+                login_title: "Giriş",
+                login_subtitle: "Platforma girmek üçin hasabyňyzy ulanyň",
+                login_email_label: "Email ýa-da ulanyjy ady",
+                login_password_label: "Parol",
+                login_button: "Girmek",
+                login_no_account: "Hasabyňyz ýokmy?",
+                login_register_link: "Ýazylmak",
+                login_error: "Nädogry email ýa-da parol",
+                login_success: "Giriş başaryldy!",
+                login_loading: "Girilýär..."
+            },
+            ru: {
+                login_title: "Вход",
+                login_subtitle: "Используйте свою учётную запись для входа",
+                login_email_label: "Email или имя пользователя",
+                login_password_label: "Пароль",
+                login_button: "Войти",
+                login_no_account: "Нет аккаунта?",
+                login_register_link: "Зарегистрироваться",
+                login_error: "Неверный email или пароль",
+                login_success: "Вход выполнен!",
+                login_loading: "Вход..."
+            },
+            en: {
+                login_title: "Login",
+                login_subtitle: "Use your account to access the platform",
+                login_email_label: "Email or username",
+                login_password_label: "Password",
+                login_button: "Login",
+                login_no_account: "Don't have an account?",
+                login_register_link: "Register",
+                login_error: "Invalid email or password",
+                login_success: "Login successful!",
+                login_loading: "Logging in..."
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || localStorage.getItem('sfera_lang') || 'tm';
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) el.textContent = translations[lang][key];
+            });
+            const langBtn = document.getElementById('langBtn');
+            if (langBtn) langBtn.textContent = lang.toUpperCase();
+            localStorage.setItem('lang', lang);
+            localStorage.setItem('sfera_lang', lang);
+        }
+
+        const langBtn = document.getElementById('langBtn');
+        const langCycle = ['tm', 'ru', 'en'];
+        let langIndex = langCycle.indexOf(currentLang);
+
+        if (langBtn) {
+            langBtn.addEventListener('click', () => {
+                langIndex = (langIndex + 1) % langCycle.length;
+                setLanguage(langCycle[langIndex]);
+            });
+        }
+
+        // Переключение видимости пароля
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const input = document.getElementById('password');
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            this.textContent = isPassword ? '🙈' : '👁️';
+        });
+
+        const messageEl = document.getElementById('message');
+        function showMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
+            messageEl.style.display = 'block';
+            clearTimeout(window.messageTimeout);
+            window.messageTimeout = setTimeout(() => { messageEl.style.display = 'none'; }, 5000);
+        }
+
+        // Автоматический "разогрев" сервера Render при открытии страницы
+        function wakeupServer() {
+            fetch('/api/stats', { method: 'GET' }).catch(() => {});
+        }
+
+        // Обработка формы входа
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (!email || !password) {
+                showMessage(translations[currentLang].login_error, 'error');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = translations[currentLang].login_loading;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Сохранение токенов во всех форматах для полного покрытия модулей
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('sfera_token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('sfera_user', JSON.stringify(data.user));
+                    localStorage.setItem('sfera_role', data.user.role || 'user');
+
+                    showMessage(translations[currentLang].login_success, 'success');
+
+                    const role = data.user.role || 'user';
+                    setTimeout(() => {
+                        window.location.href = role === 'admin' ? 'admin.html' : 'dashboard.html';
+                    }, 800);
+                } else {
+                    showMessage(data.message || translations[currentLang].login_error, 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = translations[currentLang].login_button;
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                loginBtn.disabled = false;
+                loginBtn.textContent = translations[currentLang].login_button;
+            }
+        });
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage(currentLang);
+            wakeupServer();
+
+            // Генерация фоновых частиц
+            const particles = document.getElementById('particles');
+            if (particles) {
+                for (let i = 0; i < 50; i++) {
+                    const p = document.createElement('span');
+                    p.className = 'particle';
+                    p.style.left = Math.random() * 100 + '%';
+                    p.style.top = Math.random() * 100 + '%';
+                    p.style.animationDuration = (6 + Math.random() * 12) + 's';
+                    p.style.animationDelay = Math.random() * 5 + 's';
+                    particles.appendChild(p);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
