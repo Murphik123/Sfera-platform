@@ -11,10 +11,10 @@
             const backBtn = e.target.closest('#btn-back, .btn-back');
             if (backBtn) {
                 e.preventDefault();
-                if (window.history.length > 1 && document.referrer !== "") {
-                    window.history.back();
-                } else {
-                    window.location.href = 'index.html';
+                const backRole = (window.SFERA_AUTH && window.SFERA_AUTH.role) || localStorage.getItem('sfera_role') || 'user';
+                const backUrl = backRole === 'admin' ? '/admin.html' : '/dashboard.html';
+                if (window.location.pathname !== backUrl) {
+                    window.location.href = backUrl;
                 }
             }
         });
@@ -30,8 +30,11 @@
                 e.preventDefault();
                 
                 // Очистка сессии пользователя
+                localStorage.removeItem('token');
                 localStorage.removeItem('sfera_token');
+                localStorage.removeItem('user');
                 localStorage.removeItem('sfera_user');
+                localStorage.removeItem('sfera_role');
                 sessionStorage.clear();
 
                 // Перенаправление на страницу входа
@@ -45,7 +48,7 @@
      */
     function checkAuthStatus() {
         const token = localStorage.getItem('sfera_token');
-        const user = localStorage.getItem('sfera_user');
+        const user = localStorage.getItem('sfera_user') || localStorage.getItem('user');
         const currentPage = window.location.pathname.split('/').pop();
 
         // Защищенные страницы, требующие авторизации
@@ -61,8 +64,8 @@
             try {
                 const userData = JSON.parse(user);
                 const userNameEl = document.getElementById('user-name') || document.querySelector('.user-profile-name');
-                if (userNameEl && userData.name) {
-                    userNameEl.textContent = userData.name;
+                if (userNameEl && (userData.name || userData.username)) {
+                    userNameEl.textContent = userData.name || userData.username;
                 }
             } catch (err) {
                 console.error('[AUTH] Ошибка парсинга данных пользователя:', err);
@@ -85,8 +88,12 @@
     window.SferaApp = {
         init: init,
         logout: () => {
+            localStorage.removeItem('token');
             localStorage.removeItem('sfera_token');
+            localStorage.removeItem('user');
             localStorage.removeItem('sfera_user');
+            localStorage.removeItem('sfera_role');
+            sessionStorage.clear();
             window.location.href = 'login.html';
         }
     };
