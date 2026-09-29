@@ -1,7 +1,7 @@
 // js/auth-check.js — подключить во все HTML файлы проекта
 (function () {
     const token = localStorage.getItem('token') || localStorage.getItem('sfera_token');
-    const userRaw = localStorage.getItem('user');
+    const userRaw = localStorage.getItem('sfera_user') || localStorage.getItem('user');
     let user = null;
 
     try {
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                          className.includes('logout') || 
                          action === 'logout' || 
                          text === 'выход' || 
-                         text === 'чыкмак' || 
+                         text === 'çykmak' || text === 'chymak' ||
                          text === 'exit';
 
         if (isLogout) {
@@ -75,29 +75,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.warn('Ошибка при выходе на бэкенде:', err);
             } finally {
                 localStorage.removeItem('token');
-                localStorage.removeItem('sfera_token');
-                localStorage.removeItem('user');
-                sessionStorage.clear();
-                window.location.href = 'login.html';
+localStorage.removeItem('sfera_token');
+localStorage.removeItem('user');
+localStorage.removeItem('sfera_user');
+localStorage.removeItem('sfera_role');
+sessionStorage.clear();   
+            window.location.href = 'login.html';
             }
             return;
-        }
+         }
 
         // 2. Проверка кнопки "Назад"
         const isBack = id.includes('back') || 
                        className.includes('back') || 
                        action === 'back' || 
                        text === 'назад' || 
-                       text === 'ызына' || 
+                       text === 'yzyna' || text === 'yza' ||
                        text === 'go back';
 
         if (isBack) {
             e.preventDefault();
-            if (window.history.length > 1 && document.referrer) {
-                window.history.back();
-            } else {
-                window.location.href = 'dashboard.html';
-            }
-        }
+          const backRole = (window.SFERA_AUTH && window.SFERA_AUTH.role) || localStorage.getItem('sfera_role') || 'user';
+const backUrl = backRole === 'admin' ? '/admin.html' : '/dashboard.html';
+if (window.location.pathname !== backUrl) {
+    window.location.href = backUrl;
+}
+              }
     });
 });

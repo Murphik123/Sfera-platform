@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const email = document.getElementById('email')?.value.trim();
             const password = document.getElementById('password')?.value.trim();
 
@@ -32,10 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const response = await window.api.login(email, password);
-                
+
                 if (response.success || response.token) {
-                    // Успешный вход — перенаправляем на главную
-                    window.location.href = '/index.html';
+                    const user = response.user || {};
+                    if (response.token) {
+                        localStorage.setItem('sfera_token', response.token);
+                        localStorage.setItem('sfera_user', JSON.stringify(user));
+                        localStorage.setItem('user', JSON.stringify(user));
+                        if (user.role) {
+                            localStorage.setItem('sfera_role', user.role);
+                        }
+                    }
+                    const role = user.role || localStorage.getItem('sfera_role') || 'user';
+                    window.location.href = role === 'admin' ? '/admin.html' : '/dashboard.html';
                 } else {
                     showError(response.message || 'Ошибка авторизации');
                 }
@@ -65,11 +74,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.success || response.token) {
+                    const user = response.user || {};
                     if (response.token) {
                         localStorage.setItem('sfera_token', response.token);
-                        localStorage.setItem('sfera_user', JSON.stringify(response.user));
+                        localStorage.setItem('sfera_user', JSON.stringify(user));
+                        localStorage.setItem('user', JSON.stringify(user));
+                        if (user.role) {
+                            localStorage.setItem('sfera_role', user.role);
+                        }
                     }
-                    window.location.href = '/index.html';
+                    const role = user.role || 'user';
+                    window.location.href = role === 'admin' ? '/admin.html' : '/dashboard.html';
                 } else {
                     showError(response.message || 'Ошибка при регистрации');
                 }

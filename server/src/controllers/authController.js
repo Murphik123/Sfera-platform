@@ -1,6 +1,7 @@
 // src/controllers/authController.js
 const User = require('../models/User');
 const Account = require('../models/Account');
+const Wallet = require('../models/Wallet');
 const { generateToken } = require('../utils/jwt');
 const redisClient = require('../config/redis');
 
@@ -67,6 +68,14 @@ exports.register = async (req, res) => {
         } catch (accountError) {
             console.log('⚠️ Account creation skipped:', accountError.message);
         }
+        // Автоматическое создание кошелька
+try {
+    const wallet = new Wallet({ userId: user._id });
+    await wallet.save();
+    console.log('✅ Wallet created for user:', user._id);
+} catch (walletError) {
+    console.log('⚠️ Wallet creation skipped:', walletError.message);
+}
 
         const token = generateToken(user._id);
 
