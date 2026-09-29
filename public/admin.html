@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="tm">
+<html lang="tm" translate="no"><head>
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <meta name="robots" content="notranslate">
     <title>СФЕРА — Administrasiýa paneli</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -399,13 +401,14 @@
     </div>
 
     <script>
-        // Проверка авторизации
-        const token = localStorage.getItem('token');
-        const userData = JSON.parse(localStorage.getItem('user') || '{}');
+                 // Проверка авторизации
+        const token = localStorage.getItem('token') || localStorage.getItem('sfera_token');
+        const userRaw = localStorage.getItem('sfera_user') || localStorage.getItem('user');
+        const userData = JSON.parse(userRaw || '{}');
 
         if (!token || userData.role !== 'admin') {
             window.location.href = 'login.html';
-        }
+        }  
 
         // Встроенный резервный словарь на случай отсутствия ключа в JSON
         const fallbackTranslations = {
@@ -471,12 +474,13 @@
             if (activeLi) renderSection(activeLi.dataset.section);
         }
 
-        document.getElementById('langBtn').addEventListener('click', function() {
-            const cycle = ['tm', 'ru', 'en'];
-            let idx = cycle.indexOf(currentLang);
-            idx = (idx + 1) % cycle.length;
-            setLanguage(cycle[idx]);
-        });
+                // Обработчик langBtn перенесён в auto_translate_i18n.js
+        // document.getElementById('langBtn').addEventListener('click', function() {
+        //     const cycle = ['tm', 'ru', 'en'];
+        //     let idx = cycle.indexOf(currentLang);
+        //     idx = (idx + 1) % cycle.length;
+        //     setLanguage(cycle[idx]);
+        // });
 
         document.getElementById('adminName').textContent = userData.username || 'Admin';
 
@@ -591,6 +595,7 @@
             }
             setLanguage(currentLang);
         });
-    </script>
+       </script>
+    <script src="/scripts/auto_translate_i18n.js"></script>
 </body>
 </html>
