@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="tm" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <meta name="robots" content="notranslate">
     <title>СФЕРА — Marketpleýs</title>
     
     <!-- Модульные стили проекта -->
@@ -150,7 +152,7 @@
             </a>
             <div class="header-right">
                 <span class="user-info">👤 <strong id="username">User</strong></span>
-                <button class="lang" id="langBtn">RU</button>
+                <button class="lang" id="langBtn">TM</button>
                 <button class="logout-btn" id="logoutBtn" data-i18n="logout">🚪 Çykmak</button>
                 <a href="#" id="backLink" class="btn-switch" data-i18n="back">← Yza</a>
             </div>
@@ -198,7 +200,7 @@
                 <button data-tab="cart" data-i18n="tab_cart">Sebet (<span id="cartCount">0</span>)</button>
                 <button data-tab="profile" data-i18n="tab_profile">Şahsy kabinet</button>
                 <button data-tab="wishlist" data-i18n="tab_wishlist">⭐ Söýliler</button>
-                <button id="adminTab" data-tab="admin" style="display:inline-block; color:#00ffa3;" data-i18n="tab_admin">Admin</button>
+                <button id="adminTab" data-tab="admin" style="display:none; color:#00ffa3;" data-i18n="tab_admin">Admin</button>
             </div>
 
             <!-- Каталог -->
@@ -321,7 +323,7 @@
         let wishlist = JSON.parse(localStorage.getItem('mp_wishlist') || '[]');
         let currentSegment = 'all';
         let currentCategory = 'all';
-        let currentLang = localStorage.getItem('lang') || 'ru';
+        let currentLang = localStorage.getItem('lang') || 'tm';
 
         function showMessage(msg, type = 'success') {
             const el = document.getElementById('message');
@@ -338,6 +340,23 @@
             renderCart();
             renderAdminList();
             renderWishlist();
+
+            // === Роль и имя пользователя ===
+            const role = (window.SFERA_AUTH && window.SFERA_AUTH.role) || localStorage.getItem('sfera_role') || 'user';
+            const userRaw = localStorage.getItem('sfera_user') || localStorage.getItem('user');
+            let u = null;
+            try { u = userRaw ? JSON.parse(userRaw) : null; } catch (e) { u = null; }
+
+            const usernameEl = document.getElementById('username');
+            if (usernameEl && u && (u.username || u.name)) {
+                usernameEl.textContent = u.username || u.name;
+            }
+
+            const adminTab = document.getElementById('adminTab');
+            if (adminTab) {
+                adminTab.style.display = (role === 'admin') ? 'inline-block' : 'none';
+            }
+            // === /Роль ===
 
             // Автоматическое обновление данных из базы MongoDB
             const serverProducts = await fetchServerProducts();
@@ -701,5 +720,6 @@
         });
     </script>
     <script src="js/auth-check.js"></script>
+    <script src="/scripts/auto_translate_i18n.js"></script>
 </body>
 </html>
