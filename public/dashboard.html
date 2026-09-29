@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="tm">
+<html lang="tm" translate="no">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="dashboard_page_title">СФЕРА — Дашборд</title>
+    <meta name="google" content="notranslate">
+    <meta name="robots" content="notranslate">
+    <title data-i18n="dashboard_page_title">SFERA — Dolandyryş paneli</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -482,24 +484,24 @@
     <script src="/js/auth-check.js"></script>
 
     <script>
-        // Управление системной локализацией (по умолчанию tm)
-        let currentLang = localStorage.getItem('selected_lang') || 'tm';
-        localStorage.setItem('selected_lang', currentLang);
-
-        const langBtn = document.getElementById('langBtn');
-        if (langBtn) {
-            langBtn.textContent = currentLang.toUpperCase();
-            langBtn.addEventListener('click', () => {
-                currentLang = currentLang === 'tm' ? 'ru' : (currentLang === 'ru' ? 'en' : 'tm');
-                localStorage.setItem('selected_lang', currentLang);
-                langBtn.textContent = currentLang.toUpperCase();
-                if (typeof changeLanguage === 'function') {
-                    changeLanguage(currentLang);
-                } else {
-                    location.reload();
-                }
-            });
-        }
+              // Управление локализацией перенесено в auto_translate_i18n.js
+        // let currentLang = localStorage.getItem('selected_lang') || 'tm';
+        // localStorage.setItem('selected_lang', currentLang);
+        //
+        // const langBtn = document.getElementById('langBtn');
+        // if (langBtn) {
+        //     langBtn.textContent = currentLang.toUpperCase();
+        //     langBtn.addEventListener('click', () => {
+        //         currentLang = currentLang === 'tm' ? 'ru' : (currentLang === 'ru' ? 'en' : 'tm');
+        //         localStorage.setItem('selected_lang', currentLang);
+        //         langBtn.textContent = currentLang.toUpperCase();
+        //         if (typeof changeLanguage === 'function') {
+        //             changeLanguage(currentLang);
+        //         } else {
+        //             location.reload();
+        //         }
+        //     });
+        // }
 
         // Проверка авторизации и логика единого дашборда
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -538,10 +540,11 @@
 
         // Инициализация графических эффектов эталонного дизайна
         document.addEventListener('DOMContentLoaded', () => {
-            // Инициализация выбранного языка автопереводчиком при загрузке
-            if (typeof changeLanguage === 'function') {
-                changeLanguage(currentLang);
-            }
+
+                      // Инициализация языка выполняется в auto_translate_i18n.js
+            // if (typeof changeLanguage === 'function') {
+            //     changeLanguage(currentLang);
+            // }
 
             // Эффект движения мыши по карточкам
             const initCardHover = () => {

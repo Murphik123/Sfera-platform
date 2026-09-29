@@ -51,7 +51,7 @@
   "menu_ai": "AI predictions",
   "menu_settings": "Settings",
   "logo_subtitle": "National digital platform",
-  "page_title": "🤖 AI analytics and assistant",
+  "page_title": "SFERA — Messenger",
   "refresh": "⟳ Refresh",
   "tab_assistant": "💬 Assistant",
   "tab_analytics": "📊 Analytics",
@@ -233,7 +233,6 @@
   "add_to_cart": "Add to cart",
   "messenger_title": "Chat",
   "theme_toggle": "🌙",
-  "page_title": "SFERA — Messenger",
   "username_default": "User",
   "group_name_placeholder": "Example: Work group",
   "call_target_name": "Serdar Annayev",
@@ -304,5 +303,6 @@
   "add_card": "+ Add card",
   "receive_qr": "QR code for receiving payment",
   "no_cards": "No cards",
-  "card_expiry": "Valid until: {expiry}"
+  "card_expiry": "Valid until: {expiry}",
+  "dashboard_page_title": "SFERA — Dashboard"
 }

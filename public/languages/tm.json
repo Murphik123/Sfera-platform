@@ -51,7 +51,7 @@
   "menu_ai": "AI çaklamalar",
   "menu_settings": "Sazlamalar",
   "logo_subtitle": "Milli Sanly Platforma",
-  "page_title": "🤖 AI analitika & Kömekçi",
+  "page_title": "SFERA — Messenger",
   "refresh": "⟳ Täzele",
   "tab_assistant": "💬 Kömekçi",
   "tab_analytics": "📊 Analitika",
@@ -233,7 +233,6 @@
   "add_to_cart": "В корзину",
   "messenger_title": "Söhbet",
   "theme_toggle": "🌙",
-  "page_title": "SFERA — Messenger",
   "username_default": "Ulanyjy",
   "group_name_placeholder": "Mysal: Taslama topary",
   "call_target_name": "Serdar Annayev",
@@ -304,5 +303,6 @@
   "add_card": "+ Täze kart",
   "receive_qr": "Töleg almak üçin QR kody",
   "no_cards": "Kartlar ýok",
-  "card_expiry": "Işleýän çenli: {expiry}"
+  "card_expiry": "Işleýän çenli: {expiry}",
+  "dashboard_page_title": "SFERA — Dolandyryş paneli"
 }

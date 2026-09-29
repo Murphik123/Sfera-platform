@@ -51,7 +51,7 @@
   "menu_ai": "AI прогнозы",
   "menu_settings": "Настройки",
   "logo_subtitle": "Национальная цифровая платформа",
-  "page_title": "🤖 AI аналитика и помощник",
+  "page_title": "SFERA — Мессенджер",
   "refresh": "⟳ Обновить",
   "tab_assistant": "💬 Помощник",
   "tab_analytics": "📊 Аналитика",
@@ -233,7 +233,6 @@
   "add_to_cart": "В корзину",
   "messenger_title": "Чат",
   "theme_toggle": "🌙",
-  "page_title": "SFERA — Мессенджер",
   "username_default": "Пользователь",
   "group_name_placeholder": "Например: Рабочая группа",
   "call_target_name": "Сердар Аннаев",
@@ -304,5 +303,6 @@
   "add_card": "+ Добавить карту",
   "receive_qr": "QR-код для получения платежа",
   "no_cards": "Нет карт",
-  "card_expiry": "Действует до: {expiry}"
+  "card_expiry": "Действует до: {expiry}",
+  "dashboard_page_title": "СФЕРА — Дашборд"
 }
