@@ -717,13 +717,12 @@
         const user = JSON.parse(localStorage.getItem('user') || '{"username":"User","role":"user"}');
         document.getElementById('username').textContent = user.username || 'User';
 
-        const backLink = document.getElementById('backLink');
-        if (user.role === 'admin') {
-            backLink.href = 'admin-dashboard.html';
-        } else {
-            backLink.href = 'user-dashboard.html';
-        }
-
+       // Ссылка "Назад" в зависимости от роли
+const backLink = document.getElementById('backLink');
+if (backLink) {
+    const role = (user && user.role) || (window.SFERA_AUTH && window.SFERA_AUTH.role) || localStorage.getItem('sfera_role') || 'user';
+    backLink.href = role === 'admin' ? 'admin.html' : 'dashboard.html';
+}
         document.getElementById('logoutBtn').addEventListener('click', function() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');

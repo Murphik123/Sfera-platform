@@ -1108,7 +1108,7 @@
 
             const backLink = document.getElementById('backLink');
             if (backLink) {
-                backLink.href = (user.role === 'admin') ? 'admin-dashboard.html' : 'user-dashboard.html';
+               backLink.href = (user && user.role === 'admin') ? 'admin.html' : 'dashboard.html';
             }
 
             const logoutBtn = document.getElementById('logoutBtn');
