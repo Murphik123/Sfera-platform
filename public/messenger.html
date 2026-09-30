@@ -928,20 +928,53 @@
                 });
             }
 
-            applyLanguage(currentLang);
+                         applyLanguage(currentLang);
 
-            // Инициализация отображения диалогов
-            selectDialog('devs');
-            renderDialogs();
-                       // initEmojiPicker(); // вызывается из messenger-backend.js
-            // Вкладки переключения
+                        // Безопасный вызов функций из messenger-backend.js
+            function safeSelectDialog(id) {
+                try {
+                    if (window.sferaMessenger && typeof window.sferaMessenger.selectDialog === 'function') {
+                        window.sferaMessenger.selectDialog(id);
+                    } else if (typeof selectDialog === 'function') {
+                        selectDialog(id);
+                    }
+                } catch (err) { console.warn('selectDialog failed:', err.message); }
+            }
+            function safeRenderDialogs() {
+                try {
+                    if (window.sferaMessenger && typeof window.sferaMessenger.reload === 'function') {
+                        window.sferaMessenger.reload();
+                    } else if (typeof renderDialogs === 'function') {
+                        renderDialogs();
+                    }
+                } catch (err) { console.warn('renderDialogs failed:', err.message); }
+            }
+            function safeFirstRealDialog() {
+                // Выбираем первый реальный диалог из DOM (после того как backend отрисовал список)
+                try {
+                    const items = document.querySelectorAll('#dialogsList .dialog-item');
+                    for (const item of items) {
+                        const id = item.dataset.id || item.getAttribute('data-id');
+                        if (id && id !== 'ai_assistant') {
+                            safeSelectDialog(id);
+                            return;
+                        }
+                    }
+                } catch (err) { console.warn('firstRealDialog failed:', err.message); }
+            }        
+              // Инициализация отображения диалогов (без обрыва скрипта)
+            safeFirstRealDialog();
+            safeRenderDialogs();
+
+            // ===== Вкладки переключения =====
+            let activeTab = 'chats';
             const tabsDropdown = document.getElementById('tabsDropdown');
             const dropbtn = document.getElementById('dropbtn');
             const dropdownContent = document.getElementById('dropdownContent');
 
             dropbtn?.addEventListener('click', (e) => {
                 e.stopPropagation();
-                tabsDropdown.classList.toggle('show');
+                tabsDropdown?.classList.toggle('show');
             });
 
             document.addEventListener('click', () => tabsDropdown?.classList.remove('show'));
@@ -951,29 +984,31 @@
                     dropdownContent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     activeTab = btn.getAttribute('data-tab');
-                    
+
                     const labelSpan = document.getElementById('currentTabLabel');
                     if (labelSpan) labelSpan.textContent = btn.textContent;
-                    tabsDropdown.classList.remove('show');
+                    tabsDropdown?.classList.remove('show');
+
+                    const dl = document.getElementById('dialogsList');
+                    const nf = document.getElementById('newsFeed');
 
                     if (activeTab === 'news') {
-                        document.getElementById('dialogsList').style.display = 'none';
-                        document.getElementById('newsFeed').style.display = 'block';
+                        if (dl) dl.style.display = 'none';
+                        if (nf) nf.style.display = 'block';
                     } else if (activeTab === 'assistant') {
-                        document.getElementById('dialogsList').style.display = 'block';
-                        document.getElementById('newsFeed').style.display = 'none';
-                        selectDialog('ai_assistant');
-                        renderDialogs();
+                        if (dl) dl.style.display = 'block';
+                        if (nf) nf.style.display = 'none';
+                        safeSelectDialog('ai_assistant');
+                        safeRenderDialogs();
                     } else {
-                        document.getElementById('dialogsList').style.display = 'block';
-                        document.getElementById('newsFeed').style.display = 'none';
-                        selectDialog('devs');
-                        renderDialogs();
+                        if (dl) dl.style.display = 'block';
+                        if (nf) nf.style.display = 'none';
+                        safeFirstRealDialog();
+                        safeRenderDialogs();
                     }
                 });
-            });
-
-            // Поиск по диалогам
+            });       
+               // Поиск по диалогам
             document.getElementById('searchInput')?.addEventListener('input', (e) => {
                 renderDialogs(e.target.value.toLowerCase());
             });

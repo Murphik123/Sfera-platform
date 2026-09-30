@@ -462,7 +462,7 @@
             return;
         }
 
-        listToRender.forEach(dialog => {
+               listToRender.forEach(dialog => {
             const item =
                 document.createElement('div');
 
@@ -473,6 +473,9 @@
                         : ''
                 }`;
 
+            // ID диалога в data-атрибуте — нужен для открытия чата из inline-скрипта
+            item.dataset.id = dialog.id;
+            item.setAttribute('data-id', dialog.id);
             const avatar =
                 dialog.avatar
                     ? `<img src="${escapeHtml(dialog.avatar)}" alt="">`
