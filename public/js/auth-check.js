@@ -25,21 +25,30 @@
     }
 })();
 
-// Перехватчик всех fetch-запросов для автоматической передачи токена
+// Перехватчик всех fetch-запросов: добавляет Authorization ТОЛЬКО если его ещё нет
 const originalFetch = window.fetch;
 window.fetch = async function (url, options = {}) {
-    const token = localStorage.getItem('token') || localStorage.getItem('sfera_token');
+    // Приоритет как в api.js: сначала sfera_token, потом token
+    const token = localStorage.getItem('sfera_token') || localStorage.getItem('token');
     options.headers = options.headers || {};
 
     if (token) {
-        if (options.headers instanceof Headers) {
-            options.headers.append('Authorization', `Bearer ${token}`);
-        } else {
-            options.headers['Authorization'] = `Bearer ${token}`;
+        const isHeaders = options.headers instanceof Headers;
+        const hasAuth = isHeaders
+            ? options.headers.has('Authorization')
+            : Boolean(options.headers['Authorization'] || options.headers['authorization']);
+
+        if (!hasAuth) {
+            if (isHeaders) {
+                options.headers.set('Authorization', `Bearer ${token}`);
+            } else {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
         }
     }
     return originalFetch(url, options);
 };
+
 // ==========================================
 // Универсальная обработка кнопок "Выход" и "Назад"
 // ==========================================
