@@ -574,23 +574,32 @@
 
                 const data = await response.json();
 
-                if (response.ok) {
-                    if (data.token) {
-                        localStorage.setItem('token', data.token);
-                        localStorage.setItem('sfera_token', data.token);
+                             if (response.ok) {
+                    // Токен и роль сохраняются при ЛЮБОЙ успешной регистрации
+                    const token = data.token || data.accessToken || data.jwt;
+                    const user = data.user || {
+                        username: username,
+                        email: email,
+                        role: 'user'
+                    };
+
+                    if (token) {
+                        localStorage.setItem('token', token);
+                        localStorage.setItem('sfera_token', token);
                     }
-                    if (data.user) {
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        localStorage.setItem('sfera_user', JSON.stringify(data.user));
-                        localStorage.setItem('sfera_role', data.user.role || 'user');
-                    }
-                    
+
+                    localStorage.setItem('user', JSON.stringify(user));
+                    localStorage.setItem('sfera_user', JSON.stringify(user));
+                    localStorage.setItem('sfera_role', user.role || 'user');
+
                     showMessage(translations[currentLang].reg_success, 'success');
 
+                    const role = user.role || 'user';
                     setTimeout(() => {
-                        window.location.href = (data.user && data.user.role === 'admin') ? 'admin.html' : 'dashboard.html';
+                        window.location.href = role === 'admin' ? 'admin.html' : 'dashboard.html';
                     }, 1200);
                 } else {
+
                     showMessage(data.message || 'Error occurred during registration', 'error');
                     registerBtn.disabled = false;
                     registerBtn.textContent = translations[currentLang].reg_button;
