@@ -871,10 +871,12 @@
         );
     }
 
-    function initTheme() {
+       function initTheme() {
+        if (!themeToggle) return;
         themeToggle.addEventListener(
             'click',
             () => {
+
                 messengerContainer.classList.toggle(
                     'light-theme'
                 );
