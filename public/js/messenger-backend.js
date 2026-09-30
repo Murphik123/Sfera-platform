@@ -1314,12 +1314,21 @@
             return;
         }
 
-        try {
+               try {
             currentUser =
                 await window.api.getCurrentUser();
 
             if (!currentUser) {
                 return;
+            }
+
+            // Подставляем реальное имя пользователя в шапку
+            const usernameEl = document.getElementById('username');
+            if (usernameEl) {
+                usernameEl.textContent =
+                    getUserName(currentUser) ||
+                    currentUser.email ||
+                    'User';
             }
 
             langBtn.textContent =
