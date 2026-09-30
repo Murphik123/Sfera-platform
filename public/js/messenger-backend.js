@@ -806,7 +806,8 @@
         );
     }
 
-    function initEmojiPicker() {
+        function initEmojiPicker() {
+        if (!emojiBtn || !emojiPicker || !emojiGrid) return;
         emojis.forEach(emoji => {
             const btn =
                 document.createElement('button');

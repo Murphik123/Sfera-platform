@@ -15,12 +15,21 @@ class SocketService {
 
         // Подключаемся к тому же хосту, с которого открыта страница
         const socketUrl = window.location.origin;
-
         this.socket = io(socketUrl, {
             auth: { token },
-            transports: ['websocket', 'polling']
+            transports: ['polling', 'websocket'],  // polling первым → апгрейд на WS
+            upgrade: true,
+            rememberUpgrade: false,
+            withCredentials: true,
+            reconnection: true,
+            reconnectionAttempts: 20,
+            reconnectionDelay: 1500,
+            reconnectionDelayMax: 8000,
+            timeout: 30000,
+            pingTimeout: 60000,     // ждём пинг 60 сек, а не 20
+            pingInterval: 25000     // шлём пинг каждые 25 сек
         });
-
+       
         this.socket.on('connect', () => {
             console.log('🟢 WebSocket соединён:', this.socket.id);
             
