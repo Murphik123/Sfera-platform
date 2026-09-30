@@ -665,28 +665,34 @@
         const token =
             window.api.getToken();
 
-        if (!token) return;
+                  if (!token) return;
 
-        socket =
-            window.io(
+        socket =    
+      window.io(
                 window.location.origin,
                 {
                     auth: {
                         token
                     },
                     transports: [
-                        'websocket',
-                        'polling'
+                        'polling',
+                        'websocket'
                     ],
+                    upgrade: true,
+                    rememberUpgrade: false,
+                    withCredentials: true,
                     reconnection: true,
-                    reconnectionAttempts: Infinity,
-                    reconnectionDelay: 1000,
-                    reconnectionDelayMax: 10000
+                    reconnectionAttempts: 20,
+                    reconnectionDelay: 1500,
+                    reconnectionDelayMax: 8000,
+                    timeout: 30000,
+                    pingTimeout: 60000,
+                    pingInterval: 25000
                 }
             );
 
-        socket.on(
-            'connect',
+        socket.on(          
+          'connect',
             () => {
                 console.info(
                     'SFERA Messenger realtime connected'
@@ -735,12 +741,13 @@
             }
         );
 
-        socket.on(
+                 socket.on(
             'new_message',
             async message => {
-                if (!message) return;
-
-                const normalized =
+                console.log('[new_message] получено:', message);
+                if (!message) return;  
+     
+        const normalized =
                     normalizeMessage(message);
 
                 const fromId =
@@ -808,13 +815,11 @@
 
         function initEmojiPicker() {
         if (!emojiBtn || !emojiPicker || !emojiGrid) return;
-        emojis.forEach(emoji => {
+               emojis.forEach(emoji => {
             const btn =
-                document.createElement('button');
+                document.createElement('span');
 
-            btn.type = 'button';
             btn.textContent = emoji;
-
             btn.addEventListener(
                 'click',
                 () => {

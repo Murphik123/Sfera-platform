@@ -78,12 +78,14 @@ exports.sendMessage = async (req, res, next) => {
       .populate('from', 'username avatar online')
       .populate('to', 'username avatar online');
 
-    const io = req.app.get('io');
+       const io = req.app.get('io');
     if (io) {
+      console.log('[socket] emit new_message → to:', String(to), 'from:', String(from), 'room size:', io.sockets.adapter.rooms.get(String(to))?.size || 0);
       io.to(String(to)).emit('new_message', populatedMessage);
       io.to(String(from)).emit('new_message', populatedMessage);
+    } else {
+      console.warn('[socket] io not available in req.app — сообщение не доставлено realtime');
     }
-
     return res.status(201).json(populatedMessage);
   } catch (error) {
     logControllerError('sendMessage', error, {
