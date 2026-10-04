@@ -967,7 +967,6 @@
             safeRenderDialogs();
 
             // ===== Вкладки переключения =====
-            let activeTab = 'chats';
             const tabsDropdown = document.getElementById('tabsDropdown');
             const dropbtn = document.getElementById('dropbtn');
             const dropdownContent = document.getElementById('dropdownContent');
@@ -976,39 +975,16 @@
                 e.stopPropagation();
                 tabsDropdown?.classList.toggle('show');
             });
+            // Закрыватель меню — только при клике ВНЕ dropbtn/dropdownContent
+            document.addEventListener('click', (e) => {
+                if (dropbtn && dropbtn.contains(e.target)) return;
+                if (dropdownContent && dropdownContent.contains(e.target)) return;
+                tabsDropdown?.classList.remove('show');
+            });
 
-            document.addEventListener('click', () => tabsDropdown?.classList.remove('show'));
-
-            dropdownContent?.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    dropdownContent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    activeTab = btn.getAttribute('data-tab');
-
-                    const labelSpan = document.getElementById('currentTabLabel');
-                    if (labelSpan) labelSpan.textContent = btn.textContent;
-                    tabsDropdown?.classList.remove('show');
-
-                    const dl = document.getElementById('dialogsList');
-                    const nf = document.getElementById('newsFeed');
-
-                    if (activeTab === 'news') {
-                        if (dl) dl.style.display = 'none';
-                        if (nf) nf.style.display = 'block';
-                    } else if (activeTab === 'assistant') {
-                        if (dl) dl.style.display = 'block';
-                        if (nf) nf.style.display = 'none';
-                        safeSelectDialog('ai_assistant');
-                        safeRenderDialogs();
-                    } else {
-                        if (dl) dl.style.display = 'block';
-                        if (nf) nf.style.display = 'none';
-                        safeFirstRealDialog();
-                        safeRenderDialogs();
-                    }
-                });
-            });       
-               // Поиск по диалогам
+            // Кнопки вкладок — обработчик в messenger-backend.js (initTabs)
+            // Здесь не дублируем
+                          // Поиск по диалогам
             document.getElementById('searchInput')?.addEventListener('input', (e) => {
                 renderDialogs(e.target.value.toLowerCase());
             });
