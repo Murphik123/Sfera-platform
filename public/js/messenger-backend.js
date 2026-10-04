@@ -900,17 +900,12 @@
         );
     }
 
-    function initTabs() {
-        dropbtn.addEventListener(
-            'click',
-            () =>
-                tabsDropdown.classList.toggle(
-                    'show'
-                )
-        );
+         function initTabs() {
+        // Обработчик dropbtn живёт в messenger.html (с stopPropagation) — здесь не дублируем
 
-        dropdownContent
-            .querySelectorAll('button')
+        dropdownContent        
+
+   .querySelectorAll('button')
             .forEach(btn => {
                 btn.addEventListener(
                     'click',
