@@ -108,42 +108,20 @@ exports.getMessages = async (req, res, next) => {
     }
 
     const messages = await Message.find({
-      $or: [
-        { from: req.userId, to: userId },
-        { from: userId, to: req.userId }
-      ]
-    })
-      .populate('from', 'username avatar')
-      .populate('to', 'username avatar')
-      .sort({ createdAt: 1 });
-
-    return res.json(messages);
-  } catch (error) {
-    logControllerError('getMessages', error, {
-      userId: req.params?.userId,
-      currentUserId: req.userId
-    });
-    next(error);
-  }
-};
-
-// ============================================================
-// СПИСОК ДИАЛОГОВ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
-// ============================================================
-exports.getDialogs = async (req, res, next) => {
-  try {
-    const currentUserId = req.userId;
-
-    if (!currentUserId) {
-      throw createHttpError('Пользователь не авторизован', 401);
-    }
-
-    const messages = await Message.find({
       $or: [{ from: currentUserId }, { to: currentUserId }]
     })
       .sort({ createdAt: -1 })
-      .populate('from', 'username avatar online')
-      .populate('to', 'username avatar online');
+      .populate('from', 'username avatar online lastSeen')
+      .populate('to', 'username avatar online lastSeen');
+
+    const TWO_MINUTES_MS = 2 * 60 * 1000;
+    const formatUserOnlineStatus = (u) => {
+      if (!u) return u;
+      const userObj = u.toObject ? u.toObject() : { ...u };
+      const isRecentlyActive = userObj.lastSeen && (Date.now() - new Date(userObj.lastSeen).getTime() < TWO_MINUTES_MS);
+      userObj.online = Boolean(userObj.online || isRecentlyActive);
+      return userObj;
+    };
 
     const dialogsMap = new Map();
 
@@ -155,7 +133,7 @@ exports.getDialogs = async (req, res, next) => {
       if (!dialogsMap.has(partnerId)) {
         dialogsMap.set(partnerId, {
           id: partnerId,
-          user: partner,
+          user: formatUserOnlineStatus(partner),
           lastMessage: { text: msg.text, createdAt: msg.createdAt },
           lastMsg: msg.text,
           time: msg.createdAt,
@@ -171,14 +149,20 @@ exports.getDialogs = async (req, res, next) => {
     const others = await User.find({
       _id: { $ne: currentUserId },
       isBlocked: { $ne: true }
-    }).select('username avatar online');
+    }).select('username avatar online lastSeen');
 
     others.forEach((u) => {
       const id = u._id.toString();
       if (!dialogsMap.has(id)) {
-        dialogsMap.set(id, { id, user: u, lastMsg: '', time: u.createdAt, unread: 0 });
+        dialogsMap.set(id, {
+          id,
+          user: formatUserOnlineStatus(u),
+          lastMsg: '',
+          time: u.createdAt,
+          unread: 0
+        });
       }
-    });
+    });  
 
     return res.json(Array.from(dialogsMap.values()));
   } catch (error) {
