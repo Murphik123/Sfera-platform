@@ -47,8 +47,16 @@ module.exports = (server) => {
 
     // Совместимость со старым Messenger-клиентом.
     // ВАЖНО: событие не может изменить socket.userId.
-    socket.on('register_user', () => {
+       socket.on('register_user', () => {
       io.emit('user_status_change', { userId, online: true });
+    });
+
+    // Heartbeat: клиент раз в 45 сек говорит «я жив» → обновляем lastSeen
+    socket.on('heartbeat', () => {
+      User.updateOne(
+        { _id: userId },
+        { lastSeen: new Date(), online: true }
+      ).catch(() => {});
     });
 
     // Сохранение и realtime-доставка сообщений.

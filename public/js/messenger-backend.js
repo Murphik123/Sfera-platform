@@ -1,5 +1,5 @@
 /**
- * SFERA Messenger — Backend Integration Pass 04-C
+ * SFERA Messenger — Backend Integration Pass 04-C (Updated)
  *
  * Source of truth:
  *   GET  /api/chat/dialogs
@@ -22,10 +22,11 @@
     let activeTab = 'chats';
     let activeDialogId = null;
 
-    let dialogsData = [];
+        let dialogsData = [];
     let messagesData = {};
     let currentUser = null;
     let socket = null;
+    let heartbeatInterval = null;
 
     const langBtn = document.getElementById('langBtn');
     const themeToggle = document.getElementById('themeToggle');
@@ -237,7 +238,7 @@
                         []
                     );
 
-                       dialogsData = raw
+            dialogsData = raw
                 .map(normalizeDialog)
                 .filter(Boolean);
 
@@ -312,6 +313,15 @@
         if (!userId) return;
 
         try {
+            // Если это локальный бот или кастомная группа — работаем с локальными данными
+            if (userId === 'ai_assistant' || userId === 'devs') {
+                if (!messagesData[userId]) {
+                    messagesData[userId] = [];
+                }
+                renderChat();
+                return;
+            }
+
             const response =
                 await window.api.get(
                     `/chat/${encodeURIComponent(userId)}`
@@ -396,7 +406,7 @@
         }
     }
 
-          async function sendMessage(text) {
+    async function sendMessage(text) {
         const value =
             String(text || '').trim();
 
@@ -404,30 +414,35 @@
             return;
         }
 
+        // Проверяем текущего пользователя
+        if (!currentUser && window.api && window.api.getCurrentUser) {
+            currentUser = await window.api.getCurrentUser();
+        }
+
         // === AI-помощник: локальный ответ без бэкенда ===
         if (activeDialogId === 'ai_assistant') {
-            const userMsg = {
+            const userMsg = normalizeMessage({
                 id: 'local_' + Date.now(),
                 text: value,
-                type: 'sent',
+                sender: currentUser,
                 createdAt: new Date().toISOString()
-            };
+            });
 
             if (!messagesData[activeDialogId]) {
                 messagesData[activeDialogId] = [];
             }
             messagesData[activeDialogId].push(userMsg);
 
-            messageInput.value = '';
+            if (messageInput) messageInput.value = '';
             renderChat();
 
             setTimeout(() => {
-                const aiMsg = {
+                const aiMsg = normalizeMessage({
                     id: 'ai_' + Date.now(),
                     text: 'Men Sfera AI Kömekçi. Soragyňyz kabul edildi: "' + value + '". Häzir bu demo jogap.',
-                    type: 'received',
+                    sender: { username: 'Sfera AI Kömekçi' },
                     createdAt: new Date().toISOString()
-                };
+                });
                 messagesData[activeDialogId].push(aiMsg);
                 renderChat();
             }, 700);
@@ -436,16 +451,9 @@
         }
         // === /AI-помощник ===
 
-        sendBtn.disabled = true;
+        if (sendBtn) sendBtn.disabled = true;
 
         try {   
-  
-            /*
-             * HTTP is the authoritative write path.
-             * We intentionally do NOT call socket.sendMessage()
-             * because the server Socket.IO handler also persists
-             * messages. This prevents duplicate database records.
-             */
             const response =
                 await window.api.post(
                     '/chat/send',
@@ -482,7 +490,7 @@
                 }
             }
 
-            messageInput.value = '';
+            if (messageInput) messageInput.value = '';
 
             await loadDialogs();
             renderChat();
@@ -502,14 +510,16 @@
                 'error'
             );
         } finally {
-            sendBtn.disabled = false;
-            messageInput.focus();
+            if (sendBtn) sendBtn.disabled = false;
+            if (messageInput) messageInput.focus();
         }
     }
 
-        function renderDialogs(
+    function renderDialogs(
         listToRender = null
     ) {
+        if (!dialogsList) return;
+
         // Фильтр по активной вкладке: chats / assistant / news
         if (listToRender === null) {
             const currentTab = (typeof activeTab !== 'undefined' && activeTab) || 'chats';
@@ -524,7 +534,7 @@
 
         dialogsList.innerHTML = ''; 
 
-      if (!listToRender.length) {
+        if (!listToRender.length) {
             dialogsList.innerHTML = `
                 <div class="empty-state">
                     <div class="icon">💬</div>
@@ -537,7 +547,7 @@
             return;
         }
 
-               listToRender.forEach(dialog => {
+        listToRender.forEach(dialog => {
             const item =
                 document.createElement('div');
 
@@ -548,7 +558,6 @@
                         : ''
                 }`;
 
-            // ID диалога в data-атрибуте — нужен для открытия чата из inline-скрипта
             item.dataset.id = dialog.id;
             item.setAttribute('data-id', dialog.id);
             const avatar =
@@ -623,7 +632,7 @@
     }
 
     function renderChat() {
-        if (!activeDialogId) {
+        if (!activeDialogId || !chatMessages) {
             return;
         }
 
@@ -634,24 +643,12 @@
 
         if (!dialog) return;
 
-        const chatName =
-            document.getElementById(
-                'chatName'
-            );
-
-        const chatAvatar =
-            document.getElementById(
-                'chatAvatar'
-            );
-
-        const chatStatus =
-            document.getElementById(
-                'chatStatus'
-            );
+        const chatName = document.getElementById('chatName');
+        const chatAvatar = document.getElementById('chatAvatar');
+        const chatStatus = document.getElementById('chatStatus');
 
         if (chatName) {
-            chatName.textContent =
-                dialog.name;
+            chatName.textContent = dialog.name;
         }
 
         if (chatAvatar) {
@@ -743,10 +740,10 @@
         const token =
             window.api.getToken();
 
-                  if (!token) return;
+        if (!token) return;
 
         socket =    
-      window.io(
+            window.io(
                 window.location.origin,
                 {
                     auth: {
@@ -769,26 +766,40 @@
                 }
             );
 
-        socket.on(          
-          'connect',
+                socket.on(
+            'connect',
             () => {
                 console.info(
                     'SFERA Messenger realtime connected'
                 );
+
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                }
+                heartbeatInterval = setInterval(() => {
+                    if (socket && socket.connected) {
+                        socket.emit('heartbeat');
+                    }
+                }, 45000);
             }
         );
 
-        socket.on(
+               socket.on(
             'disconnect',
             reason => {
                 console.warn(
                     'SFERA Messenger realtime disconnected:',
                     reason
                 );
-            }
-        );
 
-        socket.on(
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                    heartbeatInterval = null;
+                }
+            }
+        );     
+
+               socket.on(
             'connect_error',
             error => {
                 console.warn(
@@ -798,7 +809,6 @@
             }
         );
 
-        // Новый зарегистрированный пользователь сразу появляется в списке чатов
         socket.on(
             'user_registered',
             () => {
@@ -819,13 +829,12 @@
             }
         );
 
-                 socket.on(
+        socket.on(
             'new_message',
             async message => {
-                console.log('[new_message] получено:', message);
                 if (!message) return;  
      
-        const normalized =
+                const normalized =
                     normalizeMessage(message);
 
                 const fromId =
@@ -891,9 +900,11 @@
         );
     }
 
-        function initEmojiPicker() {
+    function initEmojiPicker() {
         if (!emojiBtn || !emojiPicker || !emojiGrid) return;
-               emojis.forEach(emoji => {
+        
+        emojiGrid.innerHTML = '';
+        emojis.forEach(emoji => {
             const btn =
                 document.createElement('span');
 
@@ -901,11 +912,11 @@
             btn.addEventListener(
                 'click',
                 () => {
-                    messageInput.value += emoji;
+                    if (messageInput) messageInput.value += emoji;
                     emojiPicker.classList.remove(
                         'active'
                     );
-                    messageInput.focus();
+                    if (messageInput) messageInput.focus();
                 }
             );
 
@@ -924,6 +935,7 @@
     }
 
     function initLanguage() {
+        if (!langBtn) return;
         langBtn.addEventListener(
             'click',
             () => {
@@ -955,12 +967,11 @@
         );
     }
 
-       function initTheme() {
-        if (!themeToggle) return;
+    function initTheme() {
+        if (!themeToggle || !messengerContainer) return;
         themeToggle.addEventListener(
             'click',
             () => {
-
                 messengerContainer.classList.toggle(
                     'light-theme'
                 );
@@ -975,12 +986,11 @@
         );
     }
 
-         function initTabs() {
-        // Обработчик dropbtn живёт в messenger.html (с stopPropagation) — здесь не дублируем
+    function initTabs() {
+        if (!dropdownContent) return;
 
-        dropdownContent        
-
-   .querySelectorAll('button')
+        dropdownContent
+            .querySelectorAll('button')
             .forEach(btn => {
                 btn.addEventListener(
                     'click',
@@ -1005,29 +1015,26 @@
                                 'data-tab'
                             );
 
-                        document.getElementById(
-                            'currentTabLabel'
-                        ).textContent =
-                            btn.textContent;
+                        const label = document.getElementById('currentTabLabel');
+                        if (label) label.textContent = btn.textContent;
 
-                        tabsDropdown.classList.remove(
-                            'show'
-                        );
+                        if (tabsDropdown) {
+                            tabsDropdown.classList.remove('show');
+                        }
 
                         if (activeTab === 'chats') {
-                            dialogsList.style.display = 'block';
-                            newsFeed.style.display = 'none';
+                            if (dialogsList) dialogsList.style.display = 'block';
+                            if (newsFeed) newsFeed.style.display = 'none';
                             renderDialogs();
                         } else if (activeTab === 'news') {
-                            dialogsList.style.display = 'none';
-                            newsFeed.style.display = 'block';
+                            if (dialogsList) dialogsList.style.display = 'none';
+                            if (newsFeed) newsFeed.style.display = 'block';
                             renderNews();
                         } else if (activeTab === 'assistant') {
-                            dialogsList.style.display = 'block';
-                            newsFeed.style.display = 'none';
+                            if (dialogsList) dialogsList.style.display = 'block';
+                            if (newsFeed) newsFeed.style.display = 'none';
                             renderDialogs();
                             selectDialog('ai_assistant');
-
                         }                        
                     }
                 );
@@ -1035,6 +1042,7 @@
     }
 
     function initSearch() {
+        if (!searchInput) return;
         searchInput.addEventListener(
             'input',
             event => {
@@ -1060,7 +1068,7 @@
 
                 renderDialogs(filtered);
 
-                if (!filtered.length) {
+                if (!filtered.length && dialogsList) {
                     dialogsList.innerHTML = `
                         <div class="empty-state">
                             <div class="icon">🔍</div>
@@ -1076,53 +1084,53 @@
     }
 
     function initGroups() {
-        createGroupBtn.addEventListener(
-            'click',
-            () => {
-                /*
-                 * Group persistence is not present in the
-                 * current /api/chat contract.
-                 *
-                 * We deliberately do NOT create a fake
-                 * local group because backend remains the
-                 * source of truth.
-                 */
-                showToast(
-                    tr(
-                        'feature_coming_soon',
-                        'Group chats will be connected in a future backend pass.'
-                    ),
-                    'info'
-                );
-            }
-        );
+        if (createGroupBtn) {
+            createGroupBtn.addEventListener(
+                'click',
+                () => {
+                    showToast(
+                        tr(
+                            'feature_coming_soon',
+                            'Group chats will be connected in a future backend pass.'
+                        ),
+                        'info'
+                    );
+                }
+            );
+        }
 
-        cancelGroupBtn.addEventListener(
-            'click',
-            () =>
-                groupModal.classList.remove(
-                    'active'
-                )
-        );
+        if (cancelGroupBtn && groupModal) {
+            cancelGroupBtn.addEventListener(
+                'click',
+                () =>
+                    groupModal.classList.remove(
+                        'active'
+                    )
+            );
+        }
 
-        groupForm.addEventListener(
-            'submit',
-            event => {
-                event.preventDefault();
+        if (groupForm) {
+            groupForm.addEventListener(
+                'submit',
+                event => {
+                    event.preventDefault();
 
-                showToast(
-                    tr(
-                        'feature_coming_soon',
-                        'Group chats will be connected in a future backend pass.'
-                    ),
-                    'info'
-                );
+                    showToast(
+                        tr(
+                            'feature_coming_soon',
+                            'Group chats will be connected in a future backend pass.'
+                        ),
+                        'info'
+                    );
 
-                groupModal.classList.remove(
-                    'active'
-                );
-            }
-        );
+                    if (groupModal) {
+                        groupModal.classList.remove(
+                            'active'
+                        );
+                    }
+                }
+            );
+        }
     }
 
     function initCalls() {
@@ -1143,73 +1151,62 @@
                 return;
             }
 
-            callTargetName.textContent =
-                dialog.name;
+            if (callTargetName) callTargetName.textContent = dialog.name;
 
-            callStatusText.textContent =
-                type === 'audio'
-                    ? tr(
-                        'audio_call',
-                        'Audio call...'
-                    )
-                    : tr(
-                        'video_call',
-                        'Video call...'
-                    );
+            if (callStatusText) {
+                callStatusText.textContent =
+                    type === 'audio'
+                        ? tr(
+                            'audio_call',
+                            'Audio call...'
+                        )
+                        : tr(
+                            'video_call',
+                            'Video call...'
+                        );
+            }
 
-            callModal.classList.add(
-                'active'
-            );
+            if (callModal) callModal.classList.add('active');
         }
 
-        audioCallBtn.addEventListener(
-            'click',
-            () => startCall('audio')
-        );
-
-        videoCallBtn.addEventListener(
-            'click',
-            () => startCall('video')
-        );
-
-        endCallBtn.addEventListener(
-            'click',
-            () =>
-                callModal.classList.remove(
-                    'active'
-                )
-        );
+        if (audioCallBtn) audioCallBtn.addEventListener('click', () => startCall('audio'));
+        if (videoCallBtn) videoCallBtn.addEventListener('click', () => startCall('video'));
+        if (endCallBtn && callModal) {
+            endCallBtn.addEventListener(
+                'click',
+                () => callModal.classList.remove('active')
+            );
+        }
     }
 
     function initFileButton() {
-        /*
-         * No upload endpoint exists in the current
-         * Messenger API contract.
-         *
-         * Never send a fake "File: filename" message.
-         */
-        fileBtn.addEventListener(
-            'click',
-            () => {
-                showToast(
-                    tr(
-                        'file_upload_soon',
-                        'File upload will be connected in a future backend pass.'
-                    ),
-                    'info'
-                );
-            }
-        );
+        if (fileBtn) {
+            fileBtn.addEventListener(
+                'click',
+                () => {
+                    showToast(
+                        tr(
+                            'file_upload_soon',
+                            'File upload will be connected in a future backend pass.'
+                        ),
+                        'info'
+                    );
+                }
+            );
+        }
 
-        fileInput.addEventListener(
-            'change',
-            () => {
-                fileInput.value = '';
-            }
-        );
+        if (fileInput) {
+            fileInput.addEventListener(
+                'change',
+                () => {
+                    fileInput.value = '';
+                }
+            );
+        }
     }
 
     function initExport() {
+        if (!exportChatBtn) return;
         exportChatBtn.addEventListener(
             'click',
             () => {
@@ -1266,60 +1263,24 @@
     }
 
     function renderNews() {
+        if (!newsFeed) return;
         newsFeed.innerHTML = `
             <div class="news-item">
                 <div class="title">
                     ${tr(
                         'news_title_1',
-                        ''
+                        'Täzelikler'
                     )}
                 </div>
 
                 <div class="summary">
                     ${tr(
                         'news_summary_1',
-                        ''
-                    )}
-                </div>
-            </div>
-
-            <div class="news-item">
-                <div class="title">
-                    ${tr(
-                        'news_title_2',
-                        ''
-                    )}
-                </div>
-
-                <div class="summary">
-                    ${tr(
-                        'news_summary_2',
-                        ''
+                        'Sfera ulamynda täze mümkinçilikler girizildi.'
                     )}
                 </div>
             </div>
         `;
-    }
-
-    async function openAssistant() {
-        /*
-         * Assistant is intentionally not inserted as a
-         * fake dialog. The current chat backend has no
-         * assistant endpoint.
-         */
-        dialogsList.style.display =
-            'block';
-
-        newsFeed.style.display =
-            'none';
-
-        showToast(
-            tr(
-                'assistant_soon',
-                'Sfera AI Assistant integration is being connected separately.'
-            ),
-            'info'
-        );
     }
 
     function initGlobalClicks() {
@@ -1327,53 +1288,51 @@
             'click',
             event => {
                 if (
-                    !emojiPicker.contains(
-                        event.target
-                    ) &&
+                    emojiPicker &&
+                    !emojiPicker.contains(event.target) &&
                     event.target !== emojiBtn
                 ) {
-                    emojiPicker.classList.remove(
-                        'active'
-                    );
+                    emojiPicker.classList.remove('active');
                 }
 
                 if (
-                    !tabsDropdown.contains(
-                        event.target
-                    )
+                    tabsDropdown &&
+                    !tabsDropdown.contains(event.target)
                 ) {
-                    tabsDropdown.classList.remove(
-                        'show'
-                    );
+                    tabsDropdown.classList.remove('show');
                 }
             }
         );
     }
 
     function initMessaging() {
-        sendBtn.addEventListener(
-            'click',
-            () =>
-                sendMessage(
-                    messageInput.value
-                )
-        );
-
-        messageInput.addEventListener(
-            'keypress',
-            event => {
-                if (
-                    event.key === 'Enter' &&
-                    !event.shiftKey
-                ) {
-                    event.preventDefault();
-
+        if (sendBtn) {
+            sendBtn.addEventListener(
+                'click',
+                () =>
                     sendMessage(
-                        messageInput.value
-                    );
+                        messageInput ? messageInput.value : ''
+                    )
+            );
+        }
+
+        if (messageInput) {
+            messageInput.addEventListener(
+                'keypress',
+                event => {
+                    if (
+                        event.key === 'Enter' &&
+                        !event.shiftKey
+                    ) {
+                        event.preventDefault();
+
+                        sendMessage(
+                            messageInput.value
+                        );
+                    }
                 }
-            }
-        );
+            );
+        }
     }
 
     async function init() {
@@ -1384,7 +1343,7 @@
             return;
         }
 
-               try {
+        try {
             currentUser =
                 await window.api.getCurrentUser();
 
@@ -1392,7 +1351,6 @@
                 return;
             }
 
-            // Подставляем реальное имя пользователя в шапку
             const usernameEl = document.getElementById('username');
             if (usernameEl) {
                 usernameEl.textContent =
@@ -1401,8 +1359,9 @@
                     'User';
             }
 
-            langBtn.textContent =
-                currentLang.toUpperCase();
+            if (langBtn) {
+                langBtn.textContent = currentLang.toUpperCase();
+            }
 
             initEmojiPicker();
             initLanguage();
