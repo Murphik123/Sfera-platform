@@ -237,9 +237,39 @@
                         []
                     );
 
-            dialogsData = raw
+                       dialogsData = raw
                 .map(normalizeDialog)
                 .filter(Boolean);
+
+            // === Фиксированные контакты: всегда в списке ===
+            const fixedDialogs = [
+                {
+                    id: 'devs',
+                    name: 'Разработчики Sfera',
+                    lastMsg: 'Täzeleşdirme taýýar!',
+                    time: 'Duş',
+                    unread: 0,
+                    isGroup: true,
+                    avatarIcon: '💻',
+                    type: 'chats'
+                },
+                {
+                    id: 'ai_assistant',
+                    name: 'Sfera AI Kömekçi',
+                    lastMsg: 'Salam! Size nähili kömek edip bilerin?',
+                    time: 'Häzir',
+                    unread: 0,
+                    isAI: true,
+                    type: 'assistant'
+                }
+            ];
+
+            const fixedIds = new Set(fixedDialogs.map(d => d.id));
+            dialogsData = [
+                ...fixedDialogs,
+                ...dialogsData.filter(d => !fixedIds.has(d.id))
+            ];
+            // === /Фиксированные контакты ===
 
             renderDialogs();
 
@@ -366,7 +396,7 @@
         }
     }
 
-    async function sendMessage(text) {
+          async function sendMessage(text) {
         const value =
             String(text || '').trim();
 
@@ -374,9 +404,42 @@
             return;
         }
 
+        // === AI-помощник: локальный ответ без бэкенда ===
+        if (activeDialogId === 'ai_assistant') {
+            const userMsg = {
+                id: 'local_' + Date.now(),
+                text: value,
+                type: 'sent',
+                createdAt: new Date().toISOString()
+            };
+
+            if (!messagesData[activeDialogId]) {
+                messagesData[activeDialogId] = [];
+            }
+            messagesData[activeDialogId].push(userMsg);
+
+            messageInput.value = '';
+            renderChat();
+
+            setTimeout(() => {
+                const aiMsg = {
+                    id: 'ai_' + Date.now(),
+                    text: 'Men Sfera AI Kömekçi. Soragyňyz kabul edildi: "' + value + '". Häzir bu demo jogap.',
+                    type: 'received',
+                    createdAt: new Date().toISOString()
+                };
+                messagesData[activeDialogId].push(aiMsg);
+                renderChat();
+            }, 700);
+
+            return;
+        }
+        // === /AI-помощник ===
+
         sendBtn.disabled = true;
 
-        try {
+        try {   
+  
             /*
              * HTTP is the authoritative write path.
              * We intentionally do NOT call socket.sendMessage()
@@ -444,12 +507,24 @@
         }
     }
 
-    function renderDialogs(
-        listToRender = dialogsData
+        function renderDialogs(
+        listToRender = null
     ) {
-        dialogsList.innerHTML = '';
+        // Фильтр по активной вкладке: chats / assistant / news
+        if (listToRender === null) {
+            const currentTab = (typeof activeTab !== 'undefined' && activeTab) || 'chats';
+            if (currentTab === 'assistant') {
+                listToRender = dialogsData.filter(d => d.type === 'assistant' || d.isAI);
+            } else if (currentTab === 'news') {
+                listToRender = [];
+            } else {
+                listToRender = dialogsData.filter(d => d.type !== 'assistant' && !d.isAI);
+            }
+        }
 
-        if (!listToRender.length) {
+        dialogsList.innerHTML = ''; 
+
+      if (!listToRender.length) {
             dialogsList.innerHTML = `
                 <div class="empty-state">
                     <div class="icon">💬</div>
@@ -939,30 +1014,21 @@
                             'show'
                         );
 
-                        if (
-                            activeTab ===
-                            'chats'
-                        ) {
-                            dialogsList.style.display =
-                                'block';
-                            newsFeed.style.display =
-                                'none';
-                        } else if (
-                            activeTab ===
-                            'news'
-                        ) {
-                            dialogsList.style.display =
-                                'none';
-                            newsFeed.style.display =
-                                'block';
-
+                        if (activeTab === 'chats') {
+                            dialogsList.style.display = 'block';
+                            newsFeed.style.display = 'none';
+                            renderDialogs();
+                        } else if (activeTab === 'news') {
+                            dialogsList.style.display = 'none';
+                            newsFeed.style.display = 'block';
                             renderNews();
-                        } else if (
-                            activeTab ===
-                            'assistant'
-                        ) {
-                            openAssistant();
-                        }
+                        } else if (activeTab === 'assistant') {
+                            dialogsList.style.display = 'block';
+                            newsFeed.style.display = 'none';
+                            renderDialogs();
+                            selectDialog('ai_assistant');
+
+                        }                        
                     }
                 );
             });
