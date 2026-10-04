@@ -304,5 +304,6 @@
   "receive_qr": "QR-код для получения платежа",
   "no_cards": "Нет карт",
   "card_expiry": "Действует до: {expiry}",
-  "dashboard_page_title": "СФЕРА — Дашборд"
+  "dashboard_page_title": "СФЕРА — Дашборд",
+  "messenger_page_title": "СФЕРА — Мессенджер"
 }

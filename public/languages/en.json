@@ -1,5 +1,5 @@
 {
-  "logo_title": "SPHERE",
+  "logo_title": "SFERA",
   "logo_sub": "National Digital Platform",
   "nav_home": "Home",
   "nav_exchange": "Exchange",
@@ -304,5 +304,6 @@
   "receive_qr": "QR code for receiving payment",
   "no_cards": "No cards",
   "card_expiry": "Valid until: {expiry}",
-  "dashboard_page_title": "SFERA — Dashboard"
+  "dashboard_page_title": "SFERA — Dashboard",
+  "messenger_page_title": "SFERA — Messenger"
 }

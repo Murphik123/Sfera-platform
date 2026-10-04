@@ -1,5 +1,5 @@
 {
-  "logo_title": "SFETRA",
+  "logo_title": "Sfera",
   "logo_sub": "Milli Sanly Platforma",
   "nav_home": "Baş sahypa",
   "nav_exchange": "Birža",
@@ -304,5 +304,6 @@
   "receive_qr": "Töleg almak üçin QR kody",
   "no_cards": "Kartlar ýok",
   "card_expiry": "Işleýän çenli: {expiry}",
-  "dashboard_page_title": "SFERA — Dolandyryş paneli"
+  "dashboard_page_title": "SFERA — Dolandyryş paneli",
+  "messenger_page_title": "Sfera — Habarlaşyk"
 }
