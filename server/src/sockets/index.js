@@ -35,6 +35,8 @@ module.exports = (server) => {
 
   io.on('connection', (socket) => {
     const userId = socket.userId;
+      // При старте сервера — все офлайн (соединения умерли вместе со старым процессом)
+  User.updateMany({}, { online: false }).catch(() => {});
 
     console.log(`🟢 Пользователь ${userId} подключился к WebSocket (${socket.id})`);
 

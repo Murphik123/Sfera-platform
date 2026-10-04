@@ -10,9 +10,15 @@ class SocketService {
     }
 
     init() {
+        // На messenger.html сокет создаёт messenger-backend.js — не дублируем
+        if (window.location.pathname.includes('messenger.html')) {
+            console.log('🟡 socket.js: пропускаем на messenger.html (управляет messenger-backend.js)');
+            return;
+        }
+
         const token = localStorage.getItem('sfera_token');
         if (!token) return;
-
+   
         // Подключаемся к тому же хосту, с которого открыта страница
         const socketUrl = window.location.origin;
         this.socket = io(socketUrl, {
