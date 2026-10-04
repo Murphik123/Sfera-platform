@@ -174,6 +174,83 @@ exports.getMessages = async (req, res, next) => {
 };
 
 // ============================================================
+// СПИСОК ДИАЛОГОВ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
+// ============================================================
+exports.getDialogs = async (req, res, next) => {
+  try {
+    const currentUserId = req.userId;
+
+    if (!currentUserId) {
+      throw createHttpError('Пользователь не авторизован', 401);
+    }
+
+    const messages = await Message.find({
+      $or: [{ from: currentUserId }, { to: currentUserId }]
+    })
+      .sort({ createdAt: -1 })
+      .populate('from', 'username avatar online lastSeen')
+      .populate('to', 'username avatar online lastSeen');
+
+    const TWO_MINUTES_MS = 2 * 60 * 1000;
+    const formatUserOnlineStatus = (u) => {
+      if (!u) return u;
+      const userObj = u.toObject ? u.toObject() : { ...u };
+      const isRecentlyActive = userObj.lastSeen && (Date.now() - new Date(userObj.lastSeen).getTime() < TWO_MINUTES_MS);
+      userObj.online = Boolean(userObj.online || isRecentlyActive);
+      return userObj;
+    };
+
+    const dialogsMap = new Map();
+
+    messages.forEach((msg) => {
+      const isFromMe = msg.from._id.toString() === currentUserId.toString();
+      const partner = isFromMe ? msg.to : msg.from;
+      const partnerId = partner._id.toString();
+
+      if (!dialogsMap.has(partnerId)) {
+        dialogsMap.set(partnerId, {
+          id: partnerId,
+          user: formatUserOnlineStatus(partner),
+          lastMessage: { text: msg.text, createdAt: msg.createdAt },
+          lastMsg: msg.text,
+          time: msg.createdAt,
+          unread: !isFromMe && !msg.read ? 1 : 0
+        });
+      } else if (!isFromMe && !msg.read) {
+        const dialog = dialogsMap.get(partnerId);
+        dialog.unread += 1;
+      }
+    });
+
+    // Все зарегистрированные пользователи видны в чате, даже без переписки.
+    const others = await User.find({
+      _id: { $ne: currentUserId },
+      isBlocked: { $ne: true }
+    }).select('username avatar online lastSeen');
+
+    others.forEach((u) => {
+      const id = u._id.toString();
+      if (!dialogsMap.has(id)) {
+        dialogsMap.set(id, {
+          id,
+          user: formatUserOnlineStatus(u),
+          lastMsg: '',
+          time: u.createdAt,
+          unread: 0
+        });
+      }
+    });
+
+    return res.json(Array.from(dialogsMap.values()));
+  } catch (error) {
+    logControllerError('getDialogs', error, {
+      currentUserId: req.userId
+    });
+    next(error);
+  }
+};
+
+// ============================================================
 // ОТМЕТКА СООБЩЕНИЯ КАК ПРОЧИТАННОГО
 // ============================================================
 exports.markAsRead = async (req, res, next) => {
