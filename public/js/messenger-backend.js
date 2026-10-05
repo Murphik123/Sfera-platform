@@ -829,96 +829,51 @@
             }
         );
 
-        socket.on(
-            'new_message',
-            async message => {
-                if (!message) return;  
-     
-                const normalized =
-                    normalizeMessage(message);
+      socket.on('new_message', async message => {
+            if (!message) return;
 
-                const fromId =
-                    getUserId(
-                        message.from ||
-                        message.sender
-                    );
+            const normalized = normalizeMessage(message);
 
-                const toId =
-                    getUserId(
-                        message.to ||
-                        message.recipient
-                    );
+            const rawFrom = message.from || message.sender;
+            const rawTo = message.to || message.recipient;
 
-                const partnerId =
-                    currentUser &&
-                    fromId === getUserId(currentUser)
-                        ? toId
-                        : fromId;
+            const fromId = String(rawFrom?._id || rawFrom?.id || rawFrom || '');
+            const toId = String(rawTo?._id || rawTo?.id || rawTo || '');
+            const myId = String(getUserId(currentUser) || '');
 
-                if (!partnerId) {
-                    return;
+            const partnerId = (fromId === myId) ? toId : fromId;
+
+            if (!partnerId) return;
+
+            const key = String(partnerId);
+
+            if (!messagesData[key]) {
+                messagesData[key] = [];
+            }
+
+            const exists = messagesData[key].some(m => String(m.id) === String(normalized.id));
+            if (!exists) {
+                messagesData[key].push(normalized);
+            }
+
+            if (String(activeDialogId) === key) {
+                renderChat();
+                if (normalized.type === 'received' && normalized.id) {
+                    await markMessageRead(normalized.id);
                 }
-
-                const key =
-                    String(partnerId);
-
-                if (!messagesData[key]) {
-                    messagesData[key] = [];
-                }
-
-                                const exists =
-                    messagesData[key]
-                        .some(
-                            m =>
-                                String(m.id) ===
-                                String(normalized.id)
-                        );
-
-                if (!exists) {
-                    messagesData[key]
-                        .push(normalized);
-                }
-
-                const dialog =
-                    dialogsData.find(
-                        d => d.id === key
-                    );
-
+            } else {
+                const dialog = dialogsData.find(d => String(d.id) === key);
                 if (dialog) {
-                    dialog.lastMsg =
-                        normalized.text || '';
-                    dialog.time =
-                        normalized.time || dialog.time;
-
-                    if (
-                        normalized.type === 'received' &&
-                        activeDialogId !== key
-                    ) {
-                        dialog.unread =
-                            Number(dialog.unread || 0) + 1;
-                    }
-                }
-
-                renderDialogs();
-
-                
-                 if (
-                    activeDialogId === key
-                ) {
-                    renderChat();
-
-                    if (
-                        normalized.type ===
-                        'received' &&
-                        normalized.id
-                    ) {
-                        await markMessageRead(
-                            normalized.id
-                        );
+                    dialog.lastMsg = normalized.text || '';
+                    dialog.time = normalized.time || dialog.time;
+                    if (normalized.type === 'received') {
+                        dialog.unread = Number(dialog.unread || 0) + 1;
                     }
                 }
             }
-        );
+
+            renderDialogs();
+        });
     }
 
     function initEmojiPicker() {       if (!emojiBtn || !emojiPicker || !emojiGrid) return;
