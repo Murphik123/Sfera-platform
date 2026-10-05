@@ -866,7 +866,7 @@
                     messagesData[key] = [];
                 }
 
-                const exists =
+                                const exists =
                     messagesData[key]
                         .some(
                             m =>
@@ -879,9 +879,30 @@
                         .push(normalized);
                 }
 
-                await loadDialogs();
+                const dialog =
+                    dialogsData.find(
+                        d => d.id === key
+                    );
 
-                if (
+                if (dialog) {
+                    dialog.lastMsg =
+                        normalized.text || '';
+                    dialog.time =
+                        normalized.time || dialog.time;
+
+                    if (
+                        normalized.type === 'received' &&
+                        activeDialogId !== key
+                    ) {
+                        dialog.unread =
+                            Number(dialog.unread || 0) + 1;
+                    }
+                }
+
+                renderDialogs();
+
+                
+                 if (
                     activeDialogId === key
                 ) {
                     renderChat();
@@ -900,8 +921,7 @@
         );
     }
 
-    function initEmojiPicker() {
-        if (!emojiBtn || !emojiPicker || !emojiGrid) return;
+    function initEmojiPicker() {       if (!emojiBtn || !emojiPicker || !emojiGrid) return;
         
         emojiGrid.innerHTML = '';
         emojis.forEach(emoji => {
