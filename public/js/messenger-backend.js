@@ -515,6 +515,12 @@
         }
     }
 
+        async function sendMessage(text) {
+    // ... весь код функции sendMessage ...
+}
+
+     window.sendMessage = sendMessage;
+
     function renderDialogs(
         listToRender = null
     ) {
