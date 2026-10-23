@@ -1,24 +1,16 @@
 <!DOCTYPE html>
-<html lang="tm" translate="no">
+<html lang="tm">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="google" content="notranslate" />
-    <title data-i18n="messenger_page_title">Sfera — Habarlaşyk</title>
+    <title id="pageTitle">Messenjer — Sfera</title>
    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Подключение общих стилей платформы -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/ui.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/glass.css">
-<!-- Добавьте эту строку в тег <head> прямо перед автопереводчиком -->
-<script src="/js/auth-check.js"></script>
-    <!-- Автоматический переводчик i18n -->
-    <script src="/scripts/auto_translate_i18n.js"></script>
+    <!-- Проверка авторизации -->
+    <script src="/js/auth-check.js"></script>
 
     <style>
         /* ==========================================================================
@@ -40,24 +32,9 @@
             --radius: 22px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Inter", sans-serif;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(0, 212, 255, 0.4) #03080e;
-        }
-
-        body {
-            background-color: var(--dark-bg) !important;
-            color: var(--white) !important;
-            overflow-x: hidden;
-            position: relative;
-            min-height: 100vh;
-        }
-
-        /* Neon Scrollbar */
+        /* ==========================================================================
+           2. СТИЛИЗАЦИЯ ПОЛЗУНКА ПРОКРУТКИ (NEON SCROLLBAR MODULE)
+           ========================================================================== */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #03080e; border-left: 1px solid rgba(0, 212, 255, 0.1); }
         ::-webkit-scrollbar-thumb {
@@ -70,12 +47,11 @@
             box-shadow: 0 0 12px rgba(0, 212, 255, 0.8);
         }
 
-        /* Glassmorphism & Background Canvas */
+        /* ==========================================================================
+           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ (GLASSMORPHISM & GRADIENTS)
+           ========================================================================== */
         .full-glass-backdrop {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
             background: 
                 radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.16), transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(0, 255, 163, 0.12), transparent 50%),
@@ -83,46 +59,23 @@
                 rgba(3, 8, 14, 0.72);
             backdrop-filter: blur(65px) saturate(180%);
             -webkit-backdrop-filter: blur(65px) saturate(180%);
-            pointer-events: none;
-            z-index: 1;
+            pointer-events: none; z-index: 1;
         }
 
+        /* ==========================================================================
+           4. ПЛАВАЮЩИЕ ТОЧКИ И НЕОНОВАЯ СЕТКА (PARTICLES & NEON FX)
+           ========================================================================== */
         .bg-grid {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
             background-image:
                 linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 0;
+            background-size: 50px 50px; pointer-events: none; z-index: 0;
         }
 
-        #bgCanvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            pointer-events: none;
-            z-index: 2;
-            opacity: 0.85;
-        }
-
-        #particles {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 3;
-        }
-
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: floatParticle linear infinite;
-        }
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; opacity: 0.85; }
+        #particles { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; overflow: hidden; z-index: 3; }
+        .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: floatParticle linear infinite; }
 
         @keyframes floatParticle {
             0% { transform: translateY(105vh) translateX(0) scale(0.5); opacity: 0; }
@@ -131,393 +84,175 @@
             100% { transform: translateY(-10vh) translateX(15px) scale(1.1); opacity: 0; }
         }
 
-        /* HEADER STYLES */
+        /* ==========================================================================
+           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И СТРУКТУРА (LAYOUT & UI COMPONENTS)
+           ========================================================================== */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: "Inter", sans-serif; scrollbar-width: thin;
+            scrollbar-color: rgba(0, 212, 255, 0.4) #03080e;
+        }
+
+        html { scroll-behavior: smooth; background-color: var(--dark-bg); }
+
+        body {
+            background-color: var(--dark-bg); color: var(--white);
+            overflow-x: hidden; position: relative; min-height: 100vh;
+        }
+
+        .container { width: min(1400px, 92%); margin: auto; position: relative; z-index: 10; }
+
+        /* --- ШАПКА (ИЗ DOCUMENTS.HTML) --- */
         header {
-            position: fixed;
-            top: 0; left: 0; width: 100%;
-            z-index: 999;
-            backdrop-filter: blur(25px) saturate(200%);
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
-            background: var(--header-footer-bg);
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
-            transition: all 0.4s ease;
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
+            backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
+            background: var(--header-footer-bg); border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5); transition: all 0.4s ease;
+            transform: translateZ(0); will-change: transform; contain: layout paint style;
         }
 
-        header .header-container {
-            width: min(1400px, 92%);
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-        }
+        header .container { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: white;
-            transition: transform 0.3s ease;
-        }
-
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; transition: transform 0.3s ease; }
         .logo:hover { transform: translateY(-1px) scale(1.02); }
+        .logo-icon { width: 54px; height: 54px; display: flex; justify-content: center; align-items: center; }
+        .logo-svg { width: 100%; height: 100%; overflow: visible; }
+        .logo-svg g { transform-origin: 50px 50px; animation: spinLogo 16s linear infinite; }
+        @keyframes spinLogo { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        .logo-text h2 { font-size: 22px; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #00ffa3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; }
+        .logo-text p { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; margin: 4px 0 0 0; color: #9fb5c8; text-transform: uppercase; }
 
-        .logo-svg {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-        }
+        .header-right { display: flex; gap: 12px; align-items: center; }
+        
+        .user-info { font-size: 14px; color: var(--text); font-weight: 600; background: rgba(255, 255, 255, 0.04); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.15); }
+        
+        .lang-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(0, 212, 255, 0.3); color: white; backdrop-filter: blur(10px); padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; outline: none; transition: all 0.35s ease; user-select: none; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; }
+        .lang-btn:hover { background: rgba(0, 212, 255, 0.2); border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); transform: translateY(-1px); }
+        
+        .btn-switch { text-decoration: none; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--white); backdrop-filter: blur(12px); transition: all 0.3s ease; }
+        .btn-switch:hover { background: rgba(0, 212, 255, 0.15); border-color: var(--primary); color: var(--primary); }
+        
+        .logout-btn { background: rgba(200, 0, 0, 0.15); border: 1px solid rgba(200, 0, 0, 0.35); color: #ff6b6b; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s ease; }
+        .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
 
-        .logo-svg g {
-            transform-origin: 50px 50px;
-            animation: spinLogo 16s linear infinite;
-        }
-
-        @keyframes spinLogo {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .logo-text h2 {
-            font-size: 20px;
-            font-weight: 800;
-            margin: 0;
-            line-height: 1.1;
-            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #00ffa3 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 0.5px;
-        }
-
-        .logo-text p {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.8px;
-            margin: 2px 0 0 0;
-            color: #9fb5c8;
-            text-transform: uppercase;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-info {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 14px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .lang-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            color: white;
-            backdrop-filter: blur(10px);
-            padding: 9px 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            outline: none;
-            transition: all 0.35s ease;
-            user-select: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 52px;
-        }
-
-        .lang-btn:hover {
-            background: rgba(0, 212, 255, 0.2);
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-            transform: translateY(-1px);
-        }
-
-        .btn-switch {
-            text-decoration: none;
-            padding: 9px 18px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            transition: all 0.3s ease;
-        }
-
-        .btn-switch:hover {
-            background: rgba(0, 212, 255, 0.15);
-            border-color: var(--primary);
-            color: #fff;
-        }
-
-        .logout-btn {
-            padding: 9px 18px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 14px;
-            background: rgba(255, 77, 77, 0.15);
-            border: 1px solid rgba(255, 77, 77, 0.35);
-            color: #ff6b6b;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 77, 77, 0.3);
-            border-color: #ff4d4d;
-            box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
-            color: #fff;
-        }
-
-        /* MESSENGER MAIN LAYOUT */
+        /* --- СТРАНИЦА МЕССЕНДЖЕРА --- */
         .messenger-page {
-            padding: 100px 20px 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: 10;
-            box-sizing: border-box;
+            padding: 110px 7% 30px; /* Отступы под фиксированную шапку */
+            min-height: 100vh; display: flex; flex-direction: column;
+            position: relative; z-index: 10; box-sizing: border-box;
         }
 
         .messenger-container {
-            display: flex;
-            flex: 1;
-            height: calc(100vh - 120px);
-            min-height: 580px;
-            border-radius: 24px;
-            overflow: hidden;
-            position: relative;
-            background: rgba(10, 18, 32, 0.55);
-            backdrop-filter: blur(30px) saturate(180%);
-            -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex; flex: 1;
+            height: calc(100vh - 180px); /* Чтобы влезало в экран вместе с шапкой */
+            min-height: 550px; border-radius: 24px; overflow: hidden;
+            position: relative; background: rgba(10, 18, 32, 0.55);
+            backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid var(--glass-border); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         .messenger-sidebar {
-            width: 330px;
-            min-width: 290px;
+            width: 330px; min-width: 290px;
             border-right: 1px solid var(--glass-border);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: 1;
-            background: rgba(5, 12, 22, 0.45);
+            display: flex; flex-direction: column;
+            position: relative; z-index: 1; background: rgba(5, 12, 22, 0.45);
         }
 
         .sidebar-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
+            padding: 18px 20px; border-bottom: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center; gap: 8px;
         }
-
         .sidebar-header h2 { font-size: 18px; font-weight: 800; margin: 0; color: #fff; }
 
         .sidebar-header .dropdown-tabs { position: relative; display: inline-block; }
         .sidebar-header .dropdown-tabs .dropbtn {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid var(--glass-border);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.3s ease;
+            background: rgba(0, 212, 255, 0.1); border: 1px solid var(--glass-border);
+            color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;
         }
-
-        .sidebar-header .dropdown-tabs .dropbtn:hover {
-            background: rgba(0, 212, 255, 0.2);
-            border-color: var(--primary);
-        }
-
+        .sidebar-header .dropdown-tabs .dropbtn:hover { background: rgba(0, 212, 255, 0.2); border-color: var(--primary); }
         .sidebar-header .dropdown-tabs .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            background: rgba(5, 14, 26, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            min-width: 160px;
-            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
-            z-index: 100;
-            padding: 6px 0;
-            margin-top: 8px;
+            display: none; position: absolute; right: 0; top: 100%;
+            background: rgba(5, 14, 26, 0.95); backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 16px; min-width: 160px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6); z-index: 100; padding: 6px 0; margin-top: 8px;
         }
-
         .sidebar-header .dropdown-tabs .dropdown-content button {
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.8);
-            padding: 10px 18px;
-            width: 100%;
-            text-align: left;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
+            background: transparent; border: none; color: rgba(255, 255, 255, 0.8);
+            padding: 10px 18px; width: 100%; text-align: left; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
         }
-
         .sidebar-header .dropdown-tabs .dropdown-content button:hover { background: rgba(0, 212, 255, 0.15); color: #fff; }
         .sidebar-header .dropdown-tabs .dropdown-content button.active { color: var(--primary); font-weight: 800; }
         .sidebar-header .dropdown-tabs.show .dropdown-content { display: block; }
 
-        .sidebar-search { padding: 14px 20px; display: flex; gap: 8px; }
+        .sidebar-search { padding: 14px 16px; display: flex; gap: 8px; align-items: center; }
         .sidebar-search input {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: 14px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.04);
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s;
+            flex: 1; min-width: 0; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.04); color: #fff; font-size: 14px; outline: none; transition: border-color 0.3s;
         }
         .sidebar-search input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
         .sidebar-search .create-group-btn {
-            padding: 10px 14px;
-            background: rgba(0, 212, 255, 0.15);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 14px;
-            color: var(--primary);
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s;
+            flex-shrink: 0; padding: 10px 12px; background: rgba(0, 212, 255, 0.15); border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 14px; color: var(--primary); cursor: pointer; font-weight: 700; transition: all 0.3s; white-space: nowrap;
         }
-        .sidebar-search .create-group-btn:hover { background: rgba(0, 212, 255, 0.3); color: #fff; }
+        .sidebar-search .create-group-btn:hover { background: rgba(0, 212, 255, 0.3); color: #fff; box-shadow: 0 0 15px rgba(0, 212, 255, 0.3); }
 
         .dialogs-list, .news-feed { flex: 1; overflow-y: auto; padding: 8px 0; }
         
         .dialog-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            cursor: pointer;
-            transition: background 0.25s, border-color 0.25s;
-            border-left: 3px solid transparent;
-            gap: 12px;
+            display: flex; align-items: center; padding: 12px 20px;
+            cursor: pointer; transition: background 0.25s, border-color 0.25s;
+            border-left: 3px solid transparent; gap: 12px;
         }
-
         .dialog-item:hover { background: rgba(0, 212, 255, 0.06); }
         .dialog-item.active { background: rgba(0, 212, 255, 0.12); border-left-color: var(--primary); }
         
         .dialog-avatar {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            background: rgba(0, 212, 255, 0.15);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--primary);
-            flex-shrink: 0;
-            position: relative;
+            width: 46px; height: 46px; border-radius: 50%; background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.3); display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: var(--primary); flex-shrink: 0; position: relative;
         }
-
-        .dialog-avatar.ai-avatar {
-            background: linear-gradient(135deg, rgba(0, 255, 163, 0.2), rgba(0, 212, 255, 0.2));
-            border-color: #00ffa3;
-            color: #00ffa3;
-        }
-
-        .dialog-avatar .online-dot {
-            width: 11px;
-            height: 11px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
-            position: absolute;
-            bottom: 0;
-            right: 0;
-        }
+        .dialog-avatar.ai-avatar { background: linear-gradient(135deg, rgba(0, 255, 163, 0.2), rgba(0, 212, 255, 0.2)); border-color: #00ffa3; color: #00ffa3; }
+        .dialog-avatar .online-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); position: absolute; bottom: 0; right: 0; }
 
         .dialog-info { flex: 1; min-width: 0; }
         .dialog-info .name { font-weight: 700; font-size: 15px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .dialog-info .last-msg { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
         .dialog-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
-        .unread-badge { background: var(--primary); color: #000; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 20px; }
-        .ai-badge { background: linear-gradient(135deg, #00ffa3, #00d4ff); color: #000; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 6px; text-transform: uppercase; }
+        .ai-badge { background: linear-gradient(135deg, #00ffa3, #00d4ff); color: #000; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 6px; text-transform: uppercase; margin-left: 4px; }
 
-        /* CHAT WINDOW */
+        .news-card {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 16px; margin: 10px 16px; transition: all 0.3s ease;
+        }
+        .news-card:hover { background: rgba(0, 212, 255, 0.08); border-color: var(--primary); }
+        .news-card .news-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .news-card .news-date { font-size: 11px; color: var(--primary); margin-bottom: 8px; }
+        .news-card .news-text { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+
         .messenger-chat { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            position: relative; 
-            z-index: 1; 
-            background: radial-gradient(circle at top right, rgba(0, 212, 255, 0.08), transparent 60%),
-                        radial-gradient(circle at bottom left, rgba(0, 255, 163, 0.05), transparent 60%),
-                        rgba(5, 12, 22, 0.3);
+            flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1; 
+            background: radial-gradient(circle at top right, rgba(0, 212, 255, 0.08), transparent 60%), radial-gradient(circle at bottom left, rgba(0, 255, 163, 0.05), transparent 60%), rgba(5, 12, 22, 0.3);
         }
 
         .chat-header {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            min-height: 70px;
-            box-sizing: border-box;
-            background: rgba(5, 14, 26, 0.4);
+            padding: 16px 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 14px;
+            min-height: 70px; box-sizing: border-box; background: rgba(5, 14, 26, 0.4);
         }
-
         .chat-header .back-btn { display: none; background: transparent; border: none; color: inherit; font-size: 20px; cursor: pointer; }
-        
         .chat-header .chat-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(0, 212, 255, 0.15);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--primary);
+            width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.3); display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: var(--primary);
         }
-
         .chat-header .chat-name { font-weight: 800; font-size: 18px; color: #fff; }
         .chat-header .chat-status { font-size: 13px; color: var(--accent); font-weight: 500; }
         .chat-header .chat-actions { margin-left: auto; display: flex; gap: 8px; }
         .chat-header .chat-actions button {
-            width: 36px; height: 36px;
-            font-size: 15px; border-radius: 50%;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--glass-border);
-            color: #fff; cursor: pointer;
-            transition: all 0.3s;
+            width: 36px; height: 36px; font-size: 15px; border-radius: 50%; background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border); color: #fff; cursor: pointer; transition: all 0.3s;
         }
         .chat-header .chat-actions button:hover { background: rgba(0, 212, 255, 0.2); border-color: var(--primary); }
 
@@ -525,124 +260,98 @@
         
         .message { max-width: 75%; padding: 12px 18px; border-radius: 20px; font-size: 15px; word-wrap: break-word; position: relative; line-height: 1.5; }
         .message.sent {
-            align-self: flex-end;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.35), rgba(31, 107, 255, 0.5));
-            border: 1px solid rgba(0, 212, 255, 0.4);
-            color: #fff;
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.25);
+            align-self: flex-end; background: linear-gradient(135deg, rgba(0, 212, 255, 0.35), rgba(31, 107, 255, 0.5));
+            border: 1px solid rgba(0, 212, 255, 0.4); color: #fff; border-bottom-right-radius: 4px; box-shadow: 0 4px 20px rgba(0, 212, 255, 0.25);
         }
         .message.received {
-            align-self: flex-start;
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-bottom-left-radius: 4px;
-            color: var(--text);
+            align-self: flex-start; background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-bottom-left-radius: 4px; color: var(--text);
         }
         .message .msg-time { font-size: 11px; opacity: 0.6; margin-top: 6px; text-align: right; }
 
-        /* Стиль встроенного файла */
         .file-card {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 8px 12px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            margin-bottom: 6px;
+            display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.25);
+            padding: 8px 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 6px;
         }
-
-        .btn-download-file {
-            background: rgba(0, 212, 255, 0.2);
-            border: 1px solid var(--primary);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-download-file:hover {
-            background: var(--primary);
-            color: #000;
-            font-weight: bold;
-        }
+        .btn-download-file { background: rgba(0, 212, 255, 0.2); border: 1px solid var(--primary); color: #fff; padding: 4px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s ease; }
+        .btn-download-file:hover { background: var(--primary); color: #000; font-weight: bold; }
 
         .chat-input-area {
-            padding: 16px 24px;
-            border-top: 1px solid var(--glass-border);
-            display: flex; gap: 12px; align-items: center;
-            background: rgba(5, 14, 26, 0.4);
+            padding: 16px 24px; border-top: 1px solid var(--glass-border); display: flex; gap: 12px; align-items: center;
+            background: rgba(5, 14, 26, 0.4); position: relative;
         }
-
         .chat-input-area .input-group { flex: 1; display: flex; gap: 10px; align-items: center; }
         .chat-input-area .input-group input[type="text"] {
-            flex: 1;
-            padding: 12px 20px;
-            border-radius: 24px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.04);
-            color: #fff;
-            font-size: 15px;
-            outline: none;
-            transition: border-color 0.3s;
+            flex: 1; padding: 12px 20px; border-radius: 24px; border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.04); color: #fff; font-size: 15px; outline: none; transition: border-color 0.3s;
         }
         .chat-input-area .input-group input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 12px rgba(0, 212, 255, 0.25); }
-
-        .chat-input-area .input-group .emoji-btn, 
-        .chat-input-area .input-group .file-btn {
+        .chat-input-area .input-group .emoji-btn, .chat-input-area .input-group .file-btn {
             background: transparent; border: none; font-size: 22px; cursor: pointer; opacity: 0.8; transition: transform 0.2s, opacity 0.2s;
         }
-        .chat-input-area .input-group .emoji-btn:hover,
-        .chat-input-area .input-group .file-btn:hover { opacity: 1; transform: scale(1.1); }
-
+        .chat-input-area .input-group .emoji-btn:hover, .chat-input-area .input-group .file-btn:hover { opacity: 1; transform: scale(1.1); }
         .chat-input-area .send-btn {
-            padding: 12px 26px; border: none; border-radius: 24px;
-            background: linear-gradient(135deg, #00d4ff 0%, #1f6bff 100%);
-            color: #fff; font-weight: 800; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
-            transition: all 0.3s ease;
+            padding: 12px 26px; border: none; border-radius: 24px; background: linear-gradient(135deg, #00d4ff 0%, #1f6bff 100%);
+            color: #fff; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3); transition: all 0.3s ease;
         }
         .chat-input-area .send-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5); }
 
         .emoji-picker {
-            display: none; position: absolute; bottom: 85px; left: 24px;
-            background: rgba(5, 14, 26, 0.95);
-            border: 1px solid var(--glass-border);
-            border-radius: 18px; padding: 14px;
-            max-width: 320px; max-height: 220px; overflow-y: auto; z-index: 20;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            display: none; position: absolute; bottom: 85px; left: 24px; background: rgba(5, 14, 26, 0.95);
+            border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px; max-width: 320px; max-height: 220px;
+            overflow-y: auto; z-index: 20; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
         .emoji-picker.active { display: block; }
         .emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; font-size: 22px; }
         .emoji-grid span { cursor: pointer; text-align: center; transition: transform 0.15s; }
         .emoji-grid span:hover { transform: scale(1.25); }
 
-        /* MODALS (MODAL & CALLS) */
+        /* Обновленный Glassmorphism дизайн модальных окон */
         .group-modal, .call-modal {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(3, 8, 14, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            justify-content: center; align-items: center;
-            z-index: 1000;
+            display: none; position: fixed; inset: 0; background: rgba(3, 8, 14, 0.6);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 1000;
         }
-        .group-modal.active, .call-modal.active { display: flex; }
+        .group-modal.active, .call-modal.active { display: flex; animation: fadeIn 0.3s ease; }
 
         .group-modal .modal-box, .call-modal .modal-box {
-            background: linear-gradient(135deg, rgba(10, 20, 35, 0.9), rgba(5, 12, 22, 0.95));
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 440px; width: 90%;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 30px rgba(0, 212, 255, 0.2);
+            background: rgba(10, 18, 32, 0.65); backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(0, 212, 255, 0.25); border-radius: 28px; padding: 36px;
+            max-width: 440px; width: 90%; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 212, 255, 0.05);
+            transform: translateY(0); transition: all 0.3s ease;
         }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal-box h2 { font-size: 22px; color: #fff; margin-bottom: 24px; font-weight: 800; }
+        
+        .btn-glass {
+            padding: 12px 24px; border-radius: 14px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-glass:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+
+        .btn-neon-primary {
+            padding: 12px 24px; border-radius: 14px; border: 1px solid var(--primary);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 163, 0.15)); 
+            color: #fff; font-weight: 700; cursor: pointer; box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); transition: all 0.3s ease;
+        }
+        .btn-neon-primary:hover { background: var(--primary); color: #000; box-shadow: 0 0 25px rgba(0, 212, 255, 0.6); }
+
+        .btn-neon-danger {
+            padding: 12px 24px; border-radius: 14px; border: 1px solid #ff4d4d;
+            background: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-weight: 700; cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); transition: all 0.3s ease;
+        }
+        .btn-neon-danger:hover { background: #ff4d4d; color: #fff; box-shadow: 0 0 25px rgba(255, 77, 77, 0.6); }
+
+        /* --- ФУТЕР (ИЗ DOCUMENTS.HTML) --- */
+        footer {
+            position: relative; z-index: 20; margin-top: 60px;
+            backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
+            background: var(--header-footer-bg); border-top: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.5);
+        }
+        footer .container { display: flex; justify-content: space-between; align-items: center; padding: 28px 0; flex-wrap: wrap; gap: 20px; }
+        footer p { color: #c0d8f0; font-size: 14px; }
 
         @media (max-width: 768px) {
             .messenger-container { flex-direction: column; height: auto; }
@@ -651,18 +360,20 @@
         }
     </style>
 </head>
-<body class="notranslate">
+<body>
 
-    <!-- Фоновые слои дизайна страницы -->
+    <!-- Сплошной сквозной слой матового стекла на весь фон -->
     <div class="full-glass-backdrop"></div>
     <div class="bg-grid"></div>
+
+    <!-- Фоновые холсты интерактивных нейросетей и светящихся точек -->
     <canvas id="bgCanvas"></canvas>
     <div id="particles"></div>
 
-    <!-- Шапка платформы SFERA -->
-    <header class="notranslate">
-        <div class="header-container">
-            <a href="index.html" class="logo" aria-label="SFERA Baş sahypa">
+    <!-- ЕДИНАЯ ЭТАЛОННАЯ ШАПКА SFERA -->
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo" aria-label="СФЕРА Главная">
                 <div class="logo-icon">
                     <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
@@ -682,46 +393,55 @@
                     </svg>
                 </div>
                 <div class="logo-text">
-                    <h2 data-i18n="logo_title">SFERA</h2>
-                    <p data-i18n="logo_subtitle">Milli Sanly Platforma</p>
+                    <h2 data-i18n="logo_title">СФЕРА</h2>
+                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
                 </div>
             </a>
 
-            <div class="header-right">
-                               <span class="user-info">👤 <strong id="username">User</strong></span>
-                <button class="lang-btn" id="langBtn" type="button" aria-label="Dili çalyşmak">TM</button>
-              
- <a href="dashboard.html" id="backLink" class="btn-switch" data-i18n="back">← Yza</a>
-<button class="logout-btn" id="logoutBtn" onclick="localStorage.clear(); window.location.href='login.html';" data-i18n="logout">🚪 Çykmak</button>
-       </div>
+            <div class="header-right header-buttons">
+                <span class="user-info">👤 <strong id="username">User</strong></span>
+                <button class="lang-btn" id="langBtn" type="button">TM</button>
+                <a href="#" id="backLink" class="btn-switch">← Yza</a>
+                <button class="logout-btn" id="logoutBtn">🚪 Çykmak</button>
+            </div>
         </div>
     </header>
 
-    <!-- Основной модуль Мессенджера -->
-    <section class="messenger-page notranslate">
-        <div style="flex:1; display:flex; flex-direction:column; max-width: 1350px; width: 100%; margin: 0 auto;">
+    <section class="messenger-page">
+        <div class="container" style="max-width: 1350px; display: flex; flex-direction: column; height: 100%;">
             <div class="messenger-container" id="messengerContainer">
                 <div class="messenger-sidebar" id="sidebar">
                     <div class="sidebar-header">
                         <div class="left-group">
-                            <h2 data-i18n="messenger_title">Söhbet</h2>
+                            <h2 id="lblSidebarTitle">Söhbetdeşlik</h2>
                         </div>
                         <div class="dropdown-tabs" id="tabsDropdown">
-                            <button class="dropbtn" id="dropbtn">📋 <span id="currentTabLabel" data-i18n="tab_chats">Çatlar</span> ▾</button>
+                            <button class="dropbtn" id="dropbtn">📋 <span id="currentTabLabel">Çatlar</span> ▾</button>
                             <div class="dropdown-content" id="dropdownContent">
-                                <button class="active" data-tab="chats" data-i18n="tab_chats">Çatlar</button>
-                                <button data-tab="news" data-i18n="tab_news">Habarlar</button>
-                                <button data-tab="assistant" data-i18n="tab_assistant">Kömekçi</button>
+                                <button class="active" data-tab="chats" id="lblTabChats">Çatlar</button>
+                                <button data-tab="news" id="lblTabNews">Habarlar</button>
+                                <button data-tab="assistant" id="lblTabAssistant">Sfera AI Kömekçi</button>
                             </div>
                         </div>
                     </div>
                     <div class="sidebar-search">
-                        <input type="text" id="searchInput" placeholder="Gözleg..." data-i18n-placeholder="search_placeholder" />
-                        <button class="create-group-btn" id="createGroupBtn" data-i18n="create_group">➕ Topar</button>
+                        <input type="text" id="searchInput" placeholder="Gözleg..." />
+                        <button class="create-group-btn" id="createGroupBtn">➕ Topar</button>
                     </div>
+                    
                     <div class="dialogs-list" id="dialogsList"></div>
-                    <div class="news-feed" id="newsFeed" style="display:none; padding: 20px; opacity: 0.8;">
-                        <p data-i18n="news_feed_closed">Habarlar kanaly ýapyk.</p>
+                    
+                    <div class="news-feed" id="newsFeed" style="display:none;">
+                        <div class="news-card">
+                            <div class="news-title">🚀 Sfera platformasynyň täzelenmesi</div>
+                            <div class="news-date" id="newsDate1">Şogün, 14:00</div>
+                            <div class="news-text" id="newsText1">Köp dilli goldaw, faýl ibermek we AI kömekçisi bilen täzelenen messenjer işe girizildi.</div>
+                        </div>
+                        <div class="news-card">
+                            <div class="news-title">🌐 Arkadag-Aşgabat täze aragatnaşyk düwünleri</div>
+                            <div class="news-date" id="newsDate2">Düýn, 18:30</div>
+                            <div class="news-text" id="newsText2">Milli ulamyň esasy maglumat merkezleriniň arasynda maglumat geçiriş tizligi optimizirlendi.</div>
+                        </div>
                     </div>
                 </div>
 
@@ -730,82 +450,453 @@
                         <button class="back-btn" id="backBtn">←</button>
                         <div class="chat-avatar" id="chatAvatar">💻</div>
                         <div>
-                            <div class="chat-name" id="chatName">Разработчики Sfera</div>
+                            <div class="chat-name" id="chatName">Sfera Düzüjileri</div>
                             <div class="chat-status" id="chatStatus">onlaýn</div>
                         </div>
                         <div class="chat-actions">
-                            <button id="searchInChatBtn" title="🔍">🔍</button>
-                            <button id="exportChatBtn" title="Загрузить историю на ПК">📥</button>
+                            <button id="searchInChatBtn" title="Gözleg">🔍</button>
+                            <button id="exportChatBtn" title="Taryhy kompýutere ýüklemek">📥</button>
                         </div>
                     </div>
                     <div class="chat-messages" id="chatMessages"></div>
                     <div class="chat-input-area" id="chatInputArea">
                         <div class="input-group">
-                            <button class="emoji-btn" id="emojiBtn">😊</button>
-                            
-                            <!-- Кнопка «Загрузить с ПК» -->
-                            <button class="file-btn" id="fileBtn" title="Загрузить файл с ПК">📎</button>
+                            <button class="emoji-btn" id="emojiBtn" title="Smileýler">😊</button>
+                            <button class="file-btn" id="fileBtn" title="Faýl ýüklemek">📎</button>
                             <input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(event)" />
-                            
-                            <input type="text" id="messageInput" placeholder="Habaryňyzy ýazyň..." data-i18n-placeholder="type_message" />
+                            <input type="text" id="messageInput" placeholder="Habaryňyzy ýazyň..." />
                         </div>
                         <div class="call-buttons" style="display: flex; gap: 6px;">
-                            <button id="audioCallBtn" title="📞" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 50%; width: 38px; height: 38px; color: #fff; cursor: pointer;">📞</button>
-                            <button id="videoCallBtn" title="📹" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 50%; width: 38px; height: 38px; color: #fff; cursor: pointer;">📹</button>
+                            <button id="audioCallBtn" title="Sesli jaň" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 50%; width: 38px; height: 38px; color: #fff; cursor: pointer;">📞</button>
+                            <button id="videoCallBtn" title="Wideojaň" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 50%; width: 38px; height: 38px; color: #fff; cursor: pointer;">📹</button>
                         </div>
-                        <button class="send-btn" id="sendBtn" data-i18n="send">Iber</button>
-                    </div>
-                    <div class="emoji-picker" id="emojiPicker">
-                        <div class="emoji-grid" id="emojiGrid"></div>
+                        <button class="send-btn" id="sendBtn">Iber</button>
+
+                        <div class="emoji-picker" id="emojiPicker">
+                            <div class="emoji-grid" id="emojiGrid"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Модальное окно создания группы -->
-    <div class="group-modal notranslate" id="groupModal">
-        <div class="modal-box">
-            <h2 data-i18n="create_group_title">Täze topar döret</h2>
-            <form id="groupForm" style="margin-top: 18px;">
-                <div class="form-group" style="margin-bottom: 14px; text-align: left;">
-                    <label for="groupName" data-i18n="group_name" style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Toparyň ady</label>
-                    <input type="text" id="groupName" placeholder="Mysal: Taslama topary" required style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.4); color: #fff; box-sizing: border-box; outline: none;" />
+    <!-- ФУТЕР (ИЗ DOCUMENTS.HTML) -->
+    <footer>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-text">
+                    <h2 data-i18n="logo_title">СФЕРА</h2>
+                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
                 </div>
-                <div class="form-actions" style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
-                    <button type="button" class="btn-cancel" id="cancelGroupBtn" style="padding: 10px 20px; border-radius: 12px; border: 1px solid var(--glass-border); cursor: pointer; background: rgba(255,255,255,0.08); color: #fff;">Ýatyr</button>
-                    <button type="submit" class="btn-create" style="padding: 10px 20px; border-radius: 12px; border: none; background: linear-gradient(135deg, #00d4ff, #00ffa3); color: #000; font-weight: bold; cursor: pointer;">Döret</button>
+            </a>
+            <p data-i18n="footer_copy">© 2026 — Единая цифровая платформа Туркменистана</p>
+        </div>
+    </footer>
+
+    <!-- Модальные окна -->
+    <div class="group-modal" id="groupModal">
+        <div class="modal-box">
+            <h2 id="lblCreateGroupTitle">Täze topar döret</h2>
+            <form id="groupForm" style="margin-top: 10px;">
+                <div class="form-group" style="margin-bottom: 24px; text-align: left;">
+                    <label for="groupName" id="lblGroupName" style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 8px;">Toparyň ady</label>
+                    <input type="text" id="groupName" placeholder="Mysal: Taslama topary" required style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid rgba(0, 212, 255, 0.3); background: rgba(0,0,0,0.4); color: #fff; outline: none; font-size: 15px; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(0, 212, 255, 0.3)'" />
+                </div>
+                <div class="form-actions" style="display: flex; gap: 12px; justify-content: center;">
+                    <button type="button" class="btn-glass" id="cancelGroupBtn">Ýatyr</button>
+                    <button type="submit" class="btn-neon-primary" id="lblBtnCreate">Döret</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Модальное окно аудио/видео вызова -->
-    <div class="call-modal notranslate" id="callModal">
+    <div class="call-modal" id="callModal">
         <div class="modal-box">
-            <div class="call-avatar" id="callAvatar" style="font-size: 42px; margin-bottom: 12px;">👤</div>
-            <h2 id="callTargetName" style="color: #fff; font-size: 22px;">Сердар Аннаев</h2>
-            <div class="call-status" id="callStatusText" style="color: var(--primary); font-size: 14px; margin: 8px 0 20px 0;">Iberilýär...</div>
+            <div class="call-avatar" id="callAvatar" style="font-size: 48px; margin-bottom: 16px; text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);">👤</div>
+            <h2 id="callTargetName" style="margin-bottom: 4px;">Serdar Annaýew</h2>
+            <div class="call-status" id="callStatusText" style="color: var(--accent); font-size: 15px; font-weight: 500; margin-bottom: 30px; letter-spacing: 0.5px;">Birikdirilýär...</div>
             <div class="call-actions">
-                <button class="btn-end-call" id="endCallBtn" style="padding: 10px 24px; border-radius: 14px; border: none; background: #ff4d4d; color: #fff; cursor: pointer; font-weight: bold; box-shadow: 0 0 15px rgba(255,77,77,0.4);">Zaňy bes et</button>
+                <button class="btn-neon-danger" id="endCallBtn">Jaňy bes et</button>
             </div>
         </div>
     </div>
 
-    <!-- Клиентские backend-скрипты Socket.io и мессенджера -->
+    <!-- Скрипты -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/socket.js"></script>
     <script src="/js/messenger-backend.js"></script>
 
     <script>
-        // Инициализация графических эффектов фона
-        function initVisualEffects() {
+        // Переводы TM / RU / EN
+        const translations = {
+            tm: {
+                pageTitle: "Messenjer — Sfera",
+                userDefault: "Ulanyjy",
+                back: "← Yza",
+                logout: "🚪 Çykmak",
+                sidebarTitle: "Söhbetdeşlik",
+                tabChats: "Çatlar",
+                tabNews: "Habarlar",
+                tabAssistant: "Sfera AI Kömekçi",
+                searchPlaceholder: "Gözleg...",
+                createGroup: "➕ Topar",
+                devGroup: "Sfera Düzüjileri",
+                aiAssistant: "Sfera AI Kömekçi",
+                userSerdar: "Serdar Annaýew",
+                online: "onlaýn",
+                clickToOpen: "Söhbetdeşligi açmak",
+                typeMessage: "Habaryňyzy ýazyň...",
+                send: "Iber",
+                createGroupTitle: "Täze topar döret",
+                groupNameLabel: "Toparyň ady",
+                groupPlaceholder: "Mysal: Taslama topary",
+                cancel: "Ýatyr",
+                create: "Döret",
+                endCall: "Jaňy bes et",
+                callingAudio: "Sesli jaň edilýär...",
+                callingVideo: "Wideojaň edilýär...",
+                downloadPC: "Ýükle 💾",
+                aiWelcome: "🤖 Salam! Men Sfera AI Kömekçisi. Size nähili kömek edip bilerin?"
+            },
+            ru: {
+                pageTitle: "Мессенджер — Sfera",
+                userDefault: "Пользователь",
+                back: "← Назад",
+                logout: "🚪 Выйти",
+                sidebarTitle: "Чаты",
+                tabChats: "Чаты",
+                tabNews: "Новости",
+                tabAssistant: "ИИ Помощник",
+                searchPlaceholder: "Поиск...",
+                createGroup: "➕ Группа",
+                devGroup: "Разработчики Sfera",
+                aiAssistant: "Sfera AI Помощник",
+                userSerdar: "Сердар Аннаев",
+                online: "онлайн",
+                clickToOpen: "Нажмите, чтобы открыть",
+                typeMessage: "Введите сообщение...",
+                send: "Отправить",
+                createGroupTitle: "Создать группу",
+                groupNameLabel: "Название группы",
+                groupPlaceholder: "Например: Команда",
+                cancel: "Отмена",
+                create: "Создать",
+                endCall: "Завершить звонок",
+                callingAudio: "Аудиозвонок...",
+                callingVideo: "Видеозвонок...",
+                downloadPC: "Скачать 💾",
+                aiWelcome: "🤖 Здравствуйте! Я ИИ-помощник Sfera."
+            },
+            en: {
+                pageTitle: "Messenger — Sfera",
+                userDefault: "User",
+                back: "← Back",
+                logout: "🚪 Logout",
+                sidebarTitle: "Chats",
+                tabChats: "Chats",
+                tabNews: "News",
+                tabAssistant: "AI Assistant",
+                searchPlaceholder: "Search...",
+                createGroup: "➕ Group",
+                devGroup: "Sfera Developers",
+                aiAssistant: "Sfera AI",
+                userSerdar: "Serdar Annayev",
+                online: "online",
+                clickToOpen: "Click to open",
+                typeMessage: "Type a message...",
+                send: "Send",
+                createGroupTitle: "Create group",
+                groupNameLabel: "Group Name",
+                groupPlaceholder: "Example: Project team",
+                cancel: "Cancel",
+                create: "Create",
+                endCall: "End call",
+                callingAudio: "Calling audio...",
+                callingVideo: "Calling video...",
+                downloadPC: "Download 💾",
+                aiWelcome: "🤖 Hello! I am Sfera AI Assistant."
+            }
+        };
+
+        let currentLang = 'tm';
+
+        const defaultDialogs = [
+            { id: 'dev_sfera', nameKey: 'devGroup', avatar: '💻', statusKey: 'online', time: '12:45', type: 'group' },
+            { id: 'ai_assistant', nameKey: 'aiAssistant', avatar: '🤖', statusKey: 'online', time: 'Indi', isAi: true, type: 'assistant' },
+            { id: 'user_serdar', nameKey: 'userSerdar', avatar: '👤', statusKey: 'online', time: '11:20', type: 'user' }
+        ];
+
+        let activeDialogId = 'dev_sfera';
+        let activeTab = 'chats';
+        const chatHistories = {};
+        const emojiList = ['😊', '😂', '👍', '❤️', '🔥', '🎉', '🚀', '💻', '✅', '🙏', '🤖', '🤝', '✨', '⚡', '🌟', '📱', '🔒', '🌐'];
+
+        function applyLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+
+            document.getElementById('langBtn').textContent = lang.toUpperCase();
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+            document.getElementById('backLink').textContent = t.back;
+            document.getElementById('logoutBtn').textContent = t.logout;
+            document.getElementById('lblSidebarTitle').textContent = t.sidebarTitle;
+            
+            document.getElementById('lblTabChats').textContent = t.tabChats;
+            document.getElementById('lblTabNews').textContent = t.tabNews;
+            document.getElementById('lblTabAssistant').textContent = t.tabAssistant;
+            
+            document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+            document.getElementById('createGroupBtn').textContent = t.createGroup;
+            document.getElementById('messageInput').placeholder = t.typeMessage;
+            document.getElementById('sendBtn').textContent = t.send;
+
+            document.getElementById('lblCreateGroupTitle').textContent = t.createGroupTitle;
+            document.getElementById('lblGroupName').textContent = t.groupNameLabel;
+            document.getElementById('groupName').placeholder = t.groupPlaceholder;
+            document.getElementById('cancelGroupBtn').textContent = t.cancel;
+            document.getElementById('lblBtnCreate').textContent = t.create;
+            document.getElementById('endCallBtn').textContent = t.endCall;
+
+            updateCurrentTabLabel();
+            renderDialogs();
+            selectDialog(activeDialogId);
+        }
+
+        function cycleLanguage() {
+            if (currentLang === 'tm') applyLanguage('ru');
+            else if (currentLang === 'ru') applyLanguage('en');
+            else applyLanguage('tm');
+        }
+
+        function updateCurrentTabLabel() {
+            const t = translations[currentLang];
+            const currentTabLabel = document.getElementById('currentTabLabel');
+            if (!currentTabLabel) return;
+
+            if (activeTab === 'news') currentTabLabel.textContent = t.tabNews;
+            else if (activeTab === 'assistant') currentTabLabel.textContent = t.tabAssistant;
+            else currentTabLabel.textContent = t.tabChats;
+        }
+
+        function renderDialogs(filter = '') {
+            const listEl = document.getElementById('dialogsList');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+            const t = translations[currentLang];
+
+            const itemsToRender = defaultDialogs.filter(d => {
+                if (activeTab === 'assistant') return d.isAi;
+                if (activeTab === 'chats') return !d.isAi;
+                return true;
+            }).filter(d => {
+                const name = t[d.nameKey] || d.nameKey;
+                return name.toLowerCase().includes(filter.toLowerCase());
+            });
+
+            itemsToRender.forEach(d => {
+                const item = document.createElement('div');
+                item.className = `dialog-item ${d.id === activeDialogId ? 'active' : ''}`;
+                item.dataset.id = d.id;
+                item.onclick = () => selectDialog(d.id);
+
+                const displayName = t[d.nameKey] || d.nameKey;
+                item.innerHTML = `
+                    <div class="dialog-avatar ${d.isAi ? 'ai-avatar' : ''}">
+                        ${d.avatar} <div class="online-dot"></div>
+                    </div>
+                    <div class="dialog-info">
+                        <div class="name">${displayName} ${d.isAi ? '<span class="ai-badge">AI</span>' : ''}</div>
+                        <div class="last-msg">${t.clickToOpen}</div>
+                    </div>
+                    <div class="dialog-time">${d.time}</div>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function selectDialog(id) {
+            activeDialogId = id;
+            const t = translations[currentLang];
+            const target = defaultDialogs.find(d => d.id === id);
+            
+            if (target) {
+                document.getElementById('chatName').textContent = t[target.nameKey] || target.nameKey;
+                document.getElementById('chatAvatar').textContent = target.avatar;
+                document.getElementById('chatStatus').textContent = t[target.statusKey] || target.statusKey;
+            }
+            renderDialogs();
+            renderChatHistory();
+        }
+
+        function renderChatHistory() {
+            const messagesBox = document.getElementById('chatMessages');
+            messagesBox.innerHTML = '';
+            const history = chatHistories[activeDialogId] || [];
+            
+            history.forEach(msg => {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message ${msg.sender === 'me' ? 'sent' : 'received'}`;
+                msgDiv.innerHTML = msg.isHtml ? msg.text : `<div>${msg.text}</div><div class="msg-time">${msg.time}</div>`;
+                messagesBox.appendChild(msgDiv);
+            });
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            const dialogsList = document.getElementById('dialogsList');
+            const newsFeed = document.getElementById('newsFeed');
+            const chatWindow = document.getElementById('chatWindow');
+
+            document.querySelectorAll('#dropdownContent button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+
+            if (tab === 'news') {
+                if (dialogsList) dialogsList.style.display = 'none';
+                if (newsFeed) newsFeed.style.display = 'block';
+                if (chatWindow) chatWindow.style.visibility = 'hidden';
+            } else {
+                if (dialogsList) dialogsList.style.display = 'block';
+                if (newsFeed) newsFeed.style.display = 'none';
+                if (chatWindow) chatWindow.style.visibility = 'visible';
+                
+                if (tab === 'assistant') selectDialog('ai_assistant');
+                else selectDialog('dev_sfera');
+            }
+            updateCurrentTabLabel();
+            document.getElementById('tabsDropdown')?.classList.remove('show');
+        }
+
+        function initEmojiPicker() {
+            const grid = document.getElementById('emojiGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            emojiList.forEach(emoji => {
+                const span = document.createElement('span');
+                span.textContent = emoji;
+                span.onclick = () => {
+                    const input = document.getElementById('messageInput');
+                    if (input) input.value += emoji;
+                    document.getElementById('emojiPicker').classList.remove('active');
+                };
+                grid.appendChild(span);
+            });
+
+            document.getElementById('emojiBtn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('emojiPicker').classList.toggle('active');
+            });
+            document.addEventListener('click', (e) => {
+                const picker = document.getElementById('emojiPicker');
+                if (picker && !picker.contains(e.target) && e.target.id !== 'emojiBtn') {
+                    picker.classList.remove('active');
+                }
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            if (!input || !input.value.trim()) return;
+
+            const text = input.value;
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            if (!chatHistories[activeDialogId]) chatHistories[activeDialogId] = [];
+            
+            chatHistories[activeDialogId].push({ sender: 'me', text, time });
+            input.value = '';
+            renderChatHistory();
+
+            if (activeDialogId === 'ai_assistant') {
+                setTimeout(() => {
+                    chatHistories[activeDialogId].push({ 
+                        sender: 'ai', 
+                        text: translations[currentLang].aiWelcome, 
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                    });
+                    renderChatHistory();
+                }, 700);
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const t = translations[currentLang];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const fileDataUrl = e.target.result;
+                const htmlContent = `
+                    <div class="file-card">
+                        <span>📄 <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)</span>
+                        <button class="btn-download-file" onclick="downloadFileFromPC('${fileDataUrl}', '${file.name}')">${t.downloadPC}</button>
+                    </div>
+                    <div class="msg-time">${time}</div>
+                `;
+
+                if (!chatHistories[activeDialogId]) chatHistories[activeDialogId] = [];
+                chatHistories[activeDialogId].push({ sender: 'me', text: htmlContent, time, isHtml: true });
+                renderChatHistory();
+            };
+
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function downloadFileFromPC(dataUrl, fileName) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function openCallModal(isVideo = false) {
+            const modal = document.getElementById('callModal');
+            document.getElementById('callTargetName').textContent = document.getElementById('chatName').textContent;
+            document.getElementById('callAvatar').textContent = document.getElementById('chatAvatar').textContent;
+            document.getElementById('callStatusText').textContent = isVideo ? translations[currentLang].callingVideo : translations[currentLang].callingAudio;
+            modal.classList.add('active');
+        }
+
+        function closeCallModal() {
+            document.getElementById('callModal').classList.remove('active');
+        }
+
+        function exportChatToPC() {
+            const history = chatHistories[activeDialogId] || [];
+            if (history.length === 0) return;
+
+            let exportText = `=== Sfera Chat History: ${document.getElementById('chatName').textContent} ===\n\n`;
+            history.forEach(msg => {
+                const sender = msg.sender === 'me' ? 'Me' : document.getElementById('chatName').textContent;
+                const text = msg.isHtml ? "[File Attached]" : msg.text;
+                exportText += `[${msg.time}] ${sender}:\n${text}\n\n`;
+            });
+
+            const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Sfera_Chat_${activeDialogId}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Инициализация фона (как в documents.html)
             const particlesContainer = document.getElementById("particles");
             if (particlesContainer) {
                 particlesContainer.innerHTML = "";
                 const colors = ['#00d4ff', '#00ffa3', '#1f6bff', '#ffffff'];
-                for (let i = 0; i < 50; i++) {
+                for (let i = 0; i < 65; i++) {
                     const particle = document.createElement("div");
                     particle.className = "particle";
                     const size = Math.random() * 2.2 + 1.0; 
@@ -826,241 +917,102 @@
             if (canvas) {
                 const ctx = canvas.getContext('2d');
                 let w, h;
-                function resize() {
-                    w = canvas.width = window.innerWidth;
-                    h = canvas.height = window.innerHeight;
-                }
+                function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
                 resize();
                 window.addEventListener('resize', resize);
-
-                const points = Array.from({ length: 50 }, () => ({
-                    x: Math.random() * (w - 40) + 20,
-                    y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.5,
-                    vy: (Math.random() - 0.5) * 0.5,
+                const points = Array.from({ length: 60 }, () => ({
+                    x: Math.random() * (w - 45) + 20, y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6,
                     radius: Math.random() * 1.2 + 0.8
                 }));
-
                 function drawCanvas() {
                     ctx.clearRect(0, 0, w, h);
                     for (let i = 0; i < points.length; i++) {
                         let p = points[i];
                         p.x += p.vx; p.y += p.vy;
-                        if (p.x < 20 || p.x > w - 20) p.vx *= -1;
+                        if (p.x < 20 || p.x > w - 25) p.vx *= -1;
                         if (p.y < 0 || p.y > h) p.vy *= -1;
-
                         for (let j = i + 1; j < points.length; j++) {
                             let p2 = points[j];
                             let dx = p.x - p2.x, dy = p.y - p2.y;
                             let dist = Math.sqrt(dx * dx + dy * dy);
-                            if (dist < 170) {
-                                ctx.beginPath();
-                                ctx.moveTo(p.x, p.y);
-                                ctx.lineTo(p2.x, p2.y);
-                                ctx.strokeStyle = `rgba(0, 212, 255, ${0.15 * (1 - dist / 170)})`;
-                                ctx.lineWidth = 1;
-                                ctx.stroke();
+                            if (dist < 180) {
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                                ctx.strokeStyle = `rgba(0, 212, 255, ${0.18 * (1 - dist / 180)})`;
+                                ctx.lineWidth = 1; ctx.stroke();
                             }
                         }
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(0, 255, 163, 0.8)';
-                        ctx.fill();
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(0, 255, 163, 0.85)'; ctx.shadowBlur = 6; ctx.shadowColor = '#00ffa3';
+                        ctx.fill(); ctx.shadowBlur = 0;
                     }
                     requestAnimationFrame(drawCanvas);
                 }
                 drawCanvas();
             }
-        }
 
-        // globalUsersRegistry, activeTab, activeDialogId, emojis — перенесены в messenger-backend.js
-        document.addEventListener('DOMContentLoaded', () => {
-            initVisualEffects();
+            // Логика навигации и кнопок (Добавлено для работы "Назад" и "Выход")
+            const user = JSON.parse(localStorage.getItem('user') || '{"username":"User","role":"user"}');
+            const usernameEl = document.getElementById('username');
+            if (usernameEl) usernameEl.textContent = user.username || 'User';
 
-            /* Yazyk (Language) logic - Default TM */
-            const langBtn = document.getElementById('langBtn');
-            const languages = ['tm', 'ru', 'en'];
-
-            let currentLang = localStorage.getItem('sphere_lang');
-            if (!currentLang || !languages.includes(currentLang)) {
-                currentLang = 'tm';
-                localStorage.setItem('sphere_lang', 'tm');
+            const backLink = document.getElementById('backLink');
+            if (backLink) {
+               backLink.href = (user && user.role === 'admin') ? 'admin.html' : 'dashboard.html';
             }
 
-            function applyLanguage(lang) {
-                currentLang = lang;
-                localStorage.setItem('sphere_lang', lang);
-                document.documentElement.lang = lang;
-
-                if (langBtn) langBtn.textContent = lang.toUpperCase();
-
-                if (typeof window.changeLanguage === 'function') {
-                    window.changeLanguage(lang);
-                } else if (typeof window.applyTranslations === 'function') {
-                    window.applyTranslations(lang);
-                }
-                window.dispatchEvent(new CustomEvent('sphereLanguageChanged', { detail: { lang } }));
-            }
-
-            if (langBtn) {
-                langBtn.addEventListener('click', () => {
-                    const currentIndex = languages.indexOf(currentLang);
-                    const nextIndex = (currentIndex + 1) % languages.length;
-                    applyLanguage(languages[nextIndex]);
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
                 });
             }
 
-                         applyLanguage(currentLang);
+            // Логика мессенджера
+            initEmojiPicker();
+            const langBtn = document.getElementById('langBtn');
+            if (langBtn) langBtn.addEventListener('click', cycleLanguage);
 
-                        // Безопасный вызов функций из messenger-backend.js
-            function safeSelectDialog(id) {
-                try {
-                    if (window.sferaMessenger && typeof window.sferaMessenger.selectDialog === 'function') {
-                        window.sferaMessenger.selectDialog(id);
-                    } else if (typeof selectDialog === 'function') {
-                        selectDialog(id);
-                    }
-                } catch (err) { console.warn('selectDialog failed:', err.message); }
-            }
-            function safeRenderDialogs() {
-                try {
-                    if (window.sferaMessenger && typeof window.sferaMessenger.reload === 'function') {
-                        window.sferaMessenger.reload();
-                    } else if (typeof renderDialogs === 'function') {
-                        renderDialogs();
-                    }
-                } catch (err) { console.warn('renderDialogs failed:', err.message); }
-            }
-            function safeFirstRealDialog() {
-                // Выбираем первый реальный диалог из DOM (после того как backend отрисовал список)
-                try {
-                    const items = document.querySelectorAll('#dialogsList .dialog-item');
-                    for (const item of items) {
-                        const id = item.dataset.id || item.getAttribute('data-id');
-                        if (id && id !== 'ai_assistant') {
-                            safeSelectDialog(id);
-                            return;
-                        }
-                    }
-                } catch (err) { console.warn('firstRealDialog failed:', err.message); }
-            }        
-              // Инициализация отображения диалогов (без обрыва скрипта)
-            safeFirstRealDialog();
-            safeRenderDialogs();
+            applyLanguage('tm'); // Установка ТМ языка по умолчанию
 
-            // ===== Вкладки переключения =====
             const tabsDropdown = document.getElementById('tabsDropdown');
-            const dropbtn = document.getElementById('dropbtn');
-            const dropdownContent = document.getElementById('dropdownContent');
-
-            dropbtn?.addEventListener('click', (e) => {
+            document.getElementById('dropbtn')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 tabsDropdown?.classList.toggle('show');
             });
-            // Закрыватель меню — только при клике ВНЕ dropbtn/dropdownContent
-            document.addEventListener('click', (e) => {
-                if (dropbtn && dropbtn.contains(e.target)) return;
-                if (dropdownContent && dropdownContent.contains(e.target)) return;
-                tabsDropdown?.classList.remove('show');
+            document.querySelectorAll('#dropdownContent button').forEach(btn => {
+                btn.addEventListener('click', (e) => { if (e.target.dataset.tab) switchTab(e.target.dataset.tab); });
+            });
+            document.addEventListener('click', () => tabsDropdown?.classList.remove('show'));
+
+            document.getElementById('searchInput')?.addEventListener('input', (e) => renderDialogs(e.target.value));
+            document.getElementById('fileBtn')?.addEventListener('click', () => document.getElementById('fileInput').click());
+
+            document.getElementById('createGroupBtn')?.addEventListener('click', () => document.getElementById('groupModal').classList.add('active'));
+            document.getElementById('cancelGroupBtn')?.addEventListener('click', () => document.getElementById('groupModal').classList.remove('active'));
+            document.getElementById('groupForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('groupName').value.trim();
+                if (name) {
+                    const newId = 'group_' + Date.now();
+                    defaultDialogs.unshift({ id: newId, nameKey: name, avatar: '👥', statusKey: 'online', time: 'Indi', type: 'group' });
+                    document.getElementById('groupModal').classList.remove('active');
+                    document.getElementById('groupName').value = '';
+                    renderDialogs();
+                    selectDialog(newId);
+                }
             });
 
-            // Кнопки вкладок — обработчик в messenger-backend.js (initTabs)
-            // Здесь не дублируем
-                          // Поиск по диалогам
-            document.getElementById('searchInput')?.addEventListener('input', (e) => {
-                renderDialogs(e.target.value.toLowerCase());
-            });
-
-            // Загрузка с ПК
-            document.getElementById('fileBtn')?.addEventListener('click', () => {
-                document.getElementById('fileInput').click();
-            });
-
-            // Скачать историю чата на ПК (Кнопка 📥)
+            document.getElementById('audioCallBtn')?.addEventListener('click', () => openCallModal(false));
+            document.getElementById('videoCallBtn')?.addEventListener('click', () => openCallModal(true));
+            document.getElementById('endCallBtn')?.addEventListener('click', closeCallModal);
             document.getElementById('exportChatBtn')?.addEventListener('click', exportChatToPC);
 
-            // Модальное окно создания группы
-            document.getElementById('createGroupBtn')?.addEventListener('click', () => {
-                document.getElementById('groupModal').classList.add('active');
-            });
-
-            document.getElementById('cancelGroupBtn')?.addEventListener('click', () => {
-                document.getElementById('groupModal').classList.remove('active');
-            });
-
-            // Звонки
-            document.getElementById('audioCallBtn')?.addEventListener('click', () => openCallModal('📞 Аудио zaň...'));
-            document.getElementById('videoCallBtn')?.addEventListener('click', () => openCallModal('📹 Wideo zaň...'));
-            document.getElementById('endCallBtn')?.addEventListener('click', () => {
-                document.getElementById('callModal').classList.remove('active');
-            });
-
-            // Отправка текстовых сообщений
             document.getElementById('sendBtn')?.addEventListener('click', sendMessage);
-            document.getElementById('messageInput')?.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') sendMessage();
-            });
+            document.getElementById('messageInput')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
         });
-        /* ==========================================================================
-           ФУНКЦИОНАЛ ЗАГРУЗКИ С ПК И СКАЧИВАНИЯ НА ПК
-           ========================================================================== */
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const messagesBox = document.getElementById('chatMessages');
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const fileDataUrl = e.target.result;
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'message sent';
-                
-                msgDiv.innerHTML = `
-                    <div class="file-card">
-                        <span>📄 <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)</span>
-                        <button class="btn-download-file" onclick="downloadFileFromPC('${fileDataUrl}', '${file.name}')">Загрузить на ПК 💾</button>
-                    </div>
-                    <div class="msg-time">${time}</div>
-                `;
-                messagesBox.appendChild(msgDiv);
-                messagesBox.scrollTop = messagesBox.scrollHeight;
-            };
-
-            reader.readAsDataURL(file);
-            event.target.value = ''; // Сброс поля выбора файла
-        }
-
-        function downloadFileFromPC(dataUrl, fileName) {
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        function exportChatToPC() {
-            const messages = document.querySelectorAll('.chat-messages .message');
-            if (messages.length === 0) return;
-
-            let exportText = `=== История чата: ${document.getElementById('chatName').textContent} ===\n\n`;
-            messages.forEach(msg => {
-                const time = msg.querySelector('.msg-time')?.textContent || '';
-                const text = msg.innerText.replace(time, '').trim();
-                const sender = msg.classList.contains('sent') ? 'Вы' : document.getElementById('chatName').textContent;
-                exportText += `[${time}] ${sender}:\n${text}\n\n`;
-            });
-
-            const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `Sfera_Chat_${activeDialogId}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
     </script>
 </body>
 </html>
