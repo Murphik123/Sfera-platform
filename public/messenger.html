@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title id="pageTitle">Messenjer — Sfera</title>
-   
+    <title data-i18n="messenger_page_title">Messenjer — Sfera</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Проверка авторизации -->
-    <script src="/js/auth-check.js"></script>
-
     <style>
         /* ==========================================================================
-           1. ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ (THEME & COLOR VARIABLES)
+           1. ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ (ТЕГ В ТЕГ ИЗ DOCUMENTS.HTML)
            ========================================================================== */
         :root {
             --primary: #00d4ff;
@@ -33,7 +30,7 @@
         }
 
         /* ==========================================================================
-           2. СТИЛИЗАЦИЯ ПОЛЗУНКА ПРОКРУТКИ (NEON SCROLLBAR MODULE)
+           2. СТИЛИЗАЦИЯ ПОЛЗУНКА ПРОКРУТКИ
            ========================================================================== */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #03080e; border-left: 1px solid rgba(0, 212, 255, 0.1); }
@@ -48,7 +45,7 @@
         }
 
         /* ==========================================================================
-           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ (GLASSMORPHISM & GRADIENTS)
+           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ
            ========================================================================== */
         .full-glass-backdrop {
             position: fixed; inset: 0; width: 100vw; height: 100vh;
@@ -63,7 +60,7 @@
         }
 
         /* ==========================================================================
-           4. ПЛАВАЮЩИЕ ТОЧКИ И НЕОНОВАЯ СЕТКА (PARTICLES & NEON FX)
+           4. ПЛАВАЮЩИЕ ТОЧКИ И НЕОНОВАЯ СЕТКА
            ========================================================================== */
         .bg-grid {
             position: fixed; inset: 0; width: 100vw; height: 100vh;
@@ -85,7 +82,7 @@
         }
 
         /* ==========================================================================
-           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И СТРУКТУРА (LAYOUT & UI COMPONENTS)
+           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И СТРУКТУРА (ИЗ DOCUMENTS.HTML)
            ========================================================================== */
         * {
             margin: 0; padding: 0; box-sizing: border-box;
@@ -124,36 +121,35 @@
         .logo-text p { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; margin: 4px 0 0 0; color: #9fb5c8; text-transform: uppercase; }
 
         .header-right { display: flex; gap: 12px; align-items: center; }
-        
         .user-info { font-size: 14px; color: var(--text); font-weight: 600; background: rgba(255, 255, 255, 0.04); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.15); }
-        
         .lang-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(0, 212, 255, 0.3); color: white; backdrop-filter: blur(10px); padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; outline: none; transition: all 0.35s ease; user-select: none; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; }
         .lang-btn:hover { background: rgba(0, 212, 255, 0.2); border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); transform: translateY(-1px); }
-        
         .btn-switch { text-decoration: none; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--white); backdrop-filter: blur(12px); transition: all 0.3s ease; }
         .btn-switch:hover { background: rgba(0, 212, 255, 0.15); border-color: var(--primary); color: var(--primary); }
-        
         .logout-btn { background: rgba(200, 0, 0, 0.15); border: 1px solid rgba(200, 0, 0, 0.35); color: #ff6b6b; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s ease; }
         .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
 
-        /* --- СТРАНИЦА МЕССЕНДЖЕРА --- */
+        /* --- ОБЕРТКА СТРАНИЦЫ (ПО АНАЛОГИИ С DOC-PAGE) --- */
         .messenger-page {
-            padding: 110px 7% 30px; /* Отступы под фиксированную шапку */
-            min-height: 100vh; display: flex; flex-direction: column;
-            position: relative; z-index: 10; box-sizing: border-box;
+            padding: 120px 7% 40px; /* Отступ под фиксированную шапку */
+            min-height: calc(100vh - 60px); /* Чтобы футер не прилипал, если контента мало */
+            position: relative; z-index: 10;
+            display: flex; flex-direction: column;
         }
 
         .messenger-container {
             display: flex; flex: 1;
-            height: calc(100vh - 180px); /* Чтобы влезало в экран вместе с шапкой */
-            min-height: 550px; border-radius: 24px; overflow: hidden;
-            position: relative; background: rgba(10, 18, 32, 0.55);
+            height: calc(100vh - 200px); /* Высота под экран с учетом шапки и футера */
+            min-height: 500px;
+            border-radius: 24px; overflow: hidden;
+            background: rgba(10, 18, 32, 0.55);
             backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
             border: 1px solid var(--glass-border); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
+        /* --- САЙДБАР (СПИСОК ЧАТОВ) --- */
         .messenger-sidebar {
-            width: 330px; min-width: 290px;
+            width: 340px; min-width: 290px;
             border-right: 1px solid var(--glass-border);
             display: flex; flex-direction: column;
             position: relative; z-index: 1; background: rgba(5, 12, 22, 0.45);
@@ -232,6 +228,7 @@
         .news-card .news-date { font-size: 11px; color: var(--primary); margin-bottom: 8px; }
         .news-card .news-text { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
+        /* --- ОКНО ЧАТА --- */
         .messenger-chat { 
             flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1; 
             background: radial-gradient(circle at top right, rgba(0, 212, 255, 0.08), transparent 60%), radial-gradient(circle at bottom left, rgba(0, 255, 163, 0.05), transparent 60%), rgba(5, 12, 22, 0.3);
@@ -306,41 +303,24 @@
         .emoji-grid span { cursor: pointer; text-align: center; transition: transform 0.15s; }
         .emoji-grid span:hover { transform: scale(1.25); }
 
-        /* Обновленный Glassmorphism дизайн модальных окон */
+        /* Модальные окна (Из messenger.html) */
         .group-modal, .call-modal {
             display: none; position: fixed; inset: 0; background: rgba(3, 8, 14, 0.6);
             backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 1000;
         }
         .group-modal.active, .call-modal.active { display: flex; animation: fadeIn 0.3s ease; }
-
         .group-modal .modal-box, .call-modal .modal-box {
             background: rgba(10, 18, 32, 0.65); backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
             border: 1px solid rgba(0, 212, 255, 0.25); border-radius: 28px; padding: 36px;
             max-width: 440px; width: 90%; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 212, 255, 0.05);
-            transform: translateY(0); transition: all 0.3s ease;
         }
-
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .modal-box h2 { font-size: 22px; color: #fff; margin-bottom: 24px; font-weight: 800; }
-        
-        .btn-glass {
-            padding: 12px 24px; border-radius: 14px; border: 1px solid var(--glass-border);
-            background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;
-        }
+        .btn-glass { padding: 12px 24px; border-radius: 14px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease; }
         .btn-glass:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
-
-        .btn-neon-primary {
-            padding: 12px 24px; border-radius: 14px; border: 1px solid var(--primary);
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 163, 0.15)); 
-            color: #fff; font-weight: 700; cursor: pointer; box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); transition: all 0.3s ease;
-        }
+        .btn-neon-primary { padding: 12px 24px; border-radius: 14px; border: 1px solid var(--primary); background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 163, 0.15)); color: #fff; font-weight: 700; cursor: pointer; box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); transition: all 0.3s ease; }
         .btn-neon-primary:hover { background: var(--primary); color: #000; box-shadow: 0 0 25px rgba(0, 212, 255, 0.6); }
-
-        .btn-neon-danger {
-            padding: 12px 24px; border-radius: 14px; border: 1px solid #ff4d4d;
-            background: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-weight: 700; cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); transition: all 0.3s ease;
-        }
+        .btn-neon-danger { padding: 12px 24px; border-radius: 14px; border: 1px solid #ff4d4d; background: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-weight: 700; cursor: pointer; box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); transition: all 0.3s ease; }
         .btn-neon-danger:hover { background: #ff4d4d; color: #fff; box-shadow: 0 0 25px rgba(255, 77, 77, 0.6); }
 
         /* --- ФУТЕР (ИЗ DOCUMENTS.HTML) --- */
@@ -400,47 +380,48 @@
 
             <div class="header-right header-buttons">
                 <span class="user-info">👤 <strong id="username">User</strong></span>
-                <button class="lang-btn" id="langBtn" type="button">TM</button>
-                <a href="#" id="backLink" class="btn-switch">← Yza</a>
-                <button class="logout-btn" id="logoutBtn">🚪 Çykmak</button>
+                <button class="lang-btn" id="langBtn" type="button" aria-label="Переключение языка">TM</button>
+                <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">← Yza</a>
+                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">🚪 Çykmak</button>
             </div>
         </div>
     </header>
 
+    <!-- КОНТЕНТ МЕССЕНДЖЕРА -->
     <section class="messenger-page">
         <div class="container" style="max-width: 1350px; display: flex; flex-direction: column; height: 100%;">
             <div class="messenger-container" id="messengerContainer">
                 <div class="messenger-sidebar" id="sidebar">
                     <div class="sidebar-header">
                         <div class="left-group">
-                            <h2 id="lblSidebarTitle">Söhbetdeşlik</h2>
+                            <h2 id="lblSidebarTitle" data-i18n="messenger_sidebar_title">Söhbetdeşlik</h2>
                         </div>
                         <div class="dropdown-tabs" id="tabsDropdown">
-                            <button class="dropbtn" id="dropbtn">📋 <span id="currentTabLabel">Çatlar</span> ▾</button>
+                            <button class="dropbtn" id="dropbtn">📋 <span id="currentTabLabel" data-i18n="messenger_tab_chats">Çatlar</span> ▾</button>
                             <div class="dropdown-content" id="dropdownContent">
-                                <button class="active" data-tab="chats" id="lblTabChats">Çatlar</button>
-                                <button data-tab="news" id="lblTabNews">Habarlar</button>
-                                <button data-tab="assistant" id="lblTabAssistant">Sfera AI Kömekçi</button>
+                                <button class="active" data-tab="chats" id="lblTabChats" data-i18n="messenger_tab_chats">Çatlar</button>
+                                <button data-tab="news" id="lblTabNews" data-i18n="messenger_tab_news">Habarlar</button>
+                                <button data-tab="assistant" id="lblTabAssistant" data-i18n="messenger_tab_ai">Sfera AI Kömekçi</button>
                             </div>
                         </div>
                     </div>
                     <div class="sidebar-search">
-                        <input type="text" id="searchInput" placeholder="Gözleg..." />
-                        <button class="create-group-btn" id="createGroupBtn">➕ Topar</button>
+                        <input type="text" id="searchInput" placeholder="Gözleg..." data-i18n-placeholder="search_placeholder" />
+                        <button class="create-group-btn" id="createGroupBtn" data-i18n="messenger_create_group">➕ Topar</button>
                     </div>
                     
                     <div class="dialogs-list" id="dialogsList"></div>
                     
                     <div class="news-feed" id="newsFeed" style="display:none;">
                         <div class="news-card">
-                            <div class="news-title">🚀 Sfera platformasynyň täzelenmesi</div>
+                            <div class="news-title" data-i18n="news_title_1">🚀 Sfera platformasynyň täzelenmesi</div>
                             <div class="news-date" id="newsDate1">Şogün, 14:00</div>
-                            <div class="news-text" id="newsText1">Köp dilli goldaw, faýl ibermek we AI kömekçisi bilen täzelenen messenjer işe girizildi.</div>
+                            <div class="news-text" data-i18n="news_summary_1">Köp dilli goldaw, faýl ibermek we AI kömekçisi bilen täzelenen messenjer işe girizildi.</div>
                         </div>
                         <div class="news-card">
-                            <div class="news-title">🌐 Arkadag-Aşgabat täze aragatnaşyk düwünleri</div>
+                            <div class="news-title" data-i18n="news_title_2">🌐 Arkadag-Aşgabat täze aragatnaşyk düwünleri</div>
                             <div class="news-date" id="newsDate2">Düýn, 18:30</div>
-                            <div class="news-text" id="newsText2">Milli ulamyň esasy maglumat merkezleriniň arasynda maglumat geçiriş tizligi optimizirlendi.</div>
+                            <div class="news-text" data-i18n="news_summary_2">Milli ulamyň esasy maglumat merkezleriniň arasynda maglumat geçiriş tizligi optimizirlendi.</div>
                         </div>
                     </div>
                 </div>
@@ -451,7 +432,7 @@
                         <div class="chat-avatar" id="chatAvatar">💻</div>
                         <div>
                             <div class="chat-name" id="chatName">Sfera Düzüjileri</div>
-                            <div class="chat-status" id="chatStatus">onlaýn</div>
+                            <div class="chat-status" id="chatStatus" data-i18n="messenger_online">onlaýn</div>
                         </div>
                         <div class="chat-actions">
                             <button id="searchInChatBtn" title="Gözleg">🔍</button>
@@ -464,13 +445,13 @@
                             <button class="emoji-btn" id="emojiBtn" title="Smileýler">😊</button>
                             <button class="file-btn" id="fileBtn" title="Faýl ýüklemek">📎</button>
                             <input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(event)" />
-                            <input type="text" id="messageInput" placeholder="Habaryňyzy ýazyň..." />
+                            <input type="text" id="messageInput" placeholder="Habaryňyzy ýazyň..." data-i18n-placeholder="messenger_type_message" />
                         </div>
                         <div class="call-buttons" style="display: flex; gap: 6px;">
                             <button id="audioCallBtn" title="Sesli jaň" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 50%; width: 38px; height: 38px; color: #fff; cursor: pointer;">📞</button>
                             <button id="videoCallBtn" title="Wideojaň" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 50%; width: 38px; height: 38px; color: #fff; cursor: pointer;">📹</button>
                         </div>
-                        <button class="send-btn" id="sendBtn">Iber</button>
+                        <button class="send-btn" id="sendBtn" data-i18n="messenger_send">Iber</button>
 
                         <div class="emoji-picker" id="emojiPicker">
                             <div class="emoji-grid" id="emojiGrid"></div>
@@ -497,15 +478,15 @@
     <!-- Модальные окна -->
     <div class="group-modal" id="groupModal">
         <div class="modal-box">
-            <h2 id="lblCreateGroupTitle">Täze topar döret</h2>
+            <h2 id="lblCreateGroupTitle" data-i18n="messenger_create_group_title">Täze topar döret</h2>
             <form id="groupForm" style="margin-top: 10px;">
                 <div class="form-group" style="margin-bottom: 24px; text-align: left;">
-                    <label for="groupName" id="lblGroupName" style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 8px;">Toparyň ady</label>
+                    <label for="groupName" id="lblGroupName" style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 8px;" data-i18n="messenger_group_name">Toparyň ady</label>
                     <input type="text" id="groupName" placeholder="Mysal: Taslama topary" required style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid rgba(0, 212, 255, 0.3); background: rgba(0,0,0,0.4); color: #fff; outline: none; font-size: 15px; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(0, 212, 255, 0.3)'" />
                 </div>
                 <div class="form-actions" style="display: flex; gap: 12px; justify-content: center;">
-                    <button type="button" class="btn-glass" id="cancelGroupBtn">Ýatyr</button>
-                    <button type="submit" class="btn-neon-primary" id="lblBtnCreate">Döret</button>
+                    <button type="button" class="btn-glass" id="cancelGroupBtn" data-i18n="messenger_cancel">Ýatyr</button>
+                    <button type="submit" class="btn-neon-primary" id="lblBtnCreate" data-i18n="messenger_create">Döret</button>
                 </div>
             </form>
         </div>
@@ -517,110 +498,61 @@
             <h2 id="callTargetName" style="margin-bottom: 4px;">Serdar Annaýew</h2>
             <div class="call-status" id="callStatusText" style="color: var(--accent); font-size: 15px; font-weight: 500; margin-bottom: 30px; letter-spacing: 0.5px;">Birikdirilýär...</div>
             <div class="call-actions">
-                <button class="btn-neon-danger" id="endCallBtn">Jaňy bes et</button>
+                <button class="btn-neon-danger" id="endCallBtn" data-i18n="messenger_end_call">Jaňy bes et</button>
             </div>
         </div>
     </div>
 
-    <!-- Скрипты -->
+    <!-- ПОДКЛЮЧЕНИЕ СКРИПТОВ -->
+    <script src="/js/auth-check.js"></script>
+    <script src="/scripts/auto_translate_i18n.js"></script>
+    
+    <!-- Скрипты сокетов (если нужны) -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/socket.js"></script>
     <script src="/js/messenger-backend.js"></script>
 
     <script>
-        // Переводы TM / RU / EN
-        const translations = {
+        // Локальный словарь для динамических элементов чата
+        const dynamicTranslations = {
             tm: {
-                pageTitle: "Messenjer — Sfera",
-                userDefault: "Ulanyjy",
-                back: "← Yza",
-                logout: "🚪 Çykmak",
-                sidebarTitle: "Söhbetdeşlik",
-                tabChats: "Çatlar",
-                tabNews: "Habarlar",
-                tabAssistant: "Sfera AI Kömekçi",
-                searchPlaceholder: "Gözleg...",
-                createGroup: "➕ Topar",
                 devGroup: "Sfera Düzüjileri",
                 aiAssistant: "Sfera AI Kömekçi",
                 userSerdar: "Serdar Annaýew",
                 online: "onlaýn",
                 clickToOpen: "Söhbetdeşligi açmak",
-                typeMessage: "Habaryňyzy ýazyň...",
-                send: "Iber",
-                createGroupTitle: "Täze topar döret",
-                groupNameLabel: "Toparyň ady",
-                groupPlaceholder: "Mysal: Taslama topary",
-                cancel: "Ýatyr",
-                create: "Döret",
-                endCall: "Jaňy bes et",
-                callingAudio: "Sesli jaň edilýär...",
-                callingVideo: "Wideojaň edilýär...",
                 downloadPC: "Ýükle 💾",
-                aiWelcome: "🤖 Salam! Men Sfera AI Kömekçisi. Size nähili kömek edip bilerin?"
+                aiWelcome: "🤖 Salam! Men Sfera AI Kömekçisi. Size nähili kömek edip bilerin?",
+                tabChats: "Çatlar",
+                tabNews: "Habarlar",
+                tabAssistant: "Sfera AI Kömekçi"
             },
             ru: {
-                pageTitle: "Мессенджер — Sfera",
-                userDefault: "Пользователь",
-                back: "← Назад",
-                logout: "🚪 Выйти",
-                sidebarTitle: "Чаты",
-                tabChats: "Чаты",
-                tabNews: "Новости",
-                tabAssistant: "ИИ Помощник",
-                searchPlaceholder: "Поиск...",
-                createGroup: "➕ Группа",
                 devGroup: "Разработчики Sfera",
                 aiAssistant: "Sfera AI Помощник",
                 userSerdar: "Сердар Аннаев",
                 online: "онлайн",
                 clickToOpen: "Нажмите, чтобы открыть",
-                typeMessage: "Введите сообщение...",
-                send: "Отправить",
-                createGroupTitle: "Создать группу",
-                groupNameLabel: "Название группы",
-                groupPlaceholder: "Например: Команда",
-                cancel: "Отмена",
-                create: "Создать",
-                endCall: "Завершить звонок",
-                callingAudio: "Аудиозвонок...",
-                callingVideo: "Видеозвонок...",
                 downloadPC: "Скачать 💾",
-                aiWelcome: "🤖 Здравствуйте! Я ИИ-помощник Sfera."
+                aiWelcome: "🤖 Здравствуйте! Я ИИ-помощник Sfera.",
+                tabChats: "Чаты",
+                tabNews: "Новости",
+                tabAssistant: "ИИ Помощник"
             },
             en: {
-                pageTitle: "Messenger — Sfera",
-                userDefault: "User",
-                back: "← Back",
-                logout: "🚪 Logout",
-                sidebarTitle: "Chats",
-                tabChats: "Chats",
-                tabNews: "News",
-                tabAssistant: "AI Assistant",
-                searchPlaceholder: "Search...",
-                createGroup: "➕ Group",
                 devGroup: "Sfera Developers",
                 aiAssistant: "Sfera AI",
                 userSerdar: "Serdar Annayev",
                 online: "online",
                 clickToOpen: "Click to open",
-                typeMessage: "Type a message...",
-                send: "Send",
-                createGroupTitle: "Create group",
-                groupNameLabel: "Group Name",
-                groupPlaceholder: "Example: Project team",
-                cancel: "Cancel",
-                create: "Create",
-                endCall: "End call",
-                callingAudio: "Calling audio...",
-                callingVideo: "Calling video...",
                 downloadPC: "Download 💾",
-                aiWelcome: "🤖 Hello! I am Sfera AI Assistant."
+                aiWelcome: "🤖 Hello! I am Sfera AI Assistant.",
+                tabChats: "Chats",
+                tabNews: "News",
+                tabAssistant: "AI Assistant"
             }
         };
-
-        let currentLang = 'tm';
 
         const defaultDialogs = [
             { id: 'dev_sfera', nameKey: 'devGroup', avatar: '💻', statusKey: 'online', time: '12:45', type: 'group' },
@@ -633,65 +565,28 @@
         const chatHistories = {};
         const emojiList = ['😊', '😂', '👍', '❤️', '🔥', '🎉', '🚀', '💻', '✅', '🙏', '🤖', '🤝', '✨', '⚡', '🌟', '📱', '🔒', '🌐'];
 
-        function applyLanguage(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-
-            document.getElementById('langBtn').textContent = lang.toUpperCase();
-            document.getElementById('pageTitle').textContent = t.pageTitle;
-            document.getElementById('backLink').textContent = t.back;
-            document.getElementById('logoutBtn').textContent = t.logout;
-            document.getElementById('lblSidebarTitle').textContent = t.sidebarTitle;
-            
-            document.getElementById('lblTabChats').textContent = t.tabChats;
-            document.getElementById('lblTabNews').textContent = t.tabNews;
-            document.getElementById('lblTabAssistant').textContent = t.tabAssistant;
-            
-            document.getElementById('searchInput').placeholder = t.searchPlaceholder;
-            document.getElementById('createGroupBtn').textContent = t.createGroup;
-            document.getElementById('messageInput').placeholder = t.typeMessage;
-            document.getElementById('sendBtn').textContent = t.send;
-
-            document.getElementById('lblCreateGroupTitle').textContent = t.createGroupTitle;
-            document.getElementById('lblGroupName').textContent = t.groupNameLabel;
-            document.getElementById('groupName').placeholder = t.groupPlaceholder;
-            document.getElementById('cancelGroupBtn').textContent = t.cancel;
-            document.getElementById('lblBtnCreate').textContent = t.create;
-            document.getElementById('endCallBtn').textContent = t.endCall;
-
-            updateCurrentTabLabel();
-            renderDialogs();
-            selectDialog(activeDialogId);
+        // Получение текущего языка (синхронизировано с auto_translate)
+        function getCurrentLang() {
+            return window.SFERA_I18N ? window.SFERA_I18N.getLanguage() : 'tm';
         }
 
-        function cycleLanguage() {
-            if (currentLang === 'tm') applyLanguage('ru');
-            else if (currentLang === 'ru') applyLanguage('en');
-            else applyLanguage('tm');
-        }
-
-        function updateCurrentTabLabel() {
-            const t = translations[currentLang];
-            const currentTabLabel = document.getElementById('currentTabLabel');
-            if (!currentTabLabel) return;
-
-            if (activeTab === 'news') currentTabLabel.textContent = t.tabNews;
-            else if (activeTab === 'assistant') currentTabLabel.textContent = t.tabAssistant;
-            else currentTabLabel.textContent = t.tabChats;
+        // Получение перевода из локального словаря
+        function getT(key) {
+            const lang = getCurrentLang();
+            return (dynamicTranslations[lang] && dynamicTranslations[lang][key]) ? dynamicTranslations[lang][key] : key;
         }
 
         function renderDialogs(filter = '') {
             const listEl = document.getElementById('dialogsList');
             if (!listEl) return;
             listEl.innerHTML = '';
-            const t = translations[currentLang];
 
             const itemsToRender = defaultDialogs.filter(d => {
                 if (activeTab === 'assistant') return d.isAi;
                 if (activeTab === 'chats') return !d.isAi;
                 return true;
             }).filter(d => {
-                const name = t[d.nameKey] || d.nameKey;
+                const name = getT(d.nameKey) || d.nameKey;
                 return name.toLowerCase().includes(filter.toLowerCase());
             });
 
@@ -701,14 +596,14 @@
                 item.dataset.id = d.id;
                 item.onclick = () => selectDialog(d.id);
 
-                const displayName = t[d.nameKey] || d.nameKey;
+                const displayName = getT(d.nameKey) || d.nameKey;
                 item.innerHTML = `
                     <div class="dialog-avatar ${d.isAi ? 'ai-avatar' : ''}">
                         ${d.avatar} <div class="online-dot"></div>
                     </div>
                     <div class="dialog-info">
                         <div class="name">${displayName} ${d.isAi ? '<span class="ai-badge">AI</span>' : ''}</div>
-                        <div class="last-msg">${t.clickToOpen}</div>
+                        <div class="last-msg">${getT('clickToOpen')}</div>
                     </div>
                     <div class="dialog-time">${d.time}</div>
                 `;
@@ -718,13 +613,12 @@
 
         function selectDialog(id) {
             activeDialogId = id;
-            const t = translations[currentLang];
             const target = defaultDialogs.find(d => d.id === id);
             
             if (target) {
-                document.getElementById('chatName').textContent = t[target.nameKey] || target.nameKey;
+                document.getElementById('chatName').textContent = getT(target.nameKey) || target.nameKey;
                 document.getElementById('chatAvatar').textContent = target.avatar;
-                document.getElementById('chatStatus').textContent = t[target.statusKey] || target.statusKey;
+                document.getElementById('chatStatus').textContent = getT(target.statusKey) || target.statusKey;
             }
             renderDialogs();
             renderChatHistory();
@@ -742,6 +636,15 @@
                 messagesBox.appendChild(msgDiv);
             });
             messagesBox.scrollTop = messagesBox.scrollHeight;
+        }
+
+        function updateCurrentTabLabel() {
+            const currentTabLabel = document.getElementById('currentTabLabel');
+            if (!currentTabLabel) return;
+
+            if (activeTab === 'news') currentTabLabel.textContent = getT('tabNews');
+            else if (activeTab === 'assistant') currentTabLabel.textContent = getT('tabAssistant');
+            else currentTabLabel.textContent = getT('tabChats');
         }
 
         function switchTab(tab) {
@@ -814,7 +717,7 @@
                 setTimeout(() => {
                     chatHistories[activeDialogId].push({ 
                         sender: 'ai', 
-                        text: translations[currentLang].aiWelcome, 
+                        text: getT('aiWelcome'), 
                         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
                     });
                     renderChatHistory();
@@ -827,7 +730,6 @@
             if (!file) return;
 
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const t = translations[currentLang];
             const reader = new FileReader();
 
             reader.onload = function(e) {
@@ -835,7 +737,7 @@
                 const htmlContent = `
                     <div class="file-card">
                         <span>📄 <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)</span>
-                        <button class="btn-download-file" onclick="downloadFileFromPC('${fileDataUrl}', '${file.name}')">${t.downloadPC}</button>
+                        <button class="btn-download-file" onclick="downloadFileFromPC('${fileDataUrl}', '${file.name}')">${getT('downloadPC')}</button>
                     </div>
                     <div class="msg-time">${time}</div>
                 `;
@@ -862,7 +764,9 @@
             const modal = document.getElementById('callModal');
             document.getElementById('callTargetName').textContent = document.getElementById('chatName').textContent;
             document.getElementById('callAvatar').textContent = document.getElementById('chatAvatar').textContent;
-            document.getElementById('callStatusText').textContent = isVideo ? translations[currentLang].callingVideo : translations[currentLang].callingAudio;
+            // Тут используется auto_translate или локальный фоллбек
+            const callText = isVideo ? (window.SFERA_I18N ? window.SFERA_I18N.t('calling_video') : 'Wideojaň...') : (window.SFERA_I18N ? window.SFERA_I18N.t('calling_audio') : 'Sesli jaň...');
+            document.getElementById('callStatusText').textContent = callText !== 'calling_video' && callText !== 'calling_audio' ? callText : (isVideo ? 'Wideojaň edilýär...' : 'Sesli jaň edilýär...');
             modal.classList.add('active');
         }
 
@@ -891,7 +795,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Инициализация фона (как в documents.html)
+            // 1. Инициализация фона (как в documents.html)
             const particlesContainer = document.getElementById("particles");
             if (particlesContainer) {
                 particlesContainer.innerHTML = "";
@@ -951,7 +855,7 @@
                 drawCanvas();
             }
 
-            // Логика навигации и кнопок (Добавлено для работы "Назад" и "Выход")
+            // 2. Навигация и кнопки
             const user = JSON.parse(localStorage.getItem('user') || '{"username":"User","role":"user"}');
             const usernameEl = document.getElementById('username');
             if (usernameEl) usernameEl.textContent = user.username || 'User';
@@ -970,12 +874,15 @@
                 });
             }
 
-            // Логика мессенджера
+            // 3. Инициализация мессенджера
             initEmojiPicker();
-            const langBtn = document.getElementById('langBtn');
-            if (langBtn) langBtn.addEventListener('click', cycleLanguage);
 
-            applyLanguage('tm'); // Установка ТМ языка по умолчанию
+            // Слушаем смену языка от auto_translate, чтобы обновить динамические тексты
+            window.addEventListener('sfera:languageChanged', () => {
+                updateCurrentTabLabel();
+                renderDialogs();
+                selectDialog(activeDialogId);
+            });
 
             const tabsDropdown = document.getElementById('tabsDropdown');
             document.getElementById('dropbtn')?.addEventListener('click', (e) => {
@@ -1012,6 +919,11 @@
 
             document.getElementById('sendBtn')?.addEventListener('click', sendMessage);
             document.getElementById('messageInput')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+            // Первичный рендер
+            updateCurrentTabLabel();
+            renderDialogs();
+            selectDialog(activeDialogId);
         });
     </script>
 </body>
