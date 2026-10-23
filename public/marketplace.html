@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
     <meta name="robots" content="notranslate">
-    <title>СФЕРА — Marketpleýs</title>
+    <title data-i18n="mp_title">SFERA — Marketpleýs</title>
     
     <!-- Модульные стили проекта -->
     <link rel="stylesheet" href="/css/variables.css">
@@ -13,124 +13,127 @@
     <link rel="stylesheet" href="/css/ui.css">
     <link rel="stylesheet" href="/css/main.css">
 
+    <!-- Подключение автоматического переводчика i18n -->
+    <script src="/scripts/auto_translate_i18n.js"></script>
+
     <style>
-        /* ===== СОГЛАСОВАННЫЕ СТИЛИ МАРКЕТПЛЕЙСА ПО style_2.css ===== */
-        .marketplace { padding: 160px 0 80px; min-height: 100vh; position: relative; z-index: 10; }
-        .mp-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
-        .mp-header h1 { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, var(--white), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0,0,0,0.5)); }
-        .mp-header p { color: var(--text-muted); font-size: 15px; }
+        /* ===== ОБЩИЕ СТИЛИ ДЛЯ МАРКЕТПЛЕЙСА ===== */
+        .marketplace { padding: 140px 0 60px; min-height: 100vh; }
+        .mp-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        .mp-header h1 { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, #fff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .mp-header p { color: #9fb5c8; font-size: 14px; }
 
-        .segment-selector { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; background: var(--glass-bg); padding: 10px; border-radius: var(--radius); border: 1px solid var(--glass-border); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); }
-        .segment-btn { flex: 1; min-width: 110px; padding: 12px 18px; border: none; border-radius: 14px; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.35s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .segment-btn.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--white); box-shadow: 0 8px 25px rgba(0,212,255,0.35); }
-        .segment-btn:hover:not(.active) { background: var(--glass-hover-bg); color: var(--white); }
+        .segment-selector { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; background: rgba(255,255,255,0.04); padding: 8px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); }
+        .segment-btn { flex: 1; min-width: 100px; padding: 10px 16px; border: none; border-radius: 12px; background: transparent; color: #9fb5c8; font-weight: 600; font-size: 14px; cursor: pointer; transition: .3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .segment-btn.active { background: linear-gradient(135deg, #00d4ff, #1f6bff); color: #fff; box-shadow: 0 8px 20px rgba(0,212,255,0.3); }
+        .segment-btn:hover:not(.active) { background: rgba(255,255,255,0.08); color: #fff; }
 
-        .category-selector { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .category-btn { padding: 8px 18px; border: 1px solid var(--glass-border); border-radius: 20px; background: var(--glass-bg); color: var(--text); cursor: pointer; transition: all 0.35s ease; font-size: 13px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
-        .category-btn.active { background: var(--glass-hover-bg); border-color: var(--primary); color: var(--primary); box-shadow: 0 0 15px rgba(0,212,255,0.2); }
-        .category-btn:hover { background: var(--glass-hover-bg); border-color: var(--glass-hover-border); }
+        .category-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+        .category-btn { padding: 6px 16px; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; background: transparent; color: #bdd0df; cursor: pointer; transition: .3s; font-size: 13px; }
+        .category-btn.active { background: rgba(0,212,255,0.15); border-color: #00d4ff; color: #00d4ff; }
+        .category-btn:hover { background: rgba(255,255,255,0.05); }
 
-        .search-bar { display: flex; gap: 12px; margin-bottom: 30px; }
-        .search-bar input { flex: 1; padding: 14px 20px; border-radius: 16px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--white); font-size: 15px; outline: none; transition: all 0.35s ease; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-        .search-bar input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); }
+        .search-bar { display: flex; gap: 12px; margin-bottom: 25px; }
+        .search-bar input { flex: 1; padding: 12px 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: #fff; font-size: 15px; outline: none; transition: .3s; }
+        .search-bar input:focus { border-color: #00d4ff; box-shadow: 0 0 15px rgba(0,212,255,0.2); }
 
-        .mp-tabs { display: flex; gap: 10px; border-bottom: 1px solid var(--glass-border); margin-bottom: 30px; flex-wrap: wrap; }
-        .mp-tabs button { padding: 12px 24px; background: transparent; border: none; color: var(--text-muted); font-size: 16px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.35s ease; }
-        .mp-tabs button.active { color: var(--primary); border-bottom-color: var(--primary); text-shadow: 0 0 10px rgba(0,212,255,0.4); }
+        .mp-tabs { display: flex; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 25px; flex-wrap: wrap; }
+        .mp-tabs button { padding: 10px 20px; background: transparent; border: none; color: #9fb5c8; font-size: 16px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: .3s; }
+        .mp-tabs button.active { color: #00d4ff; border-bottom-color: #00d4ff; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
-        .product-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 20px; backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35); }
-        .product-card:hover { transform: translateY(-8px); border-color: var(--glass-hover-border); box-shadow: 0 30px 60px rgba(0,212,255,0.25); }
-        .product-card .badge { position: absolute; top: 14px; left: 14px; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; z-index: 2; backdrop-filter: blur(10px); }
-        .badge-b2c { background: rgba(0,212,255,0.15); color: var(--primary); border: 1px solid rgba(0,212,255,0.4); }
-        .badge-b2b { background: rgba(0,255,163,0.15); color: var(--accent); border: 1px solid rgba(0,255,163,0.4); }
-        .badge-b2g { background: rgba(255,184,0,0.15); color: #ffb800; border: 1px solid rgba(255,184,0,0.4); }
-        
-        .product-card .image { width: 100%; height: 160px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.05); }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .product-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 16px; backdrop-filter: blur(15px); transition: .3s; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+        .product-card:hover { transform: translateY(-5px); border-color: rgba(0,212,255,0.4); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+        .product-card .badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; z-index: 2; }
+        .badge-b2c { background: rgba(0,212,255,0.2); color: #00d4ff; border: 1px solid rgba(0,212,255,0.4); }
+        .badge-b2b { background: rgba(0,255,163,0.2); color: #00ffa3; border: 1px solid rgba(0,255,163,0.4); }
+        .badge-b2g { background: rgba(255,184,0,0.2); color: #ffb800; border: 1px solid rgba(255,184,0,0.4); }
+        .product-card .image { width: 100%; height: 150px; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
         .product-card .image img { width: 100%; height: 100%; object-fit: cover; }
-        .product-card .image .no-img { font-size: 42px; opacity: 0.5; }
-        .product-card .name { font-size: 17px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
-        .product-card .price { font-size: 20px; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .product-card .seller { font-size: 12px; color: var(--text-muted); margin: 4px 0 14px; }
-        .product-card .favorite-btn { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: var(--text-muted); transition: all 0.3s ease; z-index: 2; backdrop-filter: blur(10px); }
-        .product-card .favorite-btn.active { color: #ffd700; border-color: rgba(255,215,0,0.5); background: rgba(255,215,0,0.1); }
+        .product-card .image .no-img { font-size: 40px; opacity: 0.5; }
+        .product-card .name { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .product-card .price { font-size: 20px; font-weight: 800; color: #00ffa3; }
+        .product-card .seller { font-size: 12px; color: #9fb5c8; margin: 4px 0 12px; }
+        .product-card .favorite-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 22px; cursor: pointer; color: #9fb5c8; transition: .2s; z-index: 2; }
+        .product-card .favorite-btn.active { color: #ffd700; }
 
-        .cart-item { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); padding: 16px 20px; border-radius: 16px; margin-bottom: 12px; border: 1px solid var(--glass-border); backdrop-filter: blur(20px); }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 12px 18px; border-radius: 12px; margin-bottom: 10px; }
         .cart-item .info { flex: 1; }
-        .cart-item .info strong { color: var(--white); font-size: 16px; }
-        .cart-item .info .meta { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        .cart-item .info strong { color: #fff; }
+        .cart-item .info .meta { font-size: 12px; color: #9fb5c8; }
         .cart-item .actions { display: flex; align-items: center; gap: 12px; }
-        .cart-item .actions .qty-btn { background: var(--glass-hover-bg); border: 1px solid var(--glass-border); color: var(--white); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: 700; transition: all 0.3s ease; }
-        .cart-item .actions .qty-btn:hover { background: var(--primary); color: #000; border-color: var(--primary); }
-        .cart-item .actions .remove-btn { background: rgba(255,77,77,0.15); border: 1px solid rgba(255,77,77,0.3); color: #ff4d4d; padding: 6px 12px; border-radius: 10px; cursor: pointer; font-size: 13px; transition: all 0.3s ease; }
-        .cart-item .actions .remove-btn:hover { background: #ff4d4d; color: var(--white); }
-        
-        .cart-total { background: var(--glass-bg); padding: 24px; border-radius: var(--radius); text-align: right; margin-top: 24px; border: 1px solid var(--glass-border); backdrop-filter: blur(25px); }
-        .cart-total .total-price { font-size: 24px; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .cart-item .actions .qty-btn { background: rgba(255,255,255,0.08); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: 700; transition: .2s; }
+        .cart-item .actions .qty-btn:hover { background: #00d4ff; color: #000; }
+        .cart-item .actions .remove-btn { background: rgba(255,77,77,0.2); border: none; color: #ff4d4d; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: .2s; }
+        .cart-item .actions .remove-btn:hover { background: #ff4d4d; color: #fff; }
+        .cart-total { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; text-align: right; margin-top: 20px; }
+        .cart-total .total-price { font-size: 22px; font-weight: 700; color: #00ffa3; }
 
-        .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-        .profile-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 28px; backdrop-filter: blur(30px); }
-        .profile-card h3 { font-size: 20px; margin-bottom: 20px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
-        .profile-card .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; color: var(--text); }
+        .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .profile-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px; }
+        .profile-card h3 { font-size: 18px; margin-bottom: 16px; color: #00d4ff; display: flex; justify-content: space-between; align-items: center; }
+        .profile-card .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
 
-        .admin-panel { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 28px; backdrop-filter: blur(30px); }
-        .admin-panel h3 { font-size: 22px; color: var(--white); margin-bottom: 20px; }
-        .admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 24px; }
-        .admin-form .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        .admin-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px; }
+        .admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .admin-form .form-group label { display: block; font-size: 13px; color: #9fb5c8; margin-bottom: 4px; }
         .admin-form .form-group input,
         .admin-form .form-group select {
             width: 100%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: rgba(3, 8, 14, 0.6);
-            color: var(--white);
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.2);
+            color: #fff;
             font-size: 15px;
             outline: none;
-            transition: all 0.35s ease;
+            transition: .3s;
         }
-        .admin-form .form-group input:focus,
-        .admin-form .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,212,255,0.25); }
-        .admin-form .form-group select option { background: #0b2035; color: var(--white); }
+        .admin-form .form-group select option { background: #0b2035; color: #fff; }
 
-        .empty-state { text-align: center; padding: 50px; color: var(--text-muted); }
-        .empty-state .icon { font-size: 56px; margin-bottom: 15px; filter: drop-shadow(0 0 15px rgba(0,212,255,0.3)); }
+        .empty-state { text-align: center; padding: 40px; color: #9fb5c8; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 10px; }
 
-        .message { padding: 14px 20px; border-radius: 14px; margin-bottom: 24px; text-align: center; font-weight: 600; backdrop-filter: blur(15px); }
-        .message.success { background: rgba(0,255,163,0.15); border: 1px solid rgba(0,255,163,0.4); color: var(--accent); }
+        .order-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.7); backdrop-filter: blur(10px); justify-content: center; align-items: center; z-index: 1000; }
+        .order-modal.active { display: flex; }
+        .order-modal .modal-box { background: rgba(20,30,45,0.95); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,.15); border-radius: 24px; padding: 30px; max-width: 500px; width: 95%; max-height: 90vh; overflow-y: auto; }
+        .order-modal .modal-box h2 { color: #fff; margin-bottom: 20px; }
+
+        .message { padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 600; }
+        .message.success { background: rgba(0,255,163,0.15); border: 1px solid rgba(0,255,163,0.4); color: #00ffa3; }
         .message.error { background: rgba(255,77,77,0.15); border: 1px solid rgba(255,77,77,0.4); color: #ff4d4d; }
 
         .btn {
-            padding: 12px 28px;
-            border-radius: 14px;
-            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: .3s;
             text-decoration: none;
             display: inline-block;
             font-size: 14px;
-            background: var(--glass-bg);
-            color: var(--white);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.06);
+            color: white;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.15);
         }
-        .btn:hover { transform: translateY(-2px); border-color: var(--glass-hover-border); background: var(--glass-hover-bg); }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--white); border: none; box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
-        .btn-primary:hover { box-shadow: 0 15px 35px rgba(0,212,255,0.5); transform: translateY(-3px); }
-        .btn-outline { background: transparent; border: 1px solid var(--glass-border); color: var(--white); }
-        .btn-outline:hover { background: var(--glass-hover-bg); border-color: var(--primary); color: var(--primary); }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: linear-gradient(135deg, #00d4ff, #008cff); color: white; border: none; box-shadow: 0 10px 30px rgba(0,212,255,0.25); }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.25); color: white; }
+        .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: #00d4ff; color: #00d4ff; }
+        .btn-success { background: linear-gradient(135deg, #00ffa3, #00b894); color: #08131d; border: none; }
         
         header {
-            background: var(--header-footer-bg) !important;
-            backdrop-filter: blur(25px) saturate(200%) !important;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2) !important;
+            background: rgba(255, 255, 255, 0.06) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
         }
         .header-right .btn-switch, .header-right .lang, .header-right .logout-btn {
-            background: var(--glass-bg) !important;
-            border: 1px solid var(--glass-border) !important;
-            color: var(--white) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #fff !important;
         }
     </style>
 </head>
@@ -148,13 +151,13 @@
                         <circle cx="48" cy="48" r="3.5" fill="#ffffff"/>
                     </svg>
                 </div>
-                <div class="logo-text"><h2>SFERA</h2><p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p></div>
+                <div class="logo-text"><h2 data-i18n="logo_title">SFERA</h2><p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p></div>
             </a>
             <div class="header-right">
                 <span class="user-info">👤 <strong id="username">User</strong></span>
-                <button class="lang" id="langBtn">TM</button>
+                <button class="lang-btn" id="langBtn" type="button">TM</button>
                 <button class="logout-btn" id="logoutBtn" data-i18n="logout">🚪 Çykmak</button>
-                <a href="#" id="backLink" class="btn-switch" data-i18n="back">← Yza</a>
+                <a href="index.html" id="backLink" class="btn-switch" data-i18n="back">← Yza</a>
             </div>
         </div>
     </header>
@@ -162,7 +165,7 @@
     <section class="marketplace">
         <div class="container">
             <div class="mp-header">
-                <div><h1 data-i18n="mp_title">🛒 SFERA Marketpleýs</h1><p data-i18n="mp_subtitle">Частные продажи • Бизнес-поставки • Госзакупки</p></div>
+                <div><h1 data-i18n="mp_title">🛒 SFERA Marketpleýs</h1><p data-i18n="mp_subtitle">Şahsy satuwlar • Biznes üpjünçiligi • Döwlet satyn alyşlary</p></div>
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-outline" id="resetProductsBtn" title="Сбросить товары к демо">↺ Сброс данных</button>
                     <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">⟳ Täzele</button>
@@ -191,7 +194,7 @@
 
             <!-- Поиск -->
             <div class="search-bar">
-                <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Harytlary gözlemek..." />
+                <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Gözleg..." />
             </div>
 
             <!-- Табы -->
@@ -244,10 +247,10 @@
             <!-- Админ-панель -->
             <div class="tab-content" id="tab-admin">
                 <div class="admin-panel">
-                    <h3 data-i18n="admin_title">Управление каталогом</h3>
+                    <h3 data-i18n="admin_title">Katalogy dolandyrmak</h3>
                     <form id="adminProductForm">
                         <div class="admin-form">
-                            <div class="form-group"><label data-i18n="admin_segment">Сегмент</label><select id="adminSegment" class="form-select"><option value="b2c">B2C</option><option value="b2b">B2B</option><option value="b2g">B2G</option></select></div>
+                            <div class="form-group"><label data-i18n="admin_segment">Segment</label><select id="adminSegment" class="form-select"><option value="b2c">B2C</option><option value="b2b">B2B</option><option value="b2g">B2G</option></select></div>
                             <div class="form-group"><label data-i18n="admin_category">Kategoriýa</label><select id="adminCategory" class="form-select"><option value="electronics">Электроника</option><option value="industry">Промышленность</option><option value="food">Продукты</option><option value="agriculture">Сельское хозяйство</option><option value="gov_tenders">Гос. тендеры</option></select></div>
                             <div class="form-group"><label data-i18n="admin_name">Ady</label><input type="text" id="adminName" placeholder="Наименование товара" class="form-input" required /></div>
                             <div class="form-group"><label data-i18n="admin_price">Bahasy (TMT)</label><input type="number" id="adminPrice" step="0.01" class="form-input" required placeholder="0.00" /></div>
@@ -262,7 +265,7 @@
         </div>
     </section>
 
-    <!-- Подключение скриптов с обработкой отсутствия локальных модулей -->
+    <!-- Подключение скриптов -->
     <script src="/js/auth-check.js" onerror="console.warn('auth-check.js not found')"></script>
     <script src="/js/api.js" onerror="console.warn('api.js not found')"></script>
     <script src="/js/theme.js" onerror="console.warn('theme.js not found')"></script>
@@ -311,7 +314,6 @@
         let wishlist = JSON.parse(localStorage.getItem('mp_wishlist') || '[]');
         let currentSegment = 'all';
         let currentCategory = 'all';
-        let currentLang = localStorage.getItem('lang') || 'tm';
 
         function showMessage(msg, type = 'success') {
             const el = document.getElementById('message');
@@ -350,41 +352,14 @@
                 renderCatalog();
                 renderAdminList();
             }
+            
+            // Отслеживание динамической смены языка через авто-переводчик
+            window.addEventListener('sfera:languageChanged', () => {
+                renderCatalog();
+            });
         });
 
-        const translations = {
-            ru: {
-                logo_subtitle: "Национальная Цифровая Платформа", logout: "🚪 Выйти", back: "← Назад",
-                mp_title: "🛒 SFERA Marketpleýs", mp_subtitle: "Частные продажи • Бизнес-поставки • Госзакупки",
-                refresh: "⟳ Обновить", segment_all: "🌐 Все", segment_b2c: "👤 B2C", segment_b2b: "🏢 B2B", segment_b2g: "🏛️ B2G",
-                category_all: "Все категории",
-                tab_catalog: "Каталог", tab_cart: "Корзина", tab_profile: "Профиль", tab_wishlist: "⭐ Избранное", tab_admin: "Админка",
-                search_placeholder: "Поиск товаров...", cart_empty: "Корзина пуста", total: "Итого:", checkout: "Оформить заказ",
-                profile_info: "Информация профиля", username_label: "Имя пользователя:", email_label: "Email:",
-                phone_label: "Телефон:", address_label: "Адрес:",
-                wishlist_empty: "Нет избранных товаров",
-                admin_title: "Управление каталогом", admin_segment: "Сегмент", admin_category: "Категория",
-                admin_name: "Наименование", admin_price: "Цена (TMT)", admin_seller: "Продавец", admin_image: "URL картинки",
-                admin_add: "Добавить товар", admin_list: "Все товары в системе",
-                add_to_cart: "В корзину", product_added: "Товар добавлен в корзину!"
-            },
-            tm: {
-                logo_subtitle: "Milli Sanly Platforma", logout: "🚪 Çykmak", back: "← Yza",
-                mp_title: "🛒 SFERA Marketpleýs", mp_subtitle: "Şahsy satuwlar • Biznes üpjünçilik • Döwlet satyn alyşlar",
-                refresh: "⟳ Täzele", segment_all: "🌐 Ähli", segment_b2c: "👤 B2C", segment_b2b: "🏢 B2B", segment_b2g: "🏛️ B2G",
-                category_all: "Ähli kategoriýa",
-                tab_catalog: "Katalog", tab_cart: "Sebet", tab_profile: "Şahsy kabinet", tab_wishlist: "⭐ Söýliler", tab_admin: "Admin",
-                search_placeholder: "Harytlary gözlemek...", cart_empty: "Sebet boş", total: "Jemi:", checkout: "Sargyt et",
-                profile_info: "Profil maglumatlary", username_label: "Ulanyjy ady:", email_label: "Email:",
-                phone_label: "Telefon:", address_label: "Adres:",
-                wishlist_empty: "Söýli harytlar ýok",
-                admin_title: "Katalog dolandyrmak", admin_segment: "Segment", admin_category: "Kategoriýa",
-                admin_name: "Ady", admin_price: "Bahasy (TMT)", admin_seller: "Satyjy", admin_image: "Surat URL",
-                admin_add: "Haryt goşmak", admin_list: "Ähli harytlar",
-                add_to_cart: "Sebete goş", product_added: "Haryt sebeta goşuldy!"
-            }
-        };
-
+        // Главный рендер каталога
         function renderCatalog() {
             const container = document.getElementById('catalogContent');
             if (!container) return;
@@ -403,11 +378,11 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>Товары не найдены</p></div>`;
+                container.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>Harytlar tapylmady</p></div>`;
                 return;
             }
 
-            const btnText = translations[currentLang] ? translations[currentLang].add_to_cart : 'В корзину';
+            const btnText = (window.SFERA_I18N && window.SFERA_I18N.t) ? window.SFERA_I18N.t('add_to_cart') : 'Sebede goş';
 
             container.innerHTML = `<div class="products-grid">` + filtered.map(p => {
                 const isFav = wishlist.includes(String(p.id));
@@ -419,7 +394,7 @@
                             ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div class="no-img">🛍️</div>`}
                         </div>
                         <div class="name">${p.name}</div>
-                        <div class="seller">🏢 ${p.seller || 'Продавец'}</div>
+                        <div class="seller">🏢 ${p.seller || 'Satyjy'}</div>
                         <div class="price">${Number(p.price || 0).toFixed(2)} TMT</div>
                         <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="addToCart('${p.id}')">
                             ${btnText}
@@ -591,6 +566,8 @@
                 return;
             }
 
+            const btnText = (window.SFERA_I18N && window.SFERA_I18N.t) ? window.SFERA_I18N.t('add_to_cart') : 'Sebede goş';
+
             container.innerHTML = `<div class="products-grid">` + favProducts.map(p => `
                 <div class="product-card">
                     <span class="badge badge-${p.segment || 'b2c'}">${(p.segment || 'b2c').toUpperCase()}</span>
@@ -599,9 +576,9 @@
                         ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div class="no-img">🛍️</div>`}
                     </div>
                     <div class="name">${p.name}</div>
-                    <div class="seller">🏢 ${p.seller || 'Продавец'}</div>
+                    <div class="seller">🏢 ${p.seller || 'Satyjy'}</div>
                     <div class="price">${Number(p.price || 0).toFixed(2)} TMT</div>
-                    <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="addToCart('${p.id}')">В корзину</button>
+                    <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="addToCart('${p.id}')">${btnText}</button>
                 </div>
             `).join('') + `</div>`;
         }
@@ -676,7 +653,5 @@
             });
         });
     </script>
-    <script src="js/auth-check.js"></script>
-    <script src="/scripts/auto_translate_i18n.js"></script>
 </body>
 </html>
