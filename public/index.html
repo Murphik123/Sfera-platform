@@ -740,62 +740,8 @@
                     <p data-i18n="logo_subtitle">Milli Sanly Platforma</p>
                 </div>
             </a>
-            <p data-i18n="footer_copyright">© 2026 — Türkmenistanyň Birleşdirilen Sanly Platformasy</p>
-        </div>
-    </footer>
-
-    <script>
+          <script>
         document.addEventListener('DOMContentLoaded', () => {
-
-            /* ==========================================================================
-               ЛОГИКА ПЕРЕКЛЮЧЕНИЯ И СОХРАНЕНИЯ ЯЗЫКА (ПРИОРИТЕТ: TM ПО УМОЛЧАНИЮ)
-               ========================================================================== */
-            const langBtn = document.getElementById('langBtn');
-            const languages = ['tm', 'ru', 'en'];
-
-            // 1. Проверяем наличие записанного языка. Если его нет — жестко инициализируем "tm"
-            let currentLang = localStorage.getItem('sphere_lang');
-            if (!currentLang || !languages.includes(currentLang)) {
-                currentLang = 'tm';
-                localStorage.setItem('sphere_lang', 'tm');
-            }
-
-            // 2. Функция применения языка
-            function applyLanguage(lang) {
-                currentLang = lang;
-                localStorage.setItem('sphere_lang', lang);
-                
-                // Устанавливаем атрибут lang
-                document.documentElement.lang = lang;
-
-                // Обновляем текст кнопки
-                if (langBtn) {
-                    langBtn.textContent = lang.toUpperCase();
-                }
-
-                // Вызываем методы скрипта переводов (если доступны)
-                if (typeof window.changeLanguage === 'function') {
-                    window.changeLanguage(lang);
-                } else if (typeof window.applyTranslations === 'function') {
-                    window.applyTranslations(lang);
-                }
-
-                // Генерируем кастомное событие для внешнего i18n
-                window.dispatchEvent(new CustomEvent('sphereLanguageChanged', { detail: { lang } }));
-            }
-
-            // 3. Переключение по нажатию кнопки (TM -> RU -> EN -> TM)
-            if (langBtn) {
-                langBtn.addEventListener('click', () => {
-                    const currentIndex = languages.indexOf(currentLang);
-                    const nextIndex = (currentIndex + 1) % languages.length;
-                    applyLanguage(languages[nextIndex]);
-                });
-            }
-
-            // Инициализируем текущий сохраненный язык сразу при загрузке
-            applyLanguage(currentLang);
-
 
             /* ==========================================================================
                АНИМАЦИИ И ЭФФЕКТЫ ИНТЕРФЕЙСА
@@ -940,5 +886,3 @@
             document.querySelectorAll(".stat").forEach(el => observer.observe(el));
         });
     </script>
-</body>
-</html>
