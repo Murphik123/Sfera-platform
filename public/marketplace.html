@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
     <meta name="robots" content="notranslate">
-    <title>СФЕРА — Marketpleýs</title>
+    <title data-i18n="mp_title">СФЕРА — Marketpleýs</title>
     
     <!-- Модульные стили проекта -->
     <link rel="stylesheet" href="/css/variables.css">
     <link rel="stylesheet" href="/css/glass.css">
     <link rel="stylesheet" href="/css/ui.css">
     <link rel="stylesheet" href="/css/main.css">
+
+    <!-- Подключение автоматического переводчика i18n -->
+    <script src="/scripts/auto_translate_i18n.js"></script>
 
     <style>
         /* ===== СОГЛАСОВАННЫЕ СТИЛИ МАРКЕТПЛЕЙСА ПО style_2.css ===== */
@@ -148,13 +151,13 @@
                         <circle cx="48" cy="48" r="3.5" fill="#ffffff"/>
                     </svg>
                 </div>
-                <div class="logo-text"><h2>SFERA</h2><p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p></div>
+                <div class="logo-text"><h2 data-i18n="logo_title">SFERA</h2><p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p></div>
             </a>
             <div class="header-right">
                 <span class="user-info">👤 <strong id="username">User</strong></span>
-                <button class="lang" id="langBtn">TM</button>
+                <button class="lang-btn" id="langBtn" type="button">TM</button>
                 <button class="logout-btn" id="logoutBtn" data-i18n="logout">🚪 Çykmak</button>
-                <a href="#" id="backLink" class="btn-switch" data-i18n="back">← Yza</a>
+                <a href="index.html" id="backLink" class="btn-switch" data-i18n="back">← Yza</a>
             </div>
         </div>
     </header>
@@ -179,16 +182,17 @@
                 <button class="segment-btn" data-segment="b2g" data-i18n="segment_b2g">🏛️ B2G</button>
             </div>
 
-            <!-- Категории -->
-             <div class="category-selector" id="categorySelector">
-    <button class="category-btn active" data-category="all" data-i18n="category_all">Ähli kategoriýa</button>
-    <button class="category-btn" data-category="electronics" data-i18n="cat_electronics">📱 Электроника</button>
-    <button class="category-btn" data-category="food" data-i18n="cat_food">🍎 Продукты</button>
-    <button class="category-btn" data-category="industry" data-i18n="cat_industry">⚙️ Промышленность</button>
-    <button class="category-btn" data-category="agriculture" data-i18n="cat_agriculture">🌾 Сельское хозяйство</button>
-    <button class="category-btn" data-category="gov_tenders" data-i18n="cat_gov_tenders">📋 Гос. тендеры</button>
-</div>        
-   <!-- Поиск -->
+            <!-- Категории с ключами перевода -->
+            <div class="category-selector" id="categorySelector">
+                <button class="category-btn active" data-category="all" data-i18n="category_all">Ähli kategoriýa</button>
+                <button class="category-btn" data-category="electronics" data-i18n="cat_electronics">📱 Электроника</button>
+                <button class="category-btn" data-category="food" data-i18n="cat_food">🍎 Продукты</button>
+                <button class="category-btn" data-category="industry" data-i18n="cat_industry">⚙️ Промышленность</button>
+                <button class="category-btn" data-category="agriculture" data-i18n="cat_agriculture">🌾 Сельское хозяйство</button>
+                <button class="category-btn" data-category="gov_tenders" data-i18n="cat_gov_tenders">📋 Гос. тендеры</button>
+            </div>
+
+            <!-- Поиск -->
             <div class="search-bar">
                 <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Harytlary gözlemek..." />
             </div>
@@ -243,21 +247,21 @@
             <!-- Админ-панель -->
             <div class="tab-content" id="tab-admin">
                 <div class="admin-panel">
-                    <h3 data-i18n="admin_title">Управление каталогом</h3>
+                    <h3 data-i18n="admin_title">Katalog dolandyrmak</h3>
                     <form id="adminProductForm">
                         <div class="admin-form">
-                            <div class="form-group"><label data-i18n="admin_segment">Сегмент</label><select id="adminSegment" class="form-select"><option value="b2c">B2C</option><option value="b2b">B2B</option><option value="b2g">B2G</option></select></div>
-                             <div class="form-group">
-    <label data-i18n="admin_category">Kategoriýa</label>
-    <select id="adminCategory" class="form-select">
-        <option value="electronics" data-i18n="cat_electronics">Электроника</option>
-        <option value="industry" data-i18n="cat_industry">Промышленность</option>
-        <option value="food" data-i18n="cat_food">Продукты</option>
-        <option value="agriculture" data-i18n="cat_agriculture">Сельское хозяйство</option>
-        <option value="gov_tenders" data-i18n="cat_gov_tenders">Гос. тендеры</option>
-    </select>
-</div>                      
- <div class="form-group"><label data-i18n="admin_name">Ady</label><input type="text" id="adminName" placeholder="Наименование товара" class="form-input" required /></div>
+                            <div class="form-group"><label data-i18n="admin_segment">Segment</label><select id="adminSegment" class="form-select"><option value="b2c">B2C</option><option value="b2b">B2B</option><option value="b2g">B2G</option></select></div>
+                            <div class="form-group">
+                                <label data-i18n="admin_category">Kategoriýa</label>
+                                <select id="adminCategory" class="form-select">
+                                    <option value="electronics" data-i18n="cat_electronics">Электроника</option>
+                                    <option value="industry" data-i18n="cat_industry">Промышленность</option>
+                                    <option value="food" data-i18n="cat_food">Продукты</option>
+                                    <option value="agriculture" data-i18n="cat_agriculture">Сельское хозяйство</option>
+                                    <option value="gov_tenders" data-i18n="cat_gov_tenders">Гос. тендеры</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label data-i18n="admin_name">Ady</label><input type="text" id="adminName" placeholder="Наименование товара" class="form-input" required /></div>
                             <div class="form-group"><label data-i18n="admin_price">Bahasy (TMT)</label><input type="number" id="adminPrice" step="0.01" class="form-input" required placeholder="0.00" /></div>
                             <div class="form-group"><label data-i18n="admin_seller">Satyjy</label><input type="text" id="adminSeller" class="form-input" required placeholder="ООО / ИП" /></div>
                             <div class="form-group"><label data-i18n="admin_image">Surat URL</label><input type="url" id="adminImageUrl" class="form-input" placeholder="https://..." /></div>
@@ -270,7 +274,7 @@
         </div>
     </section>
 
-    <!-- Подключение скриптов с обработкой отсутствия локальных модулей -->
+    <!-- Подключение скриптов -->
     <script src="/js/auth-check.js" onerror="console.warn('auth-check.js not found')"></script>
     <script src="/js/api.js" onerror="console.warn('api.js not found')"></script>
     <script src="/js/theme.js" onerror="console.warn('theme.js not found')"></script>
@@ -319,7 +323,6 @@
         let wishlist = JSON.parse(localStorage.getItem('mp_wishlist') || '[]');
         let currentSegment = 'all';
         let currentCategory = 'all';
-        let currentLang = localStorage.getItem('lang') || 'tm';
 
         function showMessage(msg, type = 'success') {
             const el = document.getElementById('message');
@@ -358,40 +361,11 @@
                 renderCatalog();
                 renderAdminList();
             }
-        });
 
-        const translations = {
-            ru: {
-                logo_subtitle: "Национальная Цифровая Платформа", logout: "🚪 Выйти", back: "← Назад",
-                mp_title: "🛒 SFERA Marketpleýs", mp_subtitle: "Частные продажи • Бизнес-поставки • Госзакупки",
-                refresh: "⟳ Обновить", segment_all: "🌐 Все", segment_b2c: "👤 B2C", segment_b2b: "🏢 B2B", segment_b2g: "🏛️ B2G",
-                category_all: "Все категории",
-                tab_catalog: "Каталог", tab_cart: "Корзина", tab_profile: "Профиль", tab_wishlist: "⭐ Избранное", tab_admin: "Админка",
-                search_placeholder: "Поиск товаров...", cart_empty: "Корзина пуста", total: "Итого:", checkout: "Оформить заказ",
-                profile_info: "Информация профиля", username_label: "Имя пользователя:", email_label: "Email:",
-                phone_label: "Телефон:", address_label: "Адрес:",
-                wishlist_empty: "Нет избранных товаров",
-                admin_title: "Управление каталогом", admin_segment: "Сегмент", admin_category: "Категория",
-                admin_name: "Наименование", admin_price: "Цена (TMT)", admin_seller: "Продавец", admin_image: "URL картинки",
-                admin_add: "Добавить товар", admin_list: "Все товары в системе",
-                add_to_cart: "В корзину", product_added: "Товар добавлен в корзину!"
-            },
-            tm: {
-                logo_subtitle: "Milli Sanly Platforma", logout: "🚪 Çykmak", back: "← Yza",
-                mp_title: "🛒 SFERA Marketpleýs", mp_subtitle: "Şahsy satuwlar • Biznes üpjünçilik • Döwlet satyn alyşlar",
-                refresh: "⟳ Täzele", segment_all: "🌐 Ähli", segment_b2c: "👤 B2C", segment_b2b: "🏢 B2B", segment_b2g: "🏛️ B2G",
-                category_all: "Ähli kategoriýa",
-                tab_catalog: "Katalog", tab_cart: "Sebet", tab_profile: "Şahsy kabinet", tab_wishlist: "⭐ Söýliler", tab_admin: "Admin",
-                search_placeholder: "Harytlary gözlemek...", cart_empty: "Sebet boş", total: "Jemi:", checkout: "Sargyt et",
-                profile_info: "Profil maglumatlary", username_label: "Ulanyjy ady:", email_label: "Email:",
-                phone_label: "Telefon:", address_label: "Adres:",
-                wishlist_empty: "Söýli harytlar ýok",
-                admin_title: "Katalog dolandyrmak", admin_segment: "Segment", admin_category: "Kategoriýa",
-                admin_name: "Ady", admin_price: "Bahasy (TMT)", admin_seller: "Satyjy", admin_image: "Surat URL",
-                admin_add: "Haryt goşmak", admin_list: "Ähli harytlar",
-                add_to_cart: "Sebete goş", product_added: "Haryt sebeta goşuldy!"
-            }
-        };
+            window.addEventListener('sfera:languageChanged', () => {
+                renderCatalog();
+            });
+        });
 
         function renderCatalog() {
             const container = document.getElementById('catalogContent');
@@ -411,11 +385,11 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>Товары не найдены</p></div>`;
+                container.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>Harytlar tapylmady</p></div>`;
                 return;
             }
 
-            const btnText = translations[currentLang] ? translations[currentLang].add_to_cart : 'В корзину';
+            const btnText = (window.SFERA_I18N && window.SFERA_I18N.t) ? window.SFERA_I18N.t('add_to_cart') : 'Sebete goş';
 
             container.innerHTML = `<div class="products-grid">` + filtered.map(p => {
                 const isFav = wishlist.includes(String(p.id));
@@ -427,7 +401,7 @@
                             ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div class="no-img">🛍️</div>`}
                         </div>
                         <div class="name">${p.name}</div>
-                        <div class="seller">🏢 ${p.seller || 'Продавец'}</div>
+                        <div class="seller">🏢 ${p.seller || 'Satyjy'}</div>
                         <div class="price">${Number(p.price || 0).toFixed(2)} TMT</div>
                         <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="addToCart('${p.id}')">
                             ${btnText}
@@ -599,6 +573,8 @@
                 return;
             }
 
+            const btnText = (window.SFERA_I18N && window.SFERA_I18N.t) ? window.SFERA_I18N.t('add_to_cart') : 'Sebete goş';
+
             container.innerHTML = `<div class="products-grid">` + favProducts.map(p => `
                 <div class="product-card">
                     <span class="badge badge-${p.segment || 'b2c'}">${(p.segment || 'b2c').toUpperCase()}</span>
@@ -607,9 +583,9 @@
                         ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div class="no-img">🛍️</div>`}
                     </div>
                     <div class="name">${p.name}</div>
-                    <div class="seller">🏢 ${p.seller || 'Продавец'}</div>
+                    <div class="seller">🏢 ${p.seller || 'Satyjy'}</div>
                     <div class="price">${Number(p.price || 0).toFixed(2)} TMT</div>
-                    <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="addToCart('${p.id}')">В корзину</button>
+                    <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="addToCart('${p.id}')">${btnText}</button>
                 </div>
             `).join('') + `</div>`;
         }
@@ -684,7 +660,5 @@
             });
         });
     </script>
-    <script src="js/auth-check.js"></script>
-    <script src="/scripts/auto_translate_i18n.js"></script>
 </body>
 </html>
