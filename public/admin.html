@@ -112,7 +112,7 @@
         .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
 
         /* ==========================================================================
-           5. СТИЛИ СТРАНИЦЫ (ИЗ DOCUMENTS.HTML)
+           5. СТИЛИ СТРАНИЦЫ (АДМИНКА)
            ========================================================================== */
         .doc-page {
             padding: 120px 7% 40px;
@@ -123,7 +123,6 @@
             flex-direction: column;
         }
 
-        /* --- МАКЕТ АДМИНКИ --- */
         .admin-wrapper {
             display: flex;
             gap: 24px;
@@ -203,7 +202,9 @@
             margin-bottom: 30px;
         }
 
-        /* --- КАРТОЧКИ МОДУЛЕЙ --- */
+        /* ==========================================================================
+           6. КАРТОЧКИ И ЭФФЕКТ ПОДСВЕТКИ (SPOTLIGHT)
+           ========================================================================== */
         .modules-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -211,50 +212,58 @@
             margin-bottom: 30px;
         }
 
-        .module-card {
-            background: var(--glass-bg);
+        /* Общие стили для карточек */
+        .module-card, .admin-card {
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            position: relative;
+            /* Динамический градиент, который двигается за мышкой */
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(0, 212, 255, 0.15), rgba(255, 255, 255, 0.03));
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 24px;
-            text-align: center;
-            transition: all 0.35s ease;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             text-decoration: none;
             color: white;
             display: block;
         }
 
-        .module-card:hover {
-            border-color: var(--glass-hover-border);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.2);
+        /* Мощная неоновая подсветка при наведении */
+        .module-card:hover, .admin-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4), 
+                0 0 30px rgba(0, 212, 255, 0.25), /* Внешнее свечение */
+                inset 0 0 20px rgba(0, 212, 255, 0.1); /* Внутреннее свечение */
         }
 
-        .module-card .icon { font-size: 40px; margin-bottom: 12px; }
+        /* Специфичные стили для карточек модулей */
+        .module-card { text-align: center; }
+        
+        .module-card .icon { 
+            font-size: 40px; 
+            margin-bottom: 12px; 
+            display: inline-block; 
+            transition: all 0.3s ease;
+        }
+        
+        .module-card:hover .icon {
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.8)); /* Свечение иконки */
+        }
+
         .module-card h3 { font-size: 18px; margin-bottom: 6px; font-weight: 700; }
         .module-card p { font-size: 13px; color: var(--text-muted); }
 
-        /* --- ТАБЛИЦЫ И БЛОКИ --- */
-        .admin-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 24px;
-            transition: all 0.35s ease;
-        }
-
-        .admin-card:hover {
-            border-color: var(--glass-hover-border);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.1);
-        }
-
+        /* Специфичные стили для блоков контента */
+        .admin-card { margin-bottom: 24px; }
         .admin-card h3 { font-size: 18px; margin-bottom: 16px; font-weight: 700; }
 
+        /* --- ТАБЛИЦЫ --- */
         .stat-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -267,9 +276,14 @@
             border-radius: 16px;
             padding: 16px;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+        .stat-item:hover {
+            background: rgba(0, 212, 255, 0.05);
+            border-color: rgba(0, 212, 255, 0.3);
         }
 
-        .stat-item .number { font-size: 26px; font-weight: 800; color: var(--primary); }
+        .stat-item .number { font-size: 26px; font-weight: 800; color: var(--primary); text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
         .stat-item .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
         .admin-table {
@@ -511,6 +525,9 @@
             if (window.SFERA_I18N && window.SFERA_I18N.setLanguage) {
                 window.SFERA_I18N.setLanguage(localStorage.getItem('lang') || 'tm');
             }
+            
+            // Переинициализируем эффект подсветки для новых карточек
+            initSpotlightEffect();
         }
 
         // Переключение меню
@@ -542,7 +559,26 @@
         }
 
         // ============================================================
-        // 3. ФОН И ЧАСТИЦЫ
+        // 3. ЭФФЕКТ ПРОЖЕКТОРА (SPOTLIGHT)
+        // ============================================================
+        function initSpotlightEffect() {
+            document.querySelectorAll(".module-card, .admin-card").forEach(card => {
+                // Удаляем старый слушатель, чтобы не было дублей при перерисовке
+                card.removeEventListener("mousemove", handleMouseMove);
+                card.addEventListener("mousemove", handleMouseMove);
+            });
+        }
+
+        function handleMouseMove(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            this.style.setProperty("--mouse-x", `${x}px`);
+            this.style.setProperty("--mouse-y", `${y}px`);
+        }
+
+        // ============================================================
+        // 4. ФОН И ЧАСТИЦЫ
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const particlesContainer = document.getElementById("particles");
@@ -608,11 +644,10 @@
             renderSection('dashboard');
         });
 
-        // Слушаем смену языка для перерисовки динамических элементов
+        // Слушаем смену языка
         window.addEventListener('sfera:languageChanged', () => {
             const activeLi = document.querySelector('#adminMenu li.active');
             if (activeLi) {
-                // Небольшая задержка, чтобы авто-переводчик успел обновить статические DOM элементы
                 setTimeout(() => renderSection(activeLi.dataset.section), 50);
             }
         });
