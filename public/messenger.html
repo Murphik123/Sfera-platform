@@ -11,29 +11,26 @@
 
     <style>
         /* ==========================================================================
-           1. ЦВЕТОВАЯ ПАЛИТРА (ИЗ DOCUMENTS.HTML)
+           1. ЦВЕТОВАЯ ПАЛИТРА (ИЗ MARKETPLACE.HTML)
            ========================================================================== */
         :root {
             --primary: #00d4ff;
             --secondary: #1f6bff;
             --accent: #00ffa3;
             --dark-bg: #03080e;
-            --glass-bg: rgba(255, 255, 255, 0.035);
+            --glass-bg: rgba(255, 255, 255, 0.04);
             --glass-border: rgba(0, 212, 255, 0.18);
-            --glass-hover-bg: rgba(0, 212, 255, 0.08);
-            --glass-hover-border: rgba(0, 212, 255, 0.45);
             --header-footer-bg: rgba(5, 14, 26, 0.75);
             --white: #ffffff;
             --text: #dbe9ff;
             --text-muted: #9bb3cc;
-            --radius: 22px;
         }
 
         /* ==========================================================================
-           2. СТИЛИЗАЦИЯ ПОЛЗУНКА ПРОКРУТКИ
+           2. ПОЛЗУНОК ПРОКРУТКИ
            ========================================================================== */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #03080e; border-left: 1px solid rgba(0, 212, 255, 0.1); }
+        ::-webkit-scrollbar-track { background: transparent; border-left: 1px solid rgba(0, 212, 255, 0.1); }
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, rgba(0, 212, 255, 0.4), rgba(31, 107, 255, 0.5));
             border-radius: 8px;
@@ -42,7 +39,7 @@
         ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #00d4ff, #00ffa3); box-shadow: 0 0 12px rgba(0, 212, 255, 0.8); }
 
         /* ==========================================================================
-           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ
+           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ФОН
            ========================================================================== */
         .full-glass-backdrop {
             position: fixed; inset: 0; width: 100vw; height: 100vh;
@@ -56,9 +53,6 @@
             pointer-events: none; z-index: 1;
         }
 
-        /* ==========================================================================
-           4. ПЛАВАЮЩИЕ ТОЧКИ И НЕОНОВАЯ СЕТКА
-           ========================================================================== */
         .bg-grid {
             position: fixed; inset: 0; width: 100vw; height: 100vh;
             background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
@@ -75,13 +69,14 @@
         }
 
         /* ==========================================================================
-           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И ШАПКА
+           4. БАЗОВЫЕ ЭЛЕМЕНТЫ
            ========================================================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; scrollbar-width: thin; scrollbar-color: rgba(0, 212, 255, 0.4) #03080e; }
         html { scroll-behavior: smooth; background-color: var(--dark-bg); }
         body { background-color: var(--dark-bg); color: var(--white); overflow-x: hidden; position: relative; min-height: 100vh; }
         .container { width: min(1400px, 92%); margin: auto; position: relative; z-index: 10; }
 
+        /* --- ШАПКА --- */
         header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
             backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
@@ -90,17 +85,15 @@
             transform: translateZ(0); will-change: transform; contain: layout paint style;
         }
         header .container { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
-        
         .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; transition: transform 0.3s ease; }
         .logo:hover { transform: translateY(-1px) scale(1.02); }
         .logo-icon { width: 54px; height: 54px; display: flex; justify-content: center; align-items: center; }
         .logo-svg { width: 100%; height: 100%; overflow: visible; }
         .logo-svg g { transform-origin: 50px 50px; animation: spinLogo 16s linear infinite; }
         @keyframes spinLogo { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         .logo-text h2 { font-size: 22px; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #00ffa3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; }
         .logo-text p { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; margin: 4px 0 0 0; color: #9fb5c8; text-transform: uppercase; }
-
+        
         .header-right { display: flex; gap: 12px; align-items: center; }
         .user-info { font-size: 14px; color: var(--text); font-weight: 600; background: rgba(255, 255, 255, 0.04); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.15); }
         .lang-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(0, 212, 255, 0.3); color: white; backdrop-filter: blur(10px); padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; outline: none; transition: all 0.35s ease; user-select: none; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; }
@@ -111,88 +104,43 @@
         .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
 
         /* ==========================================================================
-           6. СТИЛИ СТРАНИЦЫ (ИЗ DOCUMENTS.HTML)
+           5. СТИЛИ МЕССЕНДЖЕРА (ПОЛНОЭКРАННЫЙ + ПАРЯЩИЙ ЭФФЕКТ)
            ========================================================================== */
-        .doc-page {
-            padding: 140px 7% 60px;
-            min-height: 100vh;
-            position: relative;
-            z-index: 10;
+        /* Обертка без огромного заголовка, просто отступ под фиксированную шапку */
+        .messenger-page {
+            padding: 110px 7% 40px;
+            height: 100vh; /* Занимает весь экран */
             display: flex;
             flex-direction: column;
+            position: relative;
+            z-index: 10;
+            box-sizing: border-box;
         }
 
-        .doc-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
-        }
-
-        .doc-header h1 {
-            font-size: 36px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 0%, #b4d7ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .doc-header .actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 10px 24px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-        }
-
-        .btn-outline {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            color: white;
-        }
-
-        .btn-outline:hover {
-            background: rgba(0, 212, 255, 0.1);
-            border-color: #00d4ff;
-        }
-
-        /* ==========================================================================
-           7. ЭФФЕКТ ПАРЕНИЯ (ТОЧНАЯ КОПИЯ .DOC-ITEM ИЗ ДОКУМЕНТОВ)
-           ========================================================================== */
+        /* Эффект парения как у карточек товаров */
         .messenger-container {
-            display: flex;
+            display: flex; 
             flex: 1;
-            height: calc(100vh - 260px);
-            min-height: 550px;
-            border-radius: 24px;
+            border-radius: 24px; 
             overflow: hidden;
             
-            /* ТОЧНЫЕ СТИЛИ КАРТОЧЕК ИЗ ДОКУМЕНТОВ */
-            background: var(--glass-bg);
+            /* Стеклянный фон */
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: all 0.35s ease;
-            position: relative;
+            backdrop-filter: blur(30px) saturate(180%); 
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            
+            /* Тень и подъем */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            transform: translateY(-3px);
+            transition: all 0.4s ease;
         }
 
-        /* ЭФФЕКТ ПАРЕНИЯ ПРИ НАВЕДЕНИИ */
+        /* Легкий подъем при наведении (как в маркетплейсе) */
         .messenger-container:hover {
-            border-color: var(--glass-hover-border);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.2);
+            transform: translateY(-6px);
+            box-shadow: 0 30px 60px rgba(0, 212, 255, 0.15);
+            border-color: rgba(0, 212, 255, 0.35);
         }
 
         /* --- САЙДБАР --- */
@@ -378,7 +326,6 @@
         footer p { color: #c0d8f0; font-size: 14px; }
 
         @media (max-width: 768px) {
-            .doc-tabs button { padding: 10px 14px; font-size: 13px; }
             .messenger-container { flex-direction: column; height: auto; transform: none; }
             .messenger-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
             .chat-header .back-btn { display: block; }
@@ -392,7 +339,7 @@
     <canvas id="bgCanvas"></canvas>
     <div id="particles"></div>
 
-    <!-- ШАПКА (ИЗ DOCUMENTS.HTML) -->
+    <!-- ШАПКА -->
     <header>
         <div class="container">
             <a href="index.html" class="logo" aria-label="СФЕРА Главная">
@@ -429,19 +376,9 @@
         </div>
     </header>
 
-    <!-- КОНТЕНТ (СТРУКТУРА КАК В ДОКУМЕНТАХ) -->
-    <section class="doc-page">
-        <div class="container" style="display: flex; flex-direction: column; flex: 1;">
-            
-            <!-- ЗАГОЛОВОК СТРАНИЦЫ -->
-            <div class="doc-header">
-                <h1 data-i18n="messenger_page_title">💬 Sfera Messenjer</h1>
-                <div class="actions">
-                    <button class="btn btn-outline" onclick="window.location.reload()">⟳ Täzele</button>
-                </div>
-            </div>
-
-            <!-- ПАРЯЩИЙ КОНТЕЙНЕР (ЭФФЕКТ .DOC-ITEM) -->
+    <!-- КОНТЕНТ МЕССЕНДЖЕРА (ПОЛНОЭКРАННЫЙ) -->
+    <section class="messenger-page">
+        <div class="container" style="display: flex; flex-direction: column; flex: 1; height: 100%;">
             <div class="messenger-container" id="messengerContainer">
                 <div class="messenger-sidebar" id="sidebar">
                     <div class="sidebar-header">
@@ -514,7 +451,7 @@
         </div>
     </section>
 
-    <!-- ФУТЕР (ИЗ DOCUMENTS.HTML) -->
+    <!-- ФУТЕР -->
     <footer>
         <div class="container">
             <a href="index.html" class="logo">
@@ -563,7 +500,7 @@
     <script src="/js/messenger-backend.js"></script>
 
     <script>
-        // Отрисовка фона и навигации (как в документах)
+        // Отрисовка фона и навигации (не вмешиваемся в работу messenger-backend.js)
         document.addEventListener('DOMContentLoaded', () => {
             const particlesContainer = document.getElementById("particles");
             if (particlesContainer) {
