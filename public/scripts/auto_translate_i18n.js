@@ -2,6 +2,7 @@
    SFERA — Глобальная система переводов (i18n)
    Язык по умолчанию: tm (туркменский)
    Сохраняет выбор на всех страницах
+   ФИКС: Блокировка браузерного переводчика и валидный ISO-код (tk)
 ============================================ */
 
 (function () {
@@ -9,6 +10,10 @@
     const DEFAULT_LANG = 'tm';
 
     window.translations = {};
+
+    // СЕНЬОРСКИЙ ФИКС №1: Блокируем браузерный переводчик СРАЗУ при загрузке скрипта.
+    // Это предотвращает порчу текста Google Translate / Yandex.
+    document.documentElement.setAttribute('translate', 'no');
 
     // Читаем язык из обоих ключей (lang и sfera_lang)
     window.currentLang = localStorage.getItem('lang')
@@ -18,6 +23,11 @@
     if (!LANGS.includes(window.currentLang)) {
         window.currentLang = DEFAULT_LANG;
     }
+    
+    // СЕНЬОРСКИЙ ФИКС №2: Устанавливаем валидный ISO-код для туркменского языка (tk), 
+    // чтобы браузер не пытался "угадать" язык по несуществующему коду 'tm'.
+    document.documentElement.lang = window.currentLang === 'tm' ? 'tk' : window.currentLang;
+
     // Пишем в оба ключа сразу
     localStorage.setItem('lang', window.currentLang);
     localStorage.setItem('sfera_lang', window.currentLang);
@@ -58,6 +68,9 @@
         localStorage.setItem('lang', lang);
         localStorage.setItem('sfera_lang', lang);
         window.currentLang = lang;
+
+        // СЕНЬОРСКИЙ ФИКС №3: Обновляем lang при смене языка (tk / ru / en).
+        document.documentElement.lang = lang === 'tm' ? 'tk' : lang;
 
         // Сообщаем другим скриптам, что язык сменился
         window.dispatchEvent(new CustomEvent('sfera:languageChanged', { detail: { lang } }));
