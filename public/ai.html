@@ -1,24 +1,24 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tm">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="ai_page_title">СФЕРА — AI analitika</title>
+    <title data-i18n="ai_page_title">Sfera вЂ” AI analitika</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Chart.js для графиков -->
+    <!-- Chart.js РґР»СЏ РіСЂР°С„РёРєРѕРІ -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-    <!-- Проверка авторизации и Глобальный переводчик -->
+    <!-- РџСЂРѕРІРµСЂРєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё Рё Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ РїРµСЂРµРІРѕРґС‡РёРє -->
     <script src="/js/auth-check.js"></script>
     <script src="/scripts/auto_translate_i18n.js"></script>
 
     <style>
         /* ==========================================================================
-           1. ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ (ИЗ MESSENGER.HTML)
+           1. Р¦Р’Р•РўРћР’РђРЇ РџРђР›РРўР Рђ Р Р”РР—РђР™Рќ-РўРћРљР•РќР« (РР— MESSENGER.HTML)
            ========================================================================== */
         :root {
             --primary: #00d4ff;
@@ -37,7 +37,7 @@
         }
 
         /* ==========================================================================
-           2. СТИЛИЗАЦИЯ ПОЛЗУНКА ПРОКРУТКИ
+           2. РЎРўРР›РР—РђР¦РРЇ РџРћР›Р—РЈРќРљРђ РџР РћРљР РЈРўРљР
            ========================================================================== */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #03080e; border-left: 1px solid rgba(0, 212, 255, 0.1); }
@@ -49,7 +49,7 @@
         ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #00d4ff, #00ffa3); box-shadow: 0 0 12px rgba(0, 212, 255, 0.8); }
 
         /* ==========================================================================
-           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ
+           3. Р­Р¤Р¤Р•РљРўР« РЎРўР•РљР›РћР’РР”РќРћРЎРўР Р Р“Р РђР”РР•РќРўР«
            ========================================================================== */
         .full-glass-backdrop {
             position: fixed; inset: 0; width: 100vw; height: 100vh;
@@ -64,7 +64,7 @@
         }
 
         /* ==========================================================================
-           4. ПЛАВАЮЩИЕ ТОЧКИ И НЕОНОВАЯ СЕТКА
+           4. РџР›РђР’РђР®Р©РР• РўРћР§РљР Р РќР•РћРќРћР’РђРЇ РЎР•РўРљРђ
            ========================================================================== */
         .bg-grid {
             position: fixed; inset: 0; width: 100vw; height: 100vh;
@@ -82,7 +82,7 @@
         }
 
         /* ==========================================================================
-           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И ШАПКА
+           5. Р‘РђР—РћР’Р«Р• Р­Р›Р•РњР•РќРўР« Р РЁРђРџРљРђ
            ========================================================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; scrollbar-width: thin; scrollbar-color: rgba(0, 212, 255, 0.4) #03080e; }
         html { scroll-behavior: smooth; background-color: var(--dark-bg); }
@@ -118,7 +118,7 @@
         .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
 
         /* ==========================================================================
-           6. СТИЛИ СТРАНИЦЫ (ИЗ DOCUMENTS.HTML)
+           6. РЎРўРР›Р РЎРўР РђРќРР¦Р« (РР— DOCUMENTS.HTML)
            ========================================================================== */
         .doc-page {
             padding: 140px 7% 60px;
@@ -194,7 +194,7 @@
             box-shadow: 0 20px 40px rgba(0, 255, 170, 0.3);
         }
 
-        /* Табы 1-в-1 как в documents.html */
+        /* РўР°Р±С‹ 1-РІ-1 РєР°Рє РІ documents.html */
         .doc-tabs {
             display: flex;
             gap: 8px;
@@ -237,7 +237,7 @@
         }
 
         /* ==========================================================================
-           7. ЛОКАЛЬНЫЕ СТИЛИ AI (СТЕКЛО КАК В MESSENGER)
+           7. Р›РћРљРђР›Р¬РќР«Р• РЎРўРР›Р AI (РЎРўР•РљР›Рћ РљРђРљ Р’ MESSENGER)
            ========================================================================== */
         .card-glass {
             background: var(--glass-bg);
@@ -311,7 +311,7 @@
         .forecast-item .price { font-weight: 700; color: #00d4ff; }
         .forecast-item .confidence { font-size: 13px; color: #bdd0df; }
 
-        /* Формы */
+        /* Р¤РѕСЂРјС‹ */
         .report-form { max-width: 600px; margin: 0 auto; }
         .report-form .form-group { margin-bottom: 16px; }
         .report-form .form-group label { display: block; font-size: 14px; font-weight: 500; color: #dbe9ff; margin-bottom: 6px; }
@@ -341,7 +341,7 @@
         .reports-list { list-style: none; padding: 0; margin: 0; }
         .reports-list li { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.05); display: flex; justify-content: space-between; align-items: center; }
 
-        /* Чат-помощник */
+        /* Р§Р°С‚-РїРѕРјРѕС‰РЅРёРє */
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -385,7 +385,7 @@
         }
         .chat-input button:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0,212,255,.3); }
 
-        /* Загрузка документов */
+        /* Р—Р°РіСЂСѓР·РєР° РґРѕРєСѓРјРµРЅС‚РѕРІ */
         .upload-area {
             border: 2px dashed rgba(255,255,255,.2);
             border-radius: 18px;
@@ -398,12 +398,12 @@
         .upload-area:hover { border-color: #00d4ff; background: rgba(0,212,255,.05); }
         .upload-area .icon { font-size: 48px; margin-bottom: 12px; }
 
-        /* Уведомления */
+        /* РЈРІРµРґРѕРјР»РµРЅРёСЏ */
         .message { padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; display: none; }
         .message.error { display: block; background: rgba(255,0,0,.1); border: 1px solid rgba(255,0,0,.2); color: #ff6b6b; }
         .message.success { display: block; background: rgba(0,255,170,.1); border: 1px solid rgba(0,255,170,.2); color: #00ffa3; }
 
-        /* --- ФУТЕР (ИЗ MESSENGER.HTML) --- */
+        /* --- Р¤РЈРўР•Р  (РР— MESSENGER.HTML) --- */
         footer { position: relative; z-index: 20; margin-top: 60px; backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%); background: var(--header-footer-bg); border-top: 1px solid rgba(0, 212, 255, 0.2); box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.5); }
         footer .container { display: flex; justify-content: space-between; align-items: center; padding: 28px 0; flex-wrap: wrap; gap: 20px; }
         footer p { color: #c0d8f0; font-size: 14px; }
@@ -421,10 +421,10 @@
     <canvas id="bgCanvas"></canvas>
     <div id="particles"></div>
 
-    <!-- ШАПКА (ИЗ MESSENGER.HTML) -->
+    <!-- РЁРђРџРљРђ (РР— MESSENGER.HTML) -->
     <header>
         <div class="container">
-            <a href="index.html" class="logo" aria-label="СФЕРА Главная">
+            <a href="index.html" class="logo" aria-label="РЎР¤Р•Р Рђ Р“Р»Р°РІРЅР°СЏ">
                 <div class="logo-icon">
                     <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
@@ -444,66 +444,66 @@
                     </svg>
                 </div>
                 <div class="logo-text">
-                    <h2 data-i18n="logo_title">СФЕРА</h2>
-                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
+                    <h2 data-i18n="logo_title">РЎР¤Р•Р Рђ</h2>
+                    <p data-i18n="logo_subtitle">РќР°С†РёРѕРЅР°Р»СЊРЅР°СЏ Р¦РёС„СЂРѕРІР°СЏ РџР»Р°С‚С„РѕСЂРјР°</p>
                 </div>
             </a>
 
             <div class="header-right header-buttons">
-                <span class="user-info">👤 <strong id="username">User</strong></span>
-                <button class="lang-btn" id="langBtn" type="button" aria-label="Переключение языка">TM</button>
-                <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">← Yza</a>
-                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">🚪 Çykmak</button>
+                <span class="user-info">рџ‘¤ <strong id="username">User</strong></span>
+                <button class="lang-btn" id="langBtn" type="button" aria-label="РџРµСЂРµРєР»СЋС‡РµРЅРёРµ СЏР·С‹РєР°">TM</button>
+                <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">в†ђ Yza</a>
+                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">рџљЄ Г‡ykmak</button>
             </div>
         </div>
     </header>
 
-    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <!-- РћРЎРќРћР’РќРћР™ РљРћРќРўР•РќРў -->
     <section class="doc-page">
         <div class="container">
             <div class="doc-header">
-                <h1 data-i18n="page_title">🤖 AI analitika & Kömekçi</h1>
+                <h1 data-i18n="ai_header_title">рџ¤– AI analitika & KГ¶mekГ§i</h1>
                 <div class="actions">
-                    <button class="btn btn-outline" id="refreshAiBtn" data-i18n="refresh">⟳ Täzele</button>
+                    <button class="btn btn-outline" id="refreshAiBtn" data-i18n="refresh">вџі TГ¤zele</button>
                 </div>
             </div>
 
-            <!-- Вкладки -->
+            <!-- Р’РєР»Р°РґРєРё -->
             <div class="doc-tabs">
-                <button class="active" data-tab="assistant" data-i18n="tab_assistant">💬 Kömekçi</button>
-                <button data-tab="analytics" data-i18n="tab_analytics">📊 Analitika</button>
-                <button data-tab="forecasts" data-i18n="tab_forecasts">📈 Prokgnozlar</button>
-                <button data-tab="reports" data-i18n="tab_reports">📄 Hasabatlar</button>
-                <button data-tab="documents" data-i18n="tab_documents">🔍 Resmiýet barlag</button>
+                <button class="active" data-tab="assistant" data-i18n="tab_assistant">рџ’¬ KГ¶mekГ§i</button>
+                <button data-tab="analytics" data-i18n="tab_analytics">рџ“Љ Analitika</button>
+                <button data-tab="forecasts" data-i18n="tab_forecasts">рџ“€ Prokgnozlar</button>
+                <button data-tab="reports" data-i18n="tab_reports">рџ“„ Hasabatlar</button>
+                <button data-tab="documents" data-i18n="tab_documents">рџ”Ќ ResmiГЅet barlag</button>
             </div>
 
-            <!-- ===== ВКЛАДКА 1: ПОМОЩНИК ===== -->
+            <!-- ===== Р’РљР›РђР”РљРђ 1: РџРћРњРћР©РќРРљ ===== -->
             <div class="tab-content active" id="tab-assistant">
                 <div class="card-glass">
-                    <h3 data-i18n="assistant_title">Platforma boýunça kömekçi</h3>
-                    <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="assistant_desc">Sfera platformasynyň ähli meseleleri boýunça sorag beriň.</p>
+                    <h3 data-i18n="assistant_title">Platforma boГЅunГ§a kГ¶mekГ§i</h3>
+                    <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="assistant_desc">Sfera platformasynyЕ€ Г¤hli meseleleri boГЅunГ§a sorag beriЕ€.</p>
                     <div class="chat-container">
                         <div class="chat-messages-ai" id="chatMessagesAi">
-                            <div class="msg bot" id="welcomeMsg" data-i18n="welcome_msg">Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin)</div>
+                            <div class="msg bot" id="welcomeMsg" data-i18n="welcome_msg">Salam! Men Sfera platformasynyЕ€ kГ¶mekГ§isi. Size nГ¤hili kГ¶mek edip bilerin? (MarketpleГЅs, Bank, PoГ§ta, Messenjer, ResmiГЅetler, TM Coin)</div>
                         </div>
                         <div class="chat-input">
-                            <input type="text" id="aiChatInput" placeholder="Soragyňyzy ýazyň..." data-i18n-placeholder="chat_placeholder" />
+                            <input type="text" id="aiChatInput" placeholder="SoragyЕ€yzy ГЅazyЕ€..." data-i18n-placeholder="chat_placeholder" />
                             <button id="aiChatSendBtn" data-i18n="btn_send">Iber</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== ВКЛАДКА 2: АНАЛИТИКА ===== -->
+            <!-- ===== Р’РљР›РђР”РљРђ 2: РђРќРђР›РРўРРљРђ ===== -->
             <div class="tab-content" id="tab-analytics">
                 <div class="card-glass">
                     <h3 data-i18n="analytics_title">Hasabatlar</h3>
                     <div class="report-period" id="reportPeriod">
-                        <button class="active" data-period="day" data-i18n="period_day">Gün</button>
+                        <button class="active" data-period="day" data-i18n="period_day">GГјn</button>
                         <button data-period="week" data-i18n="period_week">Hepde</button>
-                        <button data-period="month" data-i18n="period_month">Aý</button>
+                        <button data-period="month" data-i18n="period_month">AГЅ</button>
                         <button data-period="quarter" data-i18n="period_quarter">Kvartal</button>
-                        <button data-period="year" data-i18n="period_year">Ýyl</button>
+                        <button data-period="year" data-i18n="period_year">Гќyl</button>
                     </div>
                     <div class="chart-container" style="position:relative; height:250px; margin-top:10px;">
                         <canvas id="analyticsChart"></canvas>
@@ -511,7 +511,7 @@
                     <div class="stats-grid" id="analyticsStats" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:16px; margin-top:20px;">
                         <div class="stat-item" style="background:rgba(255,255,255,.04); border-radius:16px; padding:16px; text-align:center;">
                             <div class="number" id="statTotal" style="font-size:28px; font-weight:700; color:#00d4ff;">0</div>
-                            <div class="label" style="font-size:13px; color:#9fb5c8;" data-i18n="total_activity">Jemi işjeňlik</div>
+                            <div class="label" style="font-size:13px; color:#9fb5c8;" data-i18n="total_activity">Jemi iЕџjeЕ€lik</div>
                         </div>
                         <div class="stat-item" style="background:rgba(255,255,255,.04); border-radius:16px; padding:16px; text-align:center;">
                             <div class="number" id="statUsers" style="font-size:28px; font-weight:700; color:#00d4ff;">0</div>
@@ -519,7 +519,7 @@
                         </div>
                         <div class="stat-item" style="background:rgba(255,255,255,.04); border-radius:16px; padding:16px; text-align:center;">
                             <div class="number" id="statOrders" style="font-size:28px; font-weight:700; color:#00d4ff;">0</div>
-                            <div class="label" style="font-size:13px; color:#9fb5c8;" data-i18n="orders">Söwdalar</div>
+                            <div class="label" style="font-size:13px; color:#9fb5c8;" data-i18n="orders">SГ¶wdalar</div>
                         </div>
                         <div class="stat-item" style="background:rgba(255,255,255,.04); border-radius:16px; padding:16px; text-align:center;">
                             <div class="number" id="statRevenue" style="font-size:28px; font-weight:700; color:#00d4ff;">0 TMT</div>
@@ -529,14 +529,14 @@
                 </div>
             </div>
 
-            <!-- ===== ВКЛАДКА 3: ПРОГНОЗЫ ===== -->
+            <!-- ===== Р’РљР›РђР”РљРђ 3: РџР РћР“РќРћР—Р« ===== -->
             <div class="tab-content" id="tab-forecasts">
                 <div class="card-glass">
                     <h3 data-i18n="forecasts_title">TM Coin prokgnozlary</h3>
                     <div class="forecast-period" id="forecastPeriod">
-                        <button class="active" data-period="7d" data-i18n="forecast_7d">7 gün</button>
-                        <button data-period="6m" data-i18n="forecast_6m">6 aý</button>
-                        <button data-period="1y" data-i18n="forecast_1y">1 ýyl</button>
+                        <button class="active" data-period="7d" data-i18n="forecast_7d">7 gГјn</button>
+                        <button data-period="6m" data-i18n="forecast_6m">6 aГЅ</button>
+                        <button data-period="1y" data-i18n="forecast_1y">1 ГЅyl</button>
                     </div>
                     <div class="forecast-list" id="forecastList"></div>
                     <div class="chart-container" style="height:200px; margin-top:20px;">
@@ -545,34 +545,34 @@
                 </div>
             </div>
 
-            <!-- ===== ВКЛАДКА 4: ОТЧЁТЫ ===== -->
+            <!-- ===== Р’РљР›РђР”РљРђ 4: РћРўР§РЃРўР« ===== -->
             <div class="tab-content" id="tab-reports">
                 <div class="card-glass">
                     <h3 data-i18n="reports_title">Hasabatlar (Prezident & Kabmin)</h3>
-                    <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="reports_desc">Administrasiýa we Kabinet Ministrleri üçin hasabat dörediň we iberiň.</p>
+                    <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="reports_desc">AdministrasiГЅa we Kabinet Ministrleri ГјГ§in hasabat dГ¶rediЕ€ we iberiЕ€.</p>
                     <form id="reportForm" class="report-form">
                         <div class="form-group">
                             <label for="reportRecipient" data-i18n="recipient">Aljy</label>
                             <select id="reportRecipient" required>
-                                <option value="president" data-i18n="recipient_president">Türkmenistanyň Prezidenti</option>
-                                <option value="cabinet" data-i18n="recipient_cabinet">Türkmenistanyň Kabinet Ministrleri</option>
+                                <option value="president" data-i18n="recipient_president">TГјrkmenistanyЕ€ Prezidenti</option>
+                                <option value="cabinet" data-i18n="recipient_cabinet">TГјrkmenistanyЕ€ Kabinet Ministrleri</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="reportTitle" data-i18n="report_title">Hasabatyň ady</label>
-                            <input type="text" id="reportTitle" placeholder="Mysal: 2026-njy ýylyň I çärýegi üçin hasabat" required />
+                            <label for="reportTitle" data-i18n="report_title">HasabatyЕ€ ady</label>
+                            <input type="text" id="reportTitle" placeholder="Mysal: 2026-njy ГЅylyЕ€ I Г§Г¤rГЅegi ГјГ§in hasabat" required />
                         </div>
                         <div class="form-group">
-                            <label for="reportPeriod" data-i18n="report_period">Döwür</label>
+                            <label for="reportPeriod" data-i18n="report_period">DГ¶wГјr</label>
                             <select id="reportPeriod">
-                                <option value="month" data-i18n="period_month">Aý</option>
+                                <option value="month" data-i18n="period_month">AГЅ</option>
                                 <option value="quarter" data-i18n="period_quarter">Kvartal</option>
-                                <option value="year" selected data-i18n="period_year">Ýyl</option>
+                                <option value="year" selected data-i18n="period_year">Гќyl</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="reportContent" data-i18n="report_content">Mazmuny</label>
-                            <textarea id="reportContent" placeholder="Hasabatyň jikme-jik beýany..." rows="5" required></textarea>
+                            <textarea id="reportContent" placeholder="HasabatyЕ€ jikme-jik beГЅany..." rows="5" required></textarea>
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary" id="submitReportBtn" data-i18n="send_report">Hasabat iber</button>
@@ -585,14 +585,14 @@
                 </div>
             </div>
 
-            <!-- ===== ВКЛАДКА 5: ПРОВЕРКА ДОКУМЕНТОВ ===== -->
+            <!-- ===== Р’РљР›РђР”РљРђ 5: РџР РћР’Р•Р РљРђ Р”РћРљРЈРњР•РќРўРћР’ ===== -->
             <div class="tab-content" id="tab-documents">
                 <div class="card-glass">
-                    <h3 data-i18n="doc_verify_title">Resmiýetleriň dogrulygyny barlamak</h3>
-                    <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="doc_verify_desc">Faýly ýüklemek bilen onuň hakykylygyny barlap bilersiňiz.</p>
+                    <h3 data-i18n="doc_verify_title">ResmiГЅetleriЕ€ dogrulygyny barlamak</h3>
+                    <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="doc_verify_desc">FaГЅly ГЅГјklemek bilen onuЕ€ hakykylygyny barlap bilersiЕ€iz.</p>
                     <div class="upload-area" id="uploadArea">
-                        <div class="icon">📤</div>
-                        <p data-i18n="upload_hint">Faýly bu ýere süýşüriň ýa-da basyň</p>
+                        <div class="icon">рџ“¤</div>
+                        <p data-i18n="upload_hint">FaГЅly bu ГЅere sГјГЅЕџГјriЕ€ ГЅa-da basyЕ€</p>
                         <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.jpg,.png" style="display:none;" />
                     </div>
                     <div class="verification-result" id="verificationResult" style="margin-top:20px; padding:16px 20px; border-radius:16px; display:none; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);"></div>
@@ -601,7 +601,7 @@
                         <button class="btn btn-outline" id="clearDocBtn" data-i18n="clear_btn">Arassala</button>
                     </div>
                     <div style="margin-top:16px; color:#9fb5c8; font-size:14px;">
-                        <strong data-i18n="supported_formats">Mümkin bolan formatlar:</strong> PDF, DOC, DOCX, JPG, PNG (100MB çenli)
+                        <strong data-i18n="supported_formats">MГјmkin bolan formatlar:</strong> PDF, DOC, DOCX, JPG, PNG (100MB Г§enli)
                     </div>
                 </div>
             </div>
@@ -609,33 +609,33 @@
         </div>
     </section>
 
-    <!-- ФУТЕР (ИЗ MESSENGER.HTML) -->
+    <!-- Р¤РЈРўР•Р  (РР— MESSENGER.HTML) -->
     <footer>
         <div class="container">
             <a href="index.html" class="logo">
                 <div class="logo-text">
-                    <h2 data-i18n="logo_title">СФЕРА</h2>
-                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
+                    <h2 data-i18n="logo_title">РЎР¤Р•Р Рђ</h2>
+                    <p data-i18n="logo_subtitle">РќР°С†РёРѕРЅР°Р»СЊРЅР°СЏ Р¦РёС„СЂРѕРІР°СЏ РџР»Р°С‚С„РѕСЂРјР°</p>
                 </div>
             </a>
-            <p data-i18n="footer_copy">© 2026 — Единая цифровая платформа Туркменистана</p>
+            <p data-i18n="footer_copy">В© 2026 вЂ” Р•РґРёРЅР°СЏ С†РёС„СЂРѕРІР°СЏ РїР»Р°С‚С„РѕСЂРјР° РўСѓСЂРєРјРµРЅРёСЃС‚Р°РЅР°</p>
         </div>
     </footer>
 
     <script>
         // ============================================================
-        // 1. ИНИЦИАЛИЗАЦИЯ И ПРИНУДИТЕЛЬНЫЙ ТУРКМЕНСКИЙ ЯЗЫК
+        // 1. РРќРР¦РРђР›РР—РђР¦РРЇ Р РџР РРќРЈР”РРўР•Р›Р¬РќР«Р™ РўРЈР РљРњР•РќРЎРљРР™ РЇР—Р«Рљ
         // ============================================================
-        // Если язык не установлен, ставим ТМ
+        // Р•СЃР»Рё СЏР·С‹Рє РЅРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅ, СЃС‚Р°РІРёРј РўРњ
         if (!localStorage.getItem('sfera_lang') && !localStorage.getItem('lang')) {
             localStorage.setItem('sfera_lang', 'tm');
             localStorage.setItem('lang', 'tm');
         }
 
-        // Получаем текущий язык из глобального переводчика (или ставим tm)
+        // РџРѕР»СѓС‡Р°РµРј С‚РµРєСѓС‰РёР№ СЏР·С‹Рє РёР· РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ РїРµСЂРµРІРѕРґС‡РёРєР° (РёР»Рё СЃС‚Р°РІРёРј tm)
         let currentLang = window.SFERA_I18N ? window.SFERA_I18N.getLanguage() : 'tm';
 
-        // Функция для получения перевода из глобального словаря
+        // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РїРµСЂРµРІРѕРґР° РёР· РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ СЃР»РѕРІР°СЂСЏ
         function tr(key, fallback = '') {
             if (window.SFERA_I18N && window.SFERA_I18N.t) {
                 const val = window.SFERA_I18N.t(key);
@@ -644,22 +644,22 @@
             return fallback || key;
         }
 
-        // Слушаем смену языка, чтобы перерисовать динамические элементы (графики, чат)
+        // РЎР»СѓС€Р°РµРј СЃРјРµРЅСѓ СЏР·С‹РєР°, С‡С‚РѕР±С‹ РїРµСЂРµСЂРёСЃРѕРІР°С‚СЊ РґРёРЅР°РјРёС‡РµСЃРєРёРµ СЌР»РµРјРµРЅС‚С‹ (РіСЂР°С„РёРєРё, С‡Р°С‚)
         window.addEventListener('sfera:languageChanged', (e) => {
             currentLang = e.detail.lang;
-            // Обновляем заголовок приветствия
+            // РћР±РЅРѕРІР»СЏРµРј Р·Р°РіРѕР»РѕРІРѕРє РїСЂРёРІРµС‚СЃС‚РІРёСЏ
             const welcomeMsg = document.getElementById('welcomeMsg');
             if (welcomeMsg) {
-                welcomeMsg.textContent = tr('welcome_msg', 'Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin?');
+                welcomeMsg.textContent = tr('welcome_msg', 'Salam! Men Sfera platformasynyЕ€ kГ¶mekГ§isi. Size nГ¤hili kГ¶mek edip bilerin?');
             }
-            // Перерисовываем графики, если они активны
+            // РџРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РіСЂР°С„РёРєРё, РµСЃР»Рё РѕРЅРё Р°РєС‚РёРІРЅС‹
             if (currentTab === 'analytics') initAnalytics();
             if (currentTab === 'forecasts') renderForecasts(currentForecastPeriod);
             if (currentTab === 'reports') renderReports();
         });
 
         // ============================================================
-        // 2. АВТОРИЗАЦИЯ И НАВИГАЦИЯ
+        // 2. РђР’РўРћР РР—РђР¦РРЇ Р РќРђР’РР“РђР¦РРЇ
         // ============================================================
         const token = localStorage.getItem('token');
         if (!token) window.location.href = 'login.html';
@@ -680,7 +680,7 @@
         });
 
         // ============================================================
-        // 3. ВКЛАДКИ
+        // 3. Р’РљР›РђР”РљР
         // ============================================================
         let currentTab = 'assistant';
         document.querySelectorAll('.doc-tabs button').forEach(btn => {
@@ -698,7 +698,7 @@
         });
 
         // ============================================================
-        // 4. ПОМОЩНИК (чат-бот)
+        // 4. РџРћРњРћР©РќРРљ (С‡Р°С‚-Р±РѕС‚)
         // ============================================================
         const chatMessages = document.getElementById('chatMessagesAi');
         const chatInput = document.getElementById('aiChatInput');
@@ -715,40 +715,40 @@
         function getBotResponse(message, lang) {
             const lower = message.toLowerCase();
             
-            // Базовые ответы на трех языках
+            // Р‘Р°Р·РѕРІС‹Рµ РѕС‚РІРµС‚С‹ РЅР° С‚СЂРµС… СЏР·С‹РєР°С…
             const botReplies = {
                 tm: {
-                    greet: "Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin)",
-                    market: "Marketpleýs moduly – elektron söwda meýdançasy. Bu ýerde harytlary satyp we satyn alyp bilersiňiz. Täze bildiriş goşmak üçin 'Marketpleýs' bölümine giriň.",
-                    bank: "TM Bank – sanly bank hyzmatlary. Balansyňyzy barlaýarsyňyz, pul geçirişleri edip we amallary görüp bilersiňiz.",
-                    mail: "TM Poçta – içki poçta ulgamy. Hatlar iberip we kabul edip bilersiňiz, goşundylary goşup.",
-                    msg: "Messenjer – çalt habarlaşma üçin ulgam. Şahsy söhbetler we gruppalar döredip, ses we wideo jaňlar edip bilersiňiz.",
-                    docs: "Resmiýetler moduly – awtomatik tassyklama. Faýly ýükläp, onuň dogrulygyny barlap bilersiňiz. AI ulgamy resmiýetiň hakykylygyny kesgitleýär.",
-                    coin: "TM Coin – sanly döwlet walýutasy. Ony platformada tölegler üçin ulanyp, şeýle hem prokgnozlary görüp bilersiňiz.",
-                    analytics: "Analitika bölüminde gün, hepde, aý, kvartal we ýyl üçin hasabatlar görkezilýär. Graphikler we statistikalar bilen tanyşyp bilersiňiz.",
-                    reports: "Hasabatlar bölüminde Prezident we Kabinet Ministrleri üçin hasabat döredip we iberip bilersiňiz.",
-                    fallback: "Täze sorag üçin minnetdar. Men size näme barada maglumat bermegimi isleýärsiňiz? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin, Analitika, Hasabatlar)"
+                    greet: "Salam! Men Sfera platformasynyЕ€ kГ¶mekГ§isi. Size nГ¤hili kГ¶mek edip bilerin? (MarketpleГЅs, Bank, PoГ§ta, Messenjer, ResmiГЅetler, TM Coin)",
+                    market: "MarketpleГЅs moduly вЂ“ elektron sГ¶wda meГЅdanГ§asy. Bu ГЅerde harytlary satyp we satyn alyp bilersiЕ€iz. TГ¤ze bildiriЕџ goЕџmak ГјГ§in 'MarketpleГЅs' bГ¶lГјmine giriЕ€.",
+                    bank: "TM Bank вЂ“ sanly bank hyzmatlary. BalansyЕ€yzy barlaГЅarsyЕ€yz, pul geГ§iriЕџleri edip we amallary gГ¶rГјp bilersiЕ€iz.",
+                    mail: "TM PoГ§ta вЂ“ iГ§ki poГ§ta ulgamy. Hatlar iberip we kabul edip bilersiЕ€iz, goЕџundylary goЕџup.",
+                    msg: "Messenjer вЂ“ Г§alt habarlaЕџma ГјГ§in ulgam. Ећahsy sГ¶hbetler we gruppalar dГ¶redip, ses we wideo jaЕ€lar edip bilersiЕ€iz.",
+                    docs: "ResmiГЅetler moduly вЂ“ awtomatik tassyklama. FaГЅly ГЅГјklГ¤p, onuЕ€ dogrulygyny barlap bilersiЕ€iz. AI ulgamy resmiГЅetiЕ€ hakykylygyny kesgitleГЅГ¤r.",
+                    coin: "TM Coin вЂ“ sanly dГ¶wlet walГЅutasy. Ony platformada tГ¶legler ГјГ§in ulanyp, ЕџeГЅle hem prokgnozlary gГ¶rГјp bilersiЕ€iz.",
+                    analytics: "Analitika bГ¶lГјminde gГјn, hepde, aГЅ, kvartal we ГЅyl ГјГ§in hasabatlar gГ¶rkezilГЅГ¤r. Graphikler we statistikalar bilen tanyЕџyp bilersiЕ€iz.",
+                    reports: "Hasabatlar bГ¶lГјminde Prezident we Kabinet Ministrleri ГјГ§in hasabat dГ¶redip we iberip bilersiЕ€iz.",
+                    fallback: "TГ¤ze sorag ГјГ§in minnetdar. Men size nГ¤me barada maglumat bermegimi isleГЅГ¤rsiЕ€iz? (MarketpleГЅs, Bank, PoГ§ta, Messenjer, ResmiГЅetler, TM Coin, Analitika, Hasabatlar)"
                 },
                 ru: {
-                    greet: "Здравствуйте! Я помощник платформы Sfera. Чем могу помочь? (Маркетплейс, Банк, Почта, Мессенджер, Документы, TM Coin)",
-                    market: "Модуль Маркетплейс – электронная торговая площадка. Здесь вы можете покупать и продавать товары.",
-                    bank: "TM Bank – цифровые банковские услуги. Проверяйте баланс, делайте переводы и просматривайте историю.",
-                    mail: "TM Почта – внутренняя почтовая система. Отправляйте и получайте письма с вложениями.",
-                    msg: "Мессенджер – система быстрых сообщений. Создавайте личные и групповые чаты, совершайте аудио и видеозвонки.",
-                    docs: "Модуль Документы – автоматическая проверка. Загрузите файл, и ИИ проверит его подлинность.",
-                    coin: "TM Coin – цифровая государственная валюта. Используйте для платежей на платформе и смотрите прогнозы.",
-                    analytics: "В разделе Аналитика отображаются отчеты за день, неделю, месяц, квартал и год. Ознакомьтесь с графиками и статистикой.",
-                    reports: "В разделе Отчеты вы можете создавать и отправлять отчеты Президенту и Кабинету Министров.",
-                    fallback: "Спасибо за вопрос. О чем вы хотите узнать? (Маркетплейс, Банк, Почта, Мессенджер, Документы, TM Coin, Аналитика, Отчеты)"
+                    greet: "Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ! РЇ РїРѕРјРѕС‰РЅРёРє РїР»Р°С‚С„РѕСЂРјС‹ Sfera. Р§РµРј РјРѕРіСѓ РїРѕРјРѕС‡СЊ? (РњР°СЂРєРµС‚РїР»РµР№СЃ, Р‘Р°РЅРє, РџРѕС‡С‚Р°, РњРµСЃСЃРµРЅРґР¶РµСЂ, Р”РѕРєСѓРјРµРЅС‚С‹, TM Coin)",
+                    market: "РњРѕРґСѓР»СЊ РњР°СЂРєРµС‚РїР»РµР№СЃ вЂ“ СЌР»РµРєС‚СЂРѕРЅРЅР°СЏ С‚РѕСЂРіРѕРІР°СЏ РїР»РѕС‰Р°РґРєР°. Р—РґРµСЃСЊ РІС‹ РјРѕР¶РµС‚Рµ РїРѕРєСѓРїР°С‚СЊ Рё РїСЂРѕРґР°РІР°С‚СЊ С‚РѕРІР°СЂС‹.",
+                    bank: "TM Bank вЂ“ С†РёС„СЂРѕРІС‹Рµ Р±Р°РЅРєРѕРІСЃРєРёРµ СѓСЃР»СѓРіРё. РџСЂРѕРІРµСЂСЏР№С‚Рµ Р±Р°Р»Р°РЅСЃ, РґРµР»Р°Р№С‚Рµ РїРµСЂРµРІРѕРґС‹ Рё РїСЂРѕСЃРјР°С‚СЂРёРІР°Р№С‚Рµ РёСЃС‚РѕСЂРёСЋ.",
+                    mail: "TM РџРѕС‡С‚Р° вЂ“ РІРЅСѓС‚СЂРµРЅРЅСЏСЏ РїРѕС‡С‚РѕРІР°СЏ СЃРёСЃС‚РµРјР°. РћС‚РїСЂР°РІР»СЏР№С‚Рµ Рё РїРѕР»СѓС‡Р°Р№С‚Рµ РїРёСЃСЊРјР° СЃ РІР»РѕР¶РµРЅРёСЏРјРё.",
+                    msg: "РњРµСЃСЃРµРЅРґР¶РµСЂ вЂ“ СЃРёСЃС‚РµРјР° Р±С‹СЃС‚СЂС‹С… СЃРѕРѕР±С‰РµРЅРёР№. РЎРѕР·РґР°РІР°Р№С‚Рµ Р»РёС‡РЅС‹Рµ Рё РіСЂСѓРїРїРѕРІС‹Рµ С‡Р°С‚С‹, СЃРѕРІРµСЂС€Р°Р№С‚Рµ Р°СѓРґРёРѕ Рё РІРёРґРµРѕР·РІРѕРЅРєРё.",
+                    docs: "РњРѕРґСѓР»СЊ Р”РѕРєСѓРјРµРЅС‚С‹ вЂ“ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РїСЂРѕРІРµСЂРєР°. Р—Р°РіСЂСѓР·РёС‚Рµ С„Р°Р№Р», Рё РР РїСЂРѕРІРµСЂРёС‚ РµРіРѕ РїРѕРґР»РёРЅРЅРѕСЃС‚СЊ.",
+                    coin: "TM Coin вЂ“ С†РёС„СЂРѕРІР°СЏ РіРѕСЃСѓРґР°СЂСЃС‚РІРµРЅРЅР°СЏ РІР°Р»СЋС‚Р°. РСЃРїРѕР»СЊР·СѓР№С‚Рµ РґР»СЏ РїР»Р°С‚РµР¶РµР№ РЅР° РїР»Р°С‚С„РѕСЂРјРµ Рё СЃРјРѕС‚СЂРёС‚Рµ РїСЂРѕРіРЅРѕР·С‹.",
+                    analytics: "Р’ СЂР°Р·РґРµР»Рµ РђРЅР°Р»РёС‚РёРєР° РѕС‚РѕР±СЂР°Р¶Р°СЋС‚СЃСЏ РѕС‚С‡РµС‚С‹ Р·Р° РґРµРЅСЊ, РЅРµРґРµР»СЋ, РјРµСЃСЏС†, РєРІР°СЂС‚Р°Р» Рё РіРѕРґ. РћР·РЅР°РєРѕРјСЊС‚РµСЃСЊ СЃ РіСЂР°С„РёРєР°РјРё Рё СЃС‚Р°С‚РёСЃС‚РёРєРѕР№.",
+                    reports: "Р’ СЂР°Р·РґРµР»Рµ РћС‚С‡РµС‚С‹ РІС‹ РјРѕР¶РµС‚Рµ СЃРѕР·РґР°РІР°С‚СЊ Рё РѕС‚РїСЂР°РІР»СЏС‚СЊ РѕС‚С‡РµС‚С‹ РџСЂРµР·РёРґРµРЅС‚Сѓ Рё РљР°Р±РёРЅРµС‚Сѓ РњРёРЅРёСЃС‚СЂРѕРІ.",
+                    fallback: "РЎРїР°СЃРёР±Рѕ Р·Р° РІРѕРїСЂРѕСЃ. Рћ С‡РµРј РІС‹ С…РѕС‚РёС‚Рµ СѓР·РЅР°С‚СЊ? (РњР°СЂРєРµС‚РїР»РµР№СЃ, Р‘Р°РЅРє, РџРѕС‡С‚Р°, РњРµСЃСЃРµРЅРґР¶РµСЂ, Р”РѕРєСѓРјРµРЅС‚С‹, TM Coin, РђРЅР°Р»РёС‚РёРєР°, РћС‚С‡РµС‚С‹)"
                 },
                 en: {
                     greet: "Hello! I am the Sfera platform assistant. How can I help you? (Marketplace, Bank, Mail, Messenger, Documents, TM Coin)",
-                    market: "Marketplace module – electronic trading platform. Here you can buy and sell goods.",
-                    bank: "TM Bank – digital banking services. Check your balance, make transfers, and view history.",
-                    mail: "TM Mail – internal mail system. Send and receive emails with attachments.",
-                    msg: "Messenger – instant messaging system. Create private and group chats, make audio and video calls.",
-                    docs: "Documents module – automatic verification. Upload a file and AI will verify its authenticity.",
-                    coin: "TM Coin – digital state currency. Use it for payments on the platform and view forecasts.",
+                    market: "Marketplace module вЂ“ electronic trading platform. Here you can buy and sell goods.",
+                    bank: "TM Bank вЂ“ digital banking services. Check your balance, make transfers, and view history.",
+                    mail: "TM Mail вЂ“ internal mail system. Send and receive emails with attachments.",
+                    msg: "Messenger вЂ“ instant messaging system. Create private and group chats, make audio and video calls.",
+                    docs: "Documents module вЂ“ automatic verification. Upload a file and AI will verify its authenticity.",
+                    coin: "TM Coin вЂ“ digital state currency. Use it for payments on the platform and view forecasts.",
                     analytics: "The Analytics section displays reports for day, week, month, quarter, and year. Review charts and statistics.",
                     reports: "In the Reports section, you can create and send reports to the President and the Cabinet of Ministers.",
                     fallback: "Thanks for the question. What would you like to know about? (Marketplace, Bank, Mail, Messenger, Documents, TM Coin, Analytics, Reports)"
@@ -757,14 +757,14 @@
 
             const dict = botReplies[lang] || botReplies['tm'];
 
-            if (lower.includes('salam') || lower.includes('hello') || lower.includes('привет')) return dict.greet;
-            if (lower.includes('market') || lower.includes('söwda') || lower.includes('бирж')) return dict.market;
+            if (lower.includes('salam') || lower.includes('hello') || lower.includes('РїСЂРёРІРµС‚')) return dict.greet;
+            if (lower.includes('market') || lower.includes('sГ¶wda') || lower.includes('Р±РёСЂР¶')) return dict.market;
             if (lower.includes('bank') || lower.includes('pul')) return dict.bank;
-            if (lower.includes('poçta') || lower.includes('mail') || lower.includes('почт')) return dict.mail;
-            if (lower.includes('mesenjer') || lower.includes('chat') || lower.includes('мессендж')) return dict.msg;
-            if (lower.includes('resmiýet') || lower.includes('document') || lower.includes('документ')) return dict.docs;
-            if (lower.includes('tm coin') || lower.includes('coín') || lower.includes('монета')) return dict.coin;
-            if (lower.includes('analitika') || lower.includes('analytics') || lower.includes('отчёт')) return dict.analytics;
+            if (lower.includes('poГ§ta') || lower.includes('mail') || lower.includes('РїРѕС‡С‚')) return dict.mail;
+            if (lower.includes('mesenjer') || lower.includes('chat') || lower.includes('РјРµСЃСЃРµРЅРґР¶')) return dict.msg;
+            if (lower.includes('resmiГЅet') || lower.includes('document') || lower.includes('РґРѕРєСѓРјРµРЅС‚')) return dict.docs;
+            if (lower.includes('tm coin') || lower.includes('coГ­n') || lower.includes('РјРѕРЅРµС‚Р°')) return dict.coin;
+            if (lower.includes('analitika') || lower.includes('analytics') || lower.includes('РѕС‚С‡С‘С‚')) return dict.analytics;
             if (lower.includes('prezident') || lower.includes('kabmin') || lower.includes('hasabat')) return dict.reports;
             
             return dict.fallback;
@@ -786,7 +786,7 @@
         });
 
         // ============================================================
-        // 5. АНАЛИТИКА (графики)
+        // 5. РђРќРђР›РРўРРљРђ (РіСЂР°С„РёРєРё)
         // ============================================================
         let currentPeriod = 'day';
         let analyticsChart = null;
@@ -814,7 +814,7 @@
             const ctx = document.getElementById('analyticsChart').getContext('2d');
             if (analyticsChart) analyticsChart.destroy();
             
-            const labelTxt = currentLang === 'ru' ? 'Активность' : currentLang === 'en' ? 'Activity' : 'Işjeňlik';
+            const labelTxt = currentLang === 'ru' ? 'РђРєС‚РёРІРЅРѕСЃС‚СЊ' : currentLang === 'en' ? 'Activity' : 'IЕџjeЕ€lik';
             
             analyticsChart = new Chart(ctx, {
                 type: 'line',
@@ -857,7 +857,7 @@
         });
 
         // ============================================================
-        // 6. ПРОГНОЗЫ
+        // 6. РџР РћР“РќРћР—Р«
         // ============================================================
         let currentForecastPeriod = '7d';
         let forecastChart = null;
@@ -890,7 +890,7 @@
             const data = generateForecastData(period);
             const list = document.getElementById('forecastList');
             
-            const confTxt = currentLang === 'ru' ? 'Уверенность' : currentLang === 'en' ? 'Confidence' : 'Ynam';
+            const confTxt = currentLang === 'ru' ? 'РЈРІРµСЂРµРЅРЅРѕСЃС‚СЊ' : currentLang === 'en' ? 'Confidence' : 'Ynam';
             
             list.innerHTML = data.map(f => `
                 <div class="forecast-item">
@@ -903,7 +903,7 @@
             const ctx = document.getElementById('forecastChart').getContext('2d');
             if (forecastChart) forecastChart.destroy();
             
-            const labelTxt = currentLang === 'ru' ? 'Прогноз цены' : currentLang === 'en' ? 'Price forecast' : 'Çaklama baha';
+            const labelTxt = currentLang === 'ru' ? 'РџСЂРѕРіРЅРѕР· С†РµРЅС‹' : currentLang === 'en' ? 'Price forecast' : 'Г‡aklama baha';
             
             forecastChart = new Chart(ctx, {
                 type: 'line',
@@ -940,14 +940,14 @@
         });
 
         // ============================================================
-        // 7. ОТЧЁТЫ
+        // 7. РћРўР§РЃРўР«
         // ============================================================
         let reports = JSON.parse(localStorage.getItem('ai_reports') || '[]');
 
         function renderReports() {
             const list = document.getElementById('reportsList');
             if (!reports.length) {
-                list.innerHTML = `<li style="color:#9fb5c8; padding:20px 0; text-align:center;">${tr('no_reports', 'Hiç hili hasabat ýok.')}</li>`;
+                list.innerHTML = `<li style="color:#9fb5c8; padding:20px 0; text-align:center;">${tr('no_reports', 'HiГ§ hili hasabat ГЅok.')}</li>`;
                 return;
             }
             const statusMap = {
@@ -959,7 +959,7 @@
                 <li>
                     <div>
                         <strong>${r.title}</strong><br />
-                        <span style="font-size:13px; color:#9fb5c8;">${r.recipient} • ${r.period}</span>
+                        <span style="font-size:13px; color:#9fb5c8;">${r.recipient} вЂў ${r.period}</span>
                     </div>
                     <span class="report-status status-${r.status}">${statusMap[r.status] || r.status}</span>
                 </li>
@@ -978,8 +978,8 @@
                 return;
             }
 
-            const recipientLabel = recipient === 'president' ? tr('recipient_president', 'Türkmenistanyň Prezidenti') : tr('recipient_cabinet', 'Türkmenistanyň Kabinet Ministrleri');
-            const periodLabel = period === 'month' ? tr('period_month', 'Aý') : period === 'quarter' ? tr('period_quarter', 'Kvartal') : tr('period_year', 'Ýyl');
+            const recipientLabel = recipient === 'president' ? tr('recipient_president', 'TГјrkmenistanyЕ€ Prezidenti') : tr('recipient_cabinet', 'TГјrkmenistanyЕ€ Kabinet Ministrleri');
+            const periodLabel = period === 'month' ? tr('period_month', 'AГЅ') : period === 'quarter' ? tr('period_quarter', 'Kvartal') : tr('period_year', 'Гќyl');
 
             const newReport = {
                 id: 'r' + Date.now(),
@@ -994,11 +994,11 @@
             localStorage.setItem('ai_reports', JSON.stringify(reports));
             renderReports();
             this.reset();
-            showMessage(tr('report_sent', 'Hasabat üstünlikli iberildi!'), 'success');
+            showMessage(tr('report_sent', 'Hasabat ГјstГјnlikli iberildi!'), 'success');
         });
 
         // ============================================================
-        // 8. ПРОВЕРКА ДОКУМЕНТОВ
+        // 8. РџР РћР’Р•Р РљРђ Р”РћРљРЈРњР•РќРўРћР’
         // ============================================================
         let selectedFile = null;
         const uploadArea = document.getElementById('uploadArea');
@@ -1010,7 +1010,7 @@
         function resetDocumentUpload() {
             selectedFile = null;
             fileInput.value = '';
-            uploadArea.querySelector('p').textContent = tr('upload_hint', 'Faýly bu ýere süýşüriň ýa-da basyň');
+            uploadArea.querySelector('p').textContent = tr('upload_hint', 'FaГЅly bu ГЅere sГјГЅЕџГјriЕ€ ГЅa-da basyЕ€');
             resultDiv.style.display = 'none';
         }
 
@@ -1038,20 +1038,20 @@
 
         verifyBtn.addEventListener('click', function() {
             if (!selectedFile) {
-                resultDiv.textContent = tr('upload_hint', 'Faýly bu ýere süýşüriň ýa-da basyň');
+                resultDiv.textContent = tr('upload_hint', 'FaГЅly bu ГЅere sГјГЅЕџГјriЕ€ ГЅa-da basyЕ€');
                 resultDiv.className = 'verification-result';
                 resultDiv.style.display = 'block';
                 return;
             }
-            resultDiv.textContent = '⏳ Barlanýar...';
+            resultDiv.textContent = 'вЏі BarlanГЅar...';
             resultDiv.style.display = 'block';
             setTimeout(() => {
                 const isValid = Math.random() > 0.3;
                 if (isValid) {
-                    resultDiv.textContent = '✅ ' + tr('verify_success', 'Resmiýet dogry!');
+                    resultDiv.textContent = 'вњ… ' + tr('verify_success', 'ResmiГЅet dogry!');
                     resultDiv.style.color = '#00ffa3';
                 } else {
-                    resultDiv.textContent = '❌ ' + tr('verify_fail', 'Resmiýet nädogry!');
+                    resultDiv.textContent = 'вќЊ ' + tr('verify_fail', 'ResmiГЅet nГ¤dogry!');
                     resultDiv.style.color = '#ff6b6b';
                 }
                 resultDiv.className = 'verification-result';
@@ -1061,7 +1061,7 @@
         clearDocBtn.addEventListener('click', resetDocumentUpload);
 
         // ============================================================
-        // 9. ОБНОВЛЕНИЕ СТРАНИЦЫ
+        // 9. РћР‘РќРћР’Р›Р•РќРР• РЎРўР РђРќРР¦Р«
         // ============================================================
         document.getElementById('refreshAiBtn').addEventListener('click', function() {
             if (currentTab === 'analytics') initAnalytics();
@@ -1071,7 +1071,7 @@
                 const welcome = document.createElement('div');
                 welcome.className = 'msg bot';
                 welcome.id = 'welcomeMsg';
-                welcome.textContent = tr('welcome_msg', 'Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin?');
+                welcome.textContent = tr('welcome_msg', 'Salam! Men Sfera platformasynyЕ€ kГ¶mekГ§isi. Size nГ¤hili kГ¶mek edip bilerin?');
                 chatMessages.appendChild(welcome);
             }
             if (currentTab === 'documents') resetDocumentUpload();
@@ -1079,7 +1079,7 @@
         });
 
         // ============================================================
-        // 10. СООБЩЕНИЯ (TOAST)
+        // 10. РЎРћРћР‘Р©Р•РќРРЇ (TOAST)
         // ============================================================
         const messageEl = document.createElement('div');
         messageEl.className = 'message';
@@ -1094,7 +1094,7 @@
         }
 
         // ============================================================
-        // 11. ФОН И ЧАСТИЦЫ (ИЗ MESSENGER.HTML)
+        // 11. Р¤РћРќ Р Р§РђРЎРўРР¦Р« (РР— MESSENGER.HTML)
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const particlesContainer = document.getElementById("particles");
@@ -1158,15 +1158,16 @@
         });
 
         // ============================================================
-        // 12. ИНИЦИАЛИЗАЦИЯ
+        // 12. РРќРР¦РРђР›РР—РђР¦РРЇ
         // ============================================================
-        // Ждем загрузки DOM для инициализации Chart.js и других элементов
+        // Р–РґРµРј Р·Р°РіСЂСѓР·РєРё DOM РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё Chart.js Рё РґСЂСѓРіРёС… СЌР»РµРјРµРЅС‚РѕРІ
         document.addEventListener('DOMContentLoaded', () => {
             initAnalytics();
             renderForecasts('7d');
             renderReports();
-            console.log('✅ AI module with unified design & auto-translate');
+            console.log('вњ… AI module with unified design & auto-translate');
         });
     </script>
 </body>
 </html>
+
