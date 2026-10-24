@@ -1148,9 +1148,9 @@
             </a>
 
             <div class="header-right">
-                <span class="user-info">рџ‘¤ <strong id="username">User</strong></span>
+                <span class="user-info">👤 <strong id="username">User</strong></span>
                 <button class="lang lang-btn" id="langBtn" type="button" aria-label="Language">TM</button>
-                <button class="logout-btn glass-header-btn" id="logoutBtn" type="button" data-i18n="logout">рџљЄ Г‡ykmak</button>
+                <button class="logout-btn glass-header-btn" id="logoutBtn" type="button" data-i18n="logout">🚪 Г‡ykmak</button>
                 <a href="#" id="backLink" class="btn-switch glass-header-btn" data-i18n="back">← Yza</a>
             </div>
         </div>
@@ -1160,7 +1160,7 @@
     <section class="bank-page">
         <div class="container">
             <div class="bank-header">
-                <h1 data-i18n="bank_header_title">рџЏ¦ TM Bank</h1>
+                <h1 data-i18n="bank_header_title">🏦 TM Bank</h1>
                 <div class="actions">
                     <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">вџі Täzele</button>
                 </div>
@@ -1231,7 +1231,7 @@
             <div class="tab-content" id="tab-history">
                 <ul class="transactions-list" id="transactionsList"></ul>
                 <div class="empty-state" id="emptyTx" style="display:none;">
-                    <div class="icon">рџ“­</div>
+                    <div class="icon">📭</div>
                     <p data-i18n="no_transactions">Hiç hili amal ýok</p>
                 </div>
             </div>
@@ -1239,7 +1239,7 @@
             <div class="tab-content" id="tab-notifications">
                 <div id="notificationsList"></div>
                 <div class="empty-state" id="emptyNotif" style="display:none;">
-                    <div class="icon">рџ””</div>
+                    <div class="icon">🔔</div>
                     <p data-i18n="no_notifications">Täze bildiriş ýok</p>
                 </div>
             </div>
@@ -1376,7 +1376,7 @@
                 const type=document.createElement('div'); type.className='card-type'; type.textContent=t(`card_type_${c.type}`,c.type||'Card');
                 const num=document.createElement('div'); num.className='card-number'; num.textContent=c.maskedNumber||'•••• •••• •••• ••••';
                 const exp=document.createElement('div'); exp.className='card-expiry'; exp.textContent=c.expiry||'';
-                const logo=document.createElement('div'); logo.className='card-logo'; logo.textContent='рџ’і';
+                const logo=document.createElement('div'); logo.className='card-logo'; logo.textContent='💳';
                 card.append(type,num,exp,logo); grid.appendChild(card);
             });
         }

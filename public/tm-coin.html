@@ -316,10 +316,10 @@
             </a>
 
             <div class="header-right header-buttons">
-                <span class="user-info">рџ‘¤ <strong id="username">User</strong></span>
+                <span class="user-info">👤 <strong id="username">User</strong></span>
                 <button class="lang-btn" id="langBtn" type="button">TM</button>
                 <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">← Yza</a>
-                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">рџљЄ Г‡ykmak</button>
+                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">🚪 Г‡ykmak</button>
             </div>
         </div>
     </header>
@@ -339,7 +339,7 @@
                 <div class="pair" data-i18n="tmc_pair">TM Coin / TMT: <span class="value" id="tmcPrice">125.75</span> <span class="change up" id="priceChange">+2.3%</span></div>
                 <div class="pair" data-i18n="btc_pair">BTC / USD: <span class="value" id="btcPrice">67250</span> <span class="change up">+0.8%</span></div>
                 <div class="pair" data-i18n="eth_pair">ETH / USD: <span class="value" id="ethPrice">3450</span> <span class="change down">-0.5%</span></div>
-                <div class="portfolio-usd" data-i18n="portfolio_usd">рџЏ¦ Jemi portfel: <span id="totalPortfolioUsd">0.00</span> USD</div>
+                <div class="portfolio-usd" data-i18n="portfolio_usd">🏦 Jemi portfel: <span id="totalPortfolioUsd">0.00</span> USD</div>
             </div>
 
             <!-- График цены TM Coin -->
@@ -490,7 +490,7 @@
             <div class="tab-content" id="tab-history">
                 <ul class="transactions-list card-spotlight" id="transactionsList" style="padding: 20px; pointer-events: auto;"></ul>
                 <div class="empty-state" id="emptyTx" style="display:none;">
-                    <div class="icon">рџ“­</div>
+                    <div class="icon">📭</div>
                     <p data-i18n="no_transactions">Hiç hili amal ýok</p>
                 </div>
             </div>
@@ -701,7 +701,7 @@
         function renderStaking() {
             const container = document.getElementById('stakingGrid');
             if (!stakes || stakes.length === 0) {
-                container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">рџ”’</div><p>${tr('no_stakes', 'Işjeň staking ýok')}</p></div>`;
+                container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">🔒</div><p>${tr('no_stakes', 'Işjeň staking ýok')}</p></div>`;
                 return;
             }
             container.innerHTML = stakes.map(s => {

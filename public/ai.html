@@ -450,10 +450,10 @@
             </a>
 
             <div class="header-right header-buttons">
-                <span class="user-info">рџ‘¤ <strong id="username">User</strong></span>
+                <span class="user-info">👤 <strong id="username">User</strong></span>
                 <button class="lang-btn" id="langBtn" type="button" aria-label="Переключение языка">TM</button>
                 <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">← Yza</a>
-                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">рџљЄ Г‡ykmak</button>
+                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">🚪 Г‡ykmak</button>
             </div>
         </div>
     </header>
@@ -462,7 +462,7 @@
     <section class="doc-page">
         <div class="container">
             <div class="doc-header">
-                <h1 data-i18n="ai_header_title">рџ¤– AI analitika & Kömekçi</h1>
+                <h1 data-i18n="ai_header_title">🤖 AI analitika & Kömekçi</h1>
                 <div class="actions">
                     <button class="btn btn-outline" id="refreshAiBtn" data-i18n="refresh">вџі Täzele</button>
                 </div>
@@ -470,11 +470,11 @@
 
             <!-- Вкладки -->
             <div class="doc-tabs">
-                <button class="active" data-tab="assistant" data-i18n="tab_assistant">рџ’¬ Kömekçi</button>
-                <button data-tab="analytics" data-i18n="tab_analytics">рџ“Љ Analitika</button>
-                <button data-tab="forecasts" data-i18n="tab_forecasts">рџ“€ Prokgnozlar</button>
-                <button data-tab="reports" data-i18n="tab_reports">рџ“„ Hasabatlar</button>
-                <button data-tab="documents" data-i18n="tab_documents">рџ”Ќ Resmiýet barlag</button>
+                <button class="active" data-tab="assistant" data-i18n="tab_assistant">💬 Kömekçi</button>
+                <button data-tab="analytics" data-i18n="tab_analytics">📊 Analitika</button>
+                <button data-tab="forecasts" data-i18n="tab_forecasts">📈 Prokgnozlar</button>
+                <button data-tab="reports" data-i18n="tab_reports">📄 Hasabatlar</button>
+                <button data-tab="documents" data-i18n="tab_documents">🔍 Resmiýet barlag</button>
             </div>
 
             <!-- ===== ВКЛАДКА 1: ПОМОЩНРК ===== -->
@@ -591,7 +591,7 @@
                     <h3 data-i18n="doc_verify_title">Resmiýetleriň dogrulygyny barlamak</h3>
                     <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="doc_verify_desc">Faýly ýüklemek bilen onuň hakykylygyny barlap bilersiňiz.</p>
                     <div class="upload-area" id="uploadArea">
-                        <div class="icon">рџ“¤</div>
+                        <div class="icon">📤</div>
                         <p data-i18n="upload_hint">Faýly bu ýere süýşüriň ýa-da basyň</p>
                         <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.jpg,.png" style="display:none;" />
                     </div>
@@ -1048,7 +1048,7 @@
             setTimeout(() => {
                 const isValid = Math.random() > 0.3;
                 if (isValid) {
-                    resultDiv.textContent = 'вњ… ' + tr('verify_success', 'Resmiýet dogry!');
+                    resultDiv.textContent = '✅ ' + tr('verify_success', 'Resmiýet dogry!');
                     resultDiv.style.color = '#00ffa3';
                 } else {
                     resultDiv.textContent = 'вќЊ ' + tr('verify_fail', 'Resmiýet nädogry!');
@@ -1165,7 +1165,7 @@
             initAnalytics();
             renderForecasts('7d');
             renderReports();
-            console.log('вњ… AI module with unified design & auto-translate');
+            console.log('✅ AI module with unified design & auto-translate');
         });
     </script>
 </body>
