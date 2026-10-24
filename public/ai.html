@@ -1,149 +1,296 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="tm">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>СФЕРА — AI analitika</title>
+    <title data-i18n="ai_page_title">СФЕРА — AI analitika</title>
 
-    <!-- Общий CSS -->
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Chart.js для графиков -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
+    <!-- Проверка авторизации и Глобальный переводчик -->
+    <script src="/js/auth-check.js"></script>
+    <script src="/scripts/auto_translate_i18n.js"></script>
+
     <style>
-        /* ===== СПЕЦИФИЧНЫЕ СТИЛИ ДЛЯ AI МОДУЛЯ ===== */
-        .ai-page {
+        /* ==========================================================================
+           1. ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ (ИЗ MESSENGER.HTML)
+           ========================================================================== */
+        :root {
+            --primary: #00d4ff;
+            --secondary: #1f6bff;
+            --accent: #00ffa3;
+            --dark-bg: #03080e;
+            --glass-bg: rgba(255, 255, 255, 0.035);
+            --glass-border: rgba(0, 212, 255, 0.18);
+            --glass-hover-bg: rgba(0, 212, 255, 0.08);
+            --glass-hover-border: rgba(0, 212, 255, 0.45);
+            --header-footer-bg: rgba(5, 14, 26, 0.75);
+            --white: #ffffff;
+            --text: #dbe9ff;
+            --text-muted: #9bb3cc;
+            --radius: 22px;
+        }
+
+        /* ==========================================================================
+           2. СТИЛИЗАЦИЯ ПОЛЗУНКА ПРОКРУТКИ
+           ========================================================================== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #03080e; border-left: 1px solid rgba(0, 212, 255, 0.1); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.4), rgba(31, 107, 255, 0.5));
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #00d4ff, #00ffa3); box-shadow: 0 0 12px rgba(0, 212, 255, 0.8); }
+
+        /* ==========================================================================
+           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ
+           ========================================================================== */
+        .full-glass-backdrop {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.16), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 163, 0.12), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(31, 107, 255, 0.1), transparent 60%),
+                rgba(3, 8, 14, 0.72);
+            backdrop-filter: blur(65px) saturate(180%);
+            -webkit-backdrop-filter: blur(65px) saturate(180%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* ==========================================================================
+           4. ПЛАВАЮЩИЕ ТОЧКИ И НЕОНОВАЯ СЕТКА
+           ========================================================================== */
+        .bg-grid {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px; pointer-events: none; z-index: 0;
+        }
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; opacity: 0.85; }
+        #particles { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; overflow: hidden; z-index: 3; }
+        .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: floatParticle linear infinite; }
+        @keyframes floatParticle {
+            0% { transform: translateY(105vh) translateX(0) scale(0.5); opacity: 0; }
+            20% { opacity: 0.85; }
+            80% { opacity: 0.85; }
+            100% { transform: translateY(-10vh) translateX(15px) scale(1.1); opacity: 0; }
+        }
+
+        /* ==========================================================================
+           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И ШАПКА
+           ========================================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; scrollbar-width: thin; scrollbar-color: rgba(0, 212, 255, 0.4) #03080e; }
+        html { scroll-behavior: smooth; background-color: var(--dark-bg); }
+        body { background-color: var(--dark-bg); color: var(--white); overflow-x: hidden; position: relative; min-height: 100vh; }
+        .container { width: min(1400px, 92%); margin: auto; position: relative; z-index: 10; }
+
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
+            backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
+            background: var(--header-footer-bg); border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5); transition: all 0.4s ease;
+            transform: translateZ(0); will-change: transform; contain: layout paint style;
+        }
+        header .container { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
+        
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; transition: transform 0.3s ease; }
+        .logo:hover { transform: translateY(-1px) scale(1.02); }
+        .logo-icon { width: 54px; height: 54px; display: flex; justify-content: center; align-items: center; }
+        .logo-svg { width: 100%; height: 100%; overflow: visible; }
+        .logo-svg g { transform-origin: 50px 50px; animation: spinLogo 16s linear infinite; }
+        @keyframes spinLogo { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .logo-text h2 { font-size: 22px; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #00ffa3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; }
+        .logo-text p { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; margin: 4px 0 0 0; color: #9fb5c8; text-transform: uppercase; }
+
+        .header-right { display: flex; gap: 12px; align-items: center; }
+        .user-info { font-size: 14px; color: var(--text); font-weight: 600; background: rgba(255, 255, 255, 0.04); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.15); }
+        .lang-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(0, 212, 255, 0.3); color: white; backdrop-filter: blur(10px); padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; outline: none; transition: all 0.35s ease; user-select: none; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; }
+        .lang-btn:hover { background: rgba(0, 212, 255, 0.2); border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); transform: translateY(-1px); }
+        .btn-switch { text-decoration: none; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--white); backdrop-filter: blur(12px); transition: all 0.3s ease; }
+        .btn-switch:hover { background: rgba(0, 212, 255, 0.15); border-color: var(--primary); color: var(--primary); }
+        .logout-btn { background: rgba(200, 0, 0, 0.15); border: 1px solid rgba(200, 0, 0, 0.35); color: #ff6b6b; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s ease; }
+        .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
+
+        /* ==========================================================================
+           6. СТИЛИ СТРАНИЦЫ (ИЗ DOCUMENTS.HTML)
+           ========================================================================== */
+        .doc-page {
             padding: 140px 7% 60px;
             min-height: 100vh;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
         }
-        .ai-header {
+
+        .doc-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             margin-bottom: 30px;
         }
-        .ai-header h1 {
+
+        .doc-header h1 {
             font-size: 36px;
             font-weight: 800;
-            background: linear-gradient(to right, #fff, #b4d7ff);
+            background: linear-gradient(135deg, #ffffff 0%, #b4d7ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .ai-header .actions {
+
+        .doc-header .actions {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+            align-items: center;
         }
+
         .btn {
             padding: 10px 24px;
             border: none;
             border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: .3s;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
             font-size: 14px;
         }
+
         .btn-primary {
             background: linear-gradient(135deg, #00d4ff, #008cff);
             color: white;
-            box-shadow: 0 10px 30px rgba(0,212,255,.25);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.25);
         }
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(0,212,255,.4);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.4);
         }
+
         .btn-outline {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,.25);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 212, 255, 0.2);
             color: white;
         }
         .btn-outline:hover {
-            background: rgba(255,255,255,.1);
+            background: rgba(0, 212, 255, 0.1);
             border-color: #00d4ff;
         }
+
         .btn-success {
             background: linear-gradient(135deg, #00ffa3, #00b894);
             color: #08131d;
+            font-weight: 700;
+        }
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 255, 170, 0.3);
         }
 
-        .ai-tabs {
+        /* Табы 1-в-1 как в documents.html */
+        .doc-tabs {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
             margin-bottom: 30px;
-            border-bottom: 1px solid rgba(255,255,255,.08);
-            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+            padding-bottom: 8px;
         }
-        .ai-tabs button {
+        .doc-tabs button {
             background: transparent;
             border: none;
-            color: #9fb5c8;
-            padding: 10px 20px;
-            border-radius: 30px;
+            color: var(--text-muted);
+            padding: 12px 24px;
             font-weight: 600;
             font-size: 15px;
             cursor: pointer;
-            transition: .3s;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            border-radius: 8px 8px 0 0;
         }
-        .ai-tabs button.active {
-            background: rgba(0,212,255,.12);
+        .doc-tabs button.active {
             color: #00d4ff;
+            border-bottom-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.05);
         }
-        .ai-tabs button:hover {
-            background: rgba(255,255,255,.05);
+        .doc-tabs button:hover {
             color: white;
         }
 
         .tab-content {
             display: none;
-            animation: fadeUp 0.5s ease;
+            animation: fadeUp 0.4s ease;
         }
         .tab-content.active {
             display: block;
         }
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ==========================================================================
+           7. ЛОКАЛЬНЫЕ СТИЛИ AI (СТЕКЛО КАК В MESSENGER)
+           ========================================================================== */
         .card-glass {
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.12);
-            backdrop-filter: blur(25px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 24px;
             padding: 30px;
             margin-bottom: 25px;
+            transition: all 0.35s ease;
+            position: relative;
         }
+
+        .card-glass:hover {
+            border-color: var(--glass-hover-border);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.2);
+        }
+
         .card-glass h3 {
             font-size: 20px;
             margin-bottom: 16px;
             color: white;
         }
 
-        .forecast-period {
+        .forecast-period, .report-period {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             margin-bottom: 16px;
         }
-        .forecast-period button {
-            padding: 6px 16px;
-            border: 1px solid rgba(255,255,255,.15);
-            border-radius: 20px;
-            background: transparent;
+        .forecast-period button, .report-period button {
+            padding: 8px 20px;
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 30px;
+            background: rgba(255,255,255,.05);
+            backdrop-filter: blur(4px);
             color: #bdd0df;
             cursor: pointer;
-            transition: .2s;
+            transition: .3s;
             font-size: 14px;
+            font-weight: 500;
         }
-        .forecast-period button.active {
-            background: rgba(0,212,255,.15);
+        .forecast-period button:hover, .report-period button:hover {
+            background: rgba(255,255,255,.1);
+            border-color: #00d4ff;
+            color: white;
+        }
+        .forecast-period button.active, .report-period button.active {
+            background: rgba(0,212,255,.2);
             border-color: #00d4ff;
             color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0,212,255,.2);
         }
 
         .forecast-list {
@@ -160,65 +307,14 @@
             border-radius: 12px;
             border-left: 4px solid #00d4ff;
         }
-        .forecast-item .date {
-            color: #9fb5c8;
-            font-size: 14px;
-        }
-        .forecast-item .price {
-            font-weight: 700;
-            color: #00d4ff;
-        }
-        .forecast-item .confidence {
-            font-size: 13px;
-            color: #bdd0df;
-        }
+        .forecast-item .date { color: #9fb5c8; font-size: 14px; }
+        .forecast-item .price { font-weight: 700; color: #00d4ff; }
+        .forecast-item .confidence { font-size: 13px; color: #bdd0df; }
 
-        /* ===== ИСПРАВЛЕННЫЕ КНОПКИ ВЫБОРА ПЕРИОДА (единый стеклянный дизайн) ===== */
-        .report-period {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .report-period button {
-            padding: 8px 20px;
-            border: 1px solid rgba(255,255,255,.2);
-            border-radius: 30px;
-            background: rgba(255,255,255,.05);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            color: #bdd0df;
-            cursor: pointer;
-            transition: .3s;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .report-period button:hover {
-            background: rgba(255,255,255,.1);
-            border-color: #00d4ff;
-            color: white;
-        }
-        .report-period button.active {
-            background: rgba(0,212,255,.2);
-            border-color: #00d4ff;
-            color: #00d4ff;
-            box-shadow: 0 0 20px rgba(0,212,255,.2);
-        }
-
-        .report-form {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .report-form .form-group {
-            margin-bottom: 16px;
-        }
-        .report-form .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #dbe9ff;
-            margin-bottom: 6px;
-        }
+        /* Формы */
+        .report-form { max-width: 600px; margin: 0 auto; }
+        .report-form .form-group { margin-bottom: 16px; }
+        .report-form .form-group label { display: block; font-size: 14px; font-weight: 500; color: #dbe9ff; margin-bottom: 6px; }
         .report-form .form-group input,
         .report-form .form-group select,
         .report-form .form-group textarea {
@@ -234,65 +330,18 @@
         }
         .report-form .form-group input:focus,
         .report-form .form-group select:focus,
-        .report-form .form-group textarea:focus {
-            border-color: #00d4ff;
-        }
-        .report-form .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-        .report-form .form-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 10px;
-        }
+        .report-form .form-group textarea:focus { border-color: #00d4ff; }
+        .report-form .form-group textarea { resize: vertical; min-height: 100px; }
+        .report-form .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px; }
 
-        .report-status {
-            display: inline-block;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
+        .report-status { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-sent { background: rgba(0,212,255,.15); color: #00d4ff; }
         .status-approved { background: rgba(0,255,170,.15); color: #00ffa3; }
         .status-rejected { background: rgba(255,0,0,.15); color: #ff6b6b; }
+        .reports-list { list-style: none; padding: 0; margin: 0; }
+        .reports-list li { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.05); display: flex; justify-content: space-between; align-items: center; }
 
-        .reports-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .reports-list li {
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(255,255,255,.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .message {
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            display: none;
-        }
-        .message.error {
-            display: block;
-            background: rgba(255,0,0,.1);
-            border: 1px solid rgba(255,0,0,.2);
-            color: #ff6b6b;
-        }
-        .message.success {
-            display: block;
-            background: rgba(0,255,170,.1);
-            border: 1px solid rgba(0,255,170,.2);
-            color: #00ffa3;
-        }
-
-        /* Чат */
+        /* Чат-помощник */
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -309,31 +358,10 @@
             flex-direction: column;
             gap: 12px;
         }
-        .msg {
-            padding: 12px 18px;
-            border-radius: 18px;
-            max-width: 80%;
-            word-wrap: break-word;
-        }
-        .msg.user {
-            align-self: flex-end;
-            background: rgba(0,212,255,.2);
-            color: white;
-            border-bottom-right-radius: 6px;
-        }
-        .msg.bot {
-            align-self: flex-start;
-            background: rgba(255,255,255,.08);
-            color: white;
-            border-bottom-left-radius: 6px;
-        }
-        .chat-input {
-            display: flex;
-            gap: 12px;
-            padding: 16px 20px;
-            border-top: 1px solid rgba(255,255,255,.08);
-            background: rgba(0,0,0,.1);
-        }
+        .msg { padding: 12px 18px; border-radius: 18px; max-width: 80%; word-wrap: break-word; }
+        .msg.user { align-self: flex-end; background: rgba(0,212,255,.2); color: white; border-bottom-right-radius: 6px; }
+        .msg.bot { align-self: flex-start; background: rgba(255,255,255,.08); color: white; border-bottom-left-radius: 6px; }
+        .chat-input { display: flex; gap: 12px; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.08); background: rgba(0,0,0,.1); }
         .chat-input input {
             flex: 1;
             padding: 12px 18px;
@@ -344,9 +372,7 @@
             font-size: 15px;
             outline: none;
         }
-        .chat-input input:focus {
-            border-color: #00d4ff;
-        }
+        .chat-input input:focus { border-color: #00d4ff; }
         .chat-input button {
             padding: 12px 24px;
             border: none;
@@ -357,12 +383,9 @@
             cursor: pointer;
             transition: .3s;
         }
-        .chat-input button:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(0,212,255,.3);
-        }
+        .chat-input button:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0,212,255,.3); }
 
-        /* Upload area */
+        /* Загрузка документов */
         .upload-area {
             border: 2px dashed rgba(255,255,255,.2);
             border-radius: 18px;
@@ -372,30 +395,36 @@
             transition: .3s;
             cursor: pointer;
         }
-        .upload-area:hover {
-            border-color: #00d4ff;
-            background: rgba(0,212,255,.05);
-        }
-        .upload-area .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
+        .upload-area:hover { border-color: #00d4ff; background: rgba(0,212,255,.05); }
+        .upload-area .icon { font-size: 48px; margin-bottom: 12px; }
+
+        /* Уведомления */
+        .message { padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .message.error { display: block; background: rgba(255,0,0,.1); border: 1px solid rgba(255,0,0,.2); color: #ff6b6b; }
+        .message.success { display: block; background: rgba(0,255,170,.1); border: 1px solid rgba(0,255,170,.2); color: #00ffa3; }
+
+        /* --- ФУТЕР (ИЗ MESSENGER.HTML) --- */
+        footer { position: relative; z-index: 20; margin-top: 60px; backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%); background: var(--header-footer-bg); border-top: 1px solid rgba(0, 212, 255, 0.2); box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.5); }
+        footer .container { display: flex; justify-content: space-between; align-items: center; padding: 28px 0; flex-wrap: wrap; gap: 20px; }
+        footer p { color: #c0d8f0; font-size: 14px; }
 
         @media (max-width: 768px) {
-            .ai-tabs button { padding: 8px 14px; font-size: 13px; }
-            .forecast-period button { font-size: 12px; padding: 4px 12px; }
-            .report-period button { font-size: 12px; padding: 6px 14px; }
-            .ai-header h1 { font-size: 28px; }
+            .doc-tabs button { padding: 10px 14px; font-size: 13px; }
+            .doc-header h1 { font-size: 28px; }
         }
     </style>
 </head>
 <body>
+
+    <div class="full-glass-backdrop"></div>
+    <div class="bg-grid"></div>
+    <canvas id="bgCanvas"></canvas>
     <div id="particles"></div>
 
-    <!-- ШАПКА (единая) -->
+    <!-- ШАПКА (ИЗ MESSENGER.HTML) -->
     <header>
         <div class="container">
-            <a href="index.html" class="logo">
+            <a href="index.html" class="logo" aria-label="СФЕРА Главная">
                 <div class="logo-icon">
                     <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
@@ -404,38 +433,35 @@
                                 <stop offset="50%" stop-color="#00d4ff"/>
                                 <stop offset="100%" stop-color="#1f6bff"/>
                             </linearGradient>
-                            <filter id="logoGlow" x="-30%" y="-30%" width="160%" height="160%">
-                                <feGaussianBlur stdDeviation="4" result="blur"/>
-                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                            </filter>
                         </defs>
-                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15" filter="url(#logoGlow)"/>
-                        <g filter="url(#logoGlow)">
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15"/>
+                        <g>
                             <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
-                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
-                            <circle cx="48" cy="48" r="3.5" fill="#ffffff" filter="url(#logoGlow)"/>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" 
+                                  stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff"/>
                         </g>
                     </svg>
                 </div>
                 <div class="logo-text">
-                    <h2>SFERA</h2>
-                    <p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p>
+                    <h2 data-i18n="logo_title">СФЕРА</h2>
+                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
                 </div>
             </a>
 
-            <div class="header-right">
+            <div class="header-right header-buttons">
                 <span class="user-info">👤 <strong id="username">User</strong></span>
-                <button class="lang" id="langBtn">RU</button>
-                <button class="logout-btn" id="logoutBtn" data-i18n="logout">🚪 Çykmak</button>
-                <a href="#" id="backLink" class="btn-switch" style="display:inline-block; padding:8px 16px; background:transparent; border:1px solid rgba(255,255,255,.15); color:white; border-radius:12px; text-decoration:none;" data-i18n="back">← Yza</a>
+                <button class="lang-btn" id="langBtn" type="button" aria-label="Переключение языка">TM</button>
+                <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">← Yza</a>
+                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">🚪 Çykmak</button>
             </div>
         </div>
     </header>
 
     <!-- ОСНОВНОЙ КОНТЕНТ -->
-    <section class="ai-page">
+    <section class="doc-page">
         <div class="container">
-            <div class="ai-header">
+            <div class="doc-header">
                 <h1 data-i18n="page_title">🤖 AI analitika & Kömekçi</h1>
                 <div class="actions">
                     <button class="btn btn-outline" id="refreshAiBtn" data-i18n="refresh">⟳ Täzele</button>
@@ -443,7 +469,7 @@
             </div>
 
             <!-- Вкладки -->
-            <div class="ai-tabs">
+            <div class="doc-tabs">
                 <button class="active" data-tab="assistant" data-i18n="tab_assistant">💬 Kömekçi</button>
                 <button data-tab="analytics" data-i18n="tab_analytics">📊 Analitika</button>
                 <button data-tab="forecasts" data-i18n="tab_forecasts">📈 Prokgnozlar</button>
@@ -458,11 +484,11 @@
                     <p style="color:#bdd0df; margin-bottom:16px;" data-i18n="assistant_desc">Sfera platformasynyň ähli meseleleri boýunça sorag beriň.</p>
                     <div class="chat-container">
                         <div class="chat-messages-ai" id="chatMessagesAi">
-                            <div class="msg bot" id="welcomeMsg">Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin)</div>
+                            <div class="msg bot" id="welcomeMsg" data-i18n="welcome_msg">Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin)</div>
                         </div>
                         <div class="chat-input">
-                            <input type="text" id="aiChatInput" placeholder="Soragyňyzy ýazyň..." />
-                            <button id="aiChatSendBtn">Iber</button>
+                            <input type="text" id="aiChatInput" placeholder="Soragyňyzy ýazyň..." data-i18n-placeholder="chat_placeholder" />
+                            <button id="aiChatSendBtn" data-i18n="btn_send">Iber</button>
                         </div>
                     </div>
                 </div>
@@ -583,221 +609,57 @@
         </div>
     </section>
 
+    <!-- ФУТЕР (ИЗ MESSENGER.HTML) -->
+    <footer>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-text">
+                    <h2 data-i18n="logo_title">СФЕРА</h2>
+                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
+                </div>
+            </a>
+            <p data-i18n="footer_copy">© 2026 — Единая цифровая платформа Туркменистана</p>
+        </div>
+    </footer>
+
     <script>
         // ============================================================
-        // ПЕРЕВОДЫ
+        // 1. ИНИЦИАЛИЗАЦИЯ И ПРИНУДИТЕЛЬНЫЙ ТУРКМЕНСКИЙ ЯЗЫК
         // ============================================================
-        const translations = {
-            ru: {
-                logo_subtitle: "Национальная Цифровая Платформа",
-                logout: "🚪 Выйти",
-                back: "← Назад",
-                refresh: "⟳ Обновить",
-                page_title: "🤖 AI аналитика & Помощник",
-                tab_assistant: "💬 Помощник",
-                tab_analytics: "📊 Аналитика",
-                tab_forecasts: "📈 Прогнозы",
-                tab_reports: "📄 Отчёты",
-                tab_documents: "🔍 Проверка документов",
-                assistant_title: "Помощник по платформе",
-                assistant_desc: "Задайте вопрос по всем модулям платформы Sfera.",
-                analytics_title: "Отчёты",
-                period_day: "День",
-                period_week: "Неделя",
-                period_month: "Месяц",
-                period_quarter: "Квартал",
-                period_year: "Год",
-                total_activity: "Всего активность",
-                users: "Пользователи",
-                orders: "Сделки",
-                revenue: "Доход",
-                forecasts_title: "Прогнозы TM Coin",
-                forecast_7d: "7 дней",
-                forecast_6m: "6 месяцев",
-                forecast_1y: "1 год",
-                reports_title: "Отчёты (Президент & Кабмин)",
-                reports_desc: "Создайте и отправьте отчёт в Администрацию Президента или Кабинет Министров.",
-                recipient: "Получатель",
-                recipient_president: "Президент Туркменистана",
-                recipient_cabinet: "Кабинет Министров Туркменистана",
-                report_title: "Название отчёта",
-                report_period: "Период",
-                report_content: "Содержание",
-                send_report: "Отправить отчёт",
-                sent_reports: "Отправленные отчёты",
-                doc_verify_title: "Проверка документов",
-                doc_verify_desc: "Загрузите файл и проверьте его подлинность.",
-                upload_hint: "Перетащите файл или нажмите для выбора",
-                verify_btn: "Проверить",
-                clear_btn: "Очистить",
-                supported_formats: "Поддерживаемые форматы:",
-                status_sent: "Отправлен",
-                status_approved: "Утверждён",
-                status_rejected: "Отклонён",
-                no_reports: "Нет отправленных отчётов.",
-                report_sent: "Отчёт успешно отправлен!",
-                report_error: "Ошибка отправки отчёта.",
-                verify_success: "Документ действителен!",
-                verify_fail: "Документ не прошёл проверку!",
-                welcome_msg: "Здравствуйте! Я помощник платформы Sfera. Чем могу помочь? (Маркетплейс, Банк, Почта, Мессенджер, Документы, TM Coin)"
-            },
-            tm: {
-                logo_subtitle: "Milli Sanly Platforma",
-                logout: "🚪 Çykmak",
-                back: "← Yza",
-                refresh: "⟳ Täzele",
-                page_title: "🤖 AI analitika & Kömekçi",
-                tab_assistant: "💬 Kömekçi",
-                tab_analytics: "📊 Analitika",
-                tab_forecasts: "📈 Prokgnozlar",
-                tab_reports: "📄 Hasabatlar",
-                tab_documents: "🔍 Resmiýet barlag",
-                assistant_title: "Platforma boýunça kömekçi",
-                assistant_desc: "Sfera platformasynyň ähli meseleleri boýunça sorag beriň.",
-                analytics_title: "Hasabatlar",
-                period_day: "Gün",
-                period_week: "Hepde",
-                period_month: "Aý",
-                period_quarter: "Kvartal",
-                period_year: "Ýyl",
-                total_activity: "Jemi işjeňlik",
-                users: "Ulanyjylar",
-                orders: "Söwdalar",
-                revenue: "Girdeji",
-                forecasts_title: "TM Coin prokgnozlary",
-                forecast_7d: "7 gün",
-                forecast_6m: "6 aý",
-                forecast_1y: "1 ýyl",
-                reports_title: "Hasabatlar (Prezident & Kabmin)",
-                reports_desc: "Administrasiýa we Kabinet Ministrleri üçin hasabat dörediň we iberiň.",
-                recipient: "Aljy",
-                recipient_president: "Türkmenistanyň Prezidenti",
-                recipient_cabinet: "Türkmenistanyň Kabinet Ministrleri",
-                report_title: "Hasabatyň ady",
-                report_period: "Döwür",
-                report_content: "Mazmuny",
-                send_report: "Hasabat iber",
-                sent_reports: "Iberilen hasabatlar",
-                doc_verify_title: "Resmiýetleriň dogrulygyny barlamak",
-                doc_verify_desc: "Faýly ýüklemek bilen onuň hakykylygyny barlap bilersiňiz.",
-                upload_hint: "Faýly bu ýere süýşüriň ýa-da basyň",
-                verify_btn: "Barlamak",
-                clear_btn: "Arassala",
-                supported_formats: "Mümkin bolan formatlar:",
-                status_sent: "Iberilen",
-                status_approved: "Tassyklandy",
-                status_rejected: "Ret edildi",
-                no_reports: "Hiç hili hasabat ýok.",
-                report_sent: "Hasabat üstünlikli iberildi!",
-                report_error: "Hasabat iberilmedi.",
-                verify_success: "Resmiýet dogry!",
-                verify_fail: "Resmiýet nädogry!",
-                welcome_msg: "Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin)"
-            },
-            en: {
-                logo_subtitle: "National Digital Platform",
-                logout: "🚪 Logout",
-                back: "← Back",
-                refresh: "⟳ Refresh",
-                page_title: "🤖 AI Analytics & Assistant",
-                tab_assistant: "💬 Assistant",
-                tab_analytics: "📊 Analytics",
-                tab_forecasts: "📈 Forecasts",
-                tab_reports: "📄 Reports",
-                tab_documents: "🔍 Document verification",
-                assistant_title: "Platform Assistant",
-                assistant_desc: "Ask any question about Sfera platform modules.",
-                analytics_title: "Reports",
-                period_day: "Day",
-                period_week: "Week",
-                period_month: "Month",
-                period_quarter: "Quarter",
-                period_year: "Year",
-                total_activity: "Total activity",
-                users: "Users",
-                orders: "Transactions",
-                revenue: "Revenue",
-                forecasts_title: "TM Coin forecasts",
-                forecast_7d: "7 days",
-                forecast_6m: "6 months",
-                forecast_1y: "1 year",
-                reports_title: "Reports (President & Cabinet)",
-                reports_desc: "Create and send reports to the President's Administration or Cabinet of Ministers.",
-                recipient: "Recipient",
-                recipient_president: "President of Turkmenistan",
-                recipient_cabinet: "Cabinet of Ministers of Turkmenistan",
-                report_title: "Report title",
-                report_period: "Period",
-                report_content: "Content",
-                send_report: "Send report",
-                sent_reports: "Sent reports",
-                doc_verify_title: "Document verification",
-                doc_verify_desc: "Upload a file to verify its authenticity.",
-                upload_hint: "Drag & drop or click to select",
-                verify_btn: "Verify",
-                clear_btn: "Clear",
-                supported_formats: "Supported formats:",
-                status_sent: "Sent",
-                status_approved: "Approved",
-                status_rejected: "Rejected",
-                no_reports: "No sent reports.",
-                report_sent: "Report sent successfully!",
-                report_error: "Failed to send report.",
-                verify_success: "Document is valid!",
-                verify_fail: "Document verification failed!",
-                welcome_msg: "Hello! I am the Sfera platform assistant. How can I help you? (Marketplace, Bank, Mail, Messenger, Documents, TM Coin)"
+        // Если язык не установлен, ставим ТМ
+        if (!localStorage.getItem('sfera_lang') && !localStorage.getItem('lang')) {
+            localStorage.setItem('sfera_lang', 'tm');
+            localStorage.setItem('lang', 'tm');
+        }
+
+        // Получаем текущий язык из глобального переводчика (или ставим tm)
+        let currentLang = window.SFERA_I18N ? window.SFERA_I18N.getLanguage() : 'tm';
+
+        // Функция для получения перевода из глобального словаря
+        function tr(key, fallback = '') {
+            if (window.SFERA_I18N && window.SFERA_I18N.t) {
+                const val = window.SFERA_I18N.t(key);
+                if (val !== key) return val;
             }
-        };
+            return fallback || key;
+        }
 
-        // ============================================================
-        // УСТАНОВКА ЯЗЫКА
-        // ============================================================
-        let currentLang = localStorage.getItem('lang') || 'ru';
-
-        function setLanguage(lang) {
-            if (!translations[lang]) return;
-            currentLang = lang;
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    if (el.tagName === 'INPUT' && el.getAttribute('placeholder')) {
-                        el.placeholder = translations[lang][key];
-                    } else if (el.tagName === 'SELECT') {
-                        // опции обновляются отдельно
-                    } else {
-                        el.textContent = translations[lang][key];
-                    }
-                }
-            });
-            // Обновляем select опции
-            document.querySelectorAll('select [data-i18n]').forEach(opt => {
-                const key = opt.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    opt.textContent = translations[lang][key];
-                }
-            });
-            // Приветствие в чате
+        // Слушаем смену языка, чтобы перерисовать динамические элементы (графики, чат)
+        window.addEventListener('sfera:languageChanged', (e) => {
+            currentLang = e.detail.lang;
+            // Обновляем заголовок приветствия
             const welcomeMsg = document.getElementById('welcomeMsg');
             if (welcomeMsg) {
-                welcomeMsg.textContent = translations[lang].welcome_msg;
+                welcomeMsg.textContent = tr('welcome_msg', 'Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin?');
             }
-            document.getElementById('langBtn').textContent = lang.toUpperCase();
-            localStorage.setItem('lang', lang);
-            // Обновить данные (перерисовать графики, прогнозы)
+            // Перерисовываем графики, если они активны
             if (currentTab === 'analytics') initAnalytics();
             if (currentTab === 'forecasts') renderForecasts(currentForecastPeriod);
             if (currentTab === 'reports') renderReports();
-        }
-
-        document.getElementById('langBtn').addEventListener('click', function() {
-            const cycle = ['ru', 'tm', 'en'];
-            let idx = cycle.indexOf(currentLang);
-            idx = (idx + 1) % cycle.length;
-            setLanguage(cycle[idx]);
         });
 
         // ============================================================
-        // АВТОРИЗАЦИЯ И НАВИГАЦИЯ
+        // 2. АВТОРИЗАЦИЯ И НАВИГАЦИЯ
         // ============================================================
         const token = localStorage.getItem('token');
         if (!token) window.location.href = 'login.html';
@@ -805,12 +667,12 @@
         const user = JSON.parse(localStorage.getItem('user') || '{"username":"User","role":"user"}');
         document.getElementById('username').textContent = user.username || 'User';
 
-      // Ссылка "Назад" в зависимости от роли
-const backLink = document.getElementById('backLink');
-if (backLink) {
-    const role = (user && user.role) || (window.SFERA_AUTH && window.SFERA_AUTH.role) || localStorage.getItem('sfera_role') || 'user';
-    backLink.href = role === 'admin' ? 'admin.html' : 'dashboard.html';
-} 
+        const backLink = document.getElementById('backLink');
+        if (backLink) {
+            const role = (user && user.role) || (window.SFERA_AUTH && window.SFERA_AUTH.role) || localStorage.getItem('sfera_role') || 'user';
+            backLink.href = role === 'admin' ? 'admin.html' : 'dashboard.html';
+        } 
+        
         document.getElementById('logoutBtn').addEventListener('click', function() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
@@ -818,12 +680,12 @@ if (backLink) {
         });
 
         // ============================================================
-        // ВКЛАДКИ
+        // 3. ВКЛАДКИ
         // ============================================================
         let currentTab = 'assistant';
-        document.querySelectorAll('.ai-tabs button').forEach(btn => {
+        document.querySelectorAll('.doc-tabs button').forEach(btn => {
             btn.addEventListener('click', function() {
-                document.querySelectorAll('.ai-tabs button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.doc-tabs button').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 const tab = this.dataset.tab;
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -836,7 +698,7 @@ if (backLink) {
         });
 
         // ============================================================
-        // ПОМОЩНИК (чат-бот)
+        // 4. ПОМОЩНИК (чат-бот)
         // ============================================================
         const chatMessages = document.getElementById('chatMessagesAi');
         const chatInput = document.getElementById('aiChatInput');
@@ -852,35 +714,60 @@ if (backLink) {
 
         function getBotResponse(message, lang) {
             const lower = message.toLowerCase();
-            const t = translations[lang];
-            if (lower.includes('salam') || lower.includes('hello') || lower.includes('привет')) {
-                return t.welcome_msg || 'Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin?';
-            }
-            if (lower.includes('market') || lower.includes('söwda') || lower.includes('бирж')) {
-                return 'Marketpleýs moduly – elektron söwda meýdançasy. Bu ýerde harytlary satyp we satyn alyp bilersiňiz. Täze bildiriş goşmak üçin "Marketpleýs" bölümine giriň.';
-            }
-            if (lower.includes('bank') || lower.includes('pul')) {
-                return 'TM Bank – sanly bank hyzmatlary. Balansyňyzy barlaýarsyňyz, pul geçirişleri edip we amallary görüp bilersiňiz.';
-            }
-            if (lower.includes('poçta') || lower.includes('mail') || lower.includes('почт')) {
-                return 'TM Poçta – içki poçta ulgamy. Hatlar iberip we kabul edip bilersiňiz, goşundylary goşup.';
-            }
-            if (lower.includes('mesenjer') || lower.includes('chat') || lower.includes('мессендж')) {
-                return 'Messenjer – çalt habarlaşma üçin ulgam. Şahsy söhbetler we gruppalar döredip, ses we wideo jaňlar edip bilersiňiz.';
-            }
-            if (lower.includes('resmiýet') || lower.includes('document') || lower.includes('документ')) {
-                return 'Resmiýetler moduly – awtomatik tassyklama. Faýly ýükläp, onuň dogrulygyny barlap bilersiňiz. AI ulgamy resmiýetiň hakykylygyny kesgitleýär.';
-            }
-            if (lower.includes('tm coin') || lower.includes('coín') || lower.includes('монета')) {
-                return 'TM Coin – sanly döwlet walýutasy. Ony platformada tölegler üçin ulanyp, şeýle hem prokgnozlary görüp bilersiňiz.';
-            }
-            if (lower.includes('analitika') || lower.includes('analytics') || lower.includes('отчёт')) {
-                return 'Analitika bölüminde gün, hepde, aý, kvartal we ýyl üçin hasabatlar görkezilýär. Graphikler we statistikalar bilen tanyşyp bilersiňiz.';
-            }
-            if (lower.includes('prezident') || lower.includes('kabmin') || lower.includes('hasabat')) {
-                return 'Hasabatlar bölüminde Prezident we Kabinet Ministrleri üçin hasabat döredip we iberip bilersiňiz.';
-            }
-            return 'Täze sorag üçin minnetdar. Men size näme barada maglumat bermegimi isleýärsiňiz? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin, Analitika, Hasabatlar)';
+            
+            // Базовые ответы на трех языках
+            const botReplies = {
+                tm: {
+                    greet: "Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin)",
+                    market: "Marketpleýs moduly – elektron söwda meýdançasy. Bu ýerde harytlary satyp we satyn alyp bilersiňiz. Täze bildiriş goşmak üçin 'Marketpleýs' bölümine giriň.",
+                    bank: "TM Bank – sanly bank hyzmatlary. Balansyňyzy barlaýarsyňyz, pul geçirişleri edip we amallary görüp bilersiňiz.",
+                    mail: "TM Poçta – içki poçta ulgamy. Hatlar iberip we kabul edip bilersiňiz, goşundylary goşup.",
+                    msg: "Messenjer – çalt habarlaşma üçin ulgam. Şahsy söhbetler we gruppalar döredip, ses we wideo jaňlar edip bilersiňiz.",
+                    docs: "Resmiýetler moduly – awtomatik tassyklama. Faýly ýükläp, onuň dogrulygyny barlap bilersiňiz. AI ulgamy resmiýetiň hakykylygyny kesgitleýär.",
+                    coin: "TM Coin – sanly döwlet walýutasy. Ony platformada tölegler üçin ulanyp, şeýle hem prokgnozlary görüp bilersiňiz.",
+                    analytics: "Analitika bölüminde gün, hepde, aý, kvartal we ýyl üçin hasabatlar görkezilýär. Graphikler we statistikalar bilen tanyşyp bilersiňiz.",
+                    reports: "Hasabatlar bölüminde Prezident we Kabinet Ministrleri üçin hasabat döredip we iberip bilersiňiz.",
+                    fallback: "Täze sorag üçin minnetdar. Men size näme barada maglumat bermegimi isleýärsiňiz? (Marketpleýs, Bank, Poçta, Messenjer, Resmiýetler, TM Coin, Analitika, Hasabatlar)"
+                },
+                ru: {
+                    greet: "Здравствуйте! Я помощник платформы Sfera. Чем могу помочь? (Маркетплейс, Банк, Почта, Мессенджер, Документы, TM Coin)",
+                    market: "Модуль Маркетплейс – электронная торговая площадка. Здесь вы можете покупать и продавать товары.",
+                    bank: "TM Bank – цифровые банковские услуги. Проверяйте баланс, делайте переводы и просматривайте историю.",
+                    mail: "TM Почта – внутренняя почтовая система. Отправляйте и получайте письма с вложениями.",
+                    msg: "Мессенджер – система быстрых сообщений. Создавайте личные и групповые чаты, совершайте аудио и видеозвонки.",
+                    docs: "Модуль Документы – автоматическая проверка. Загрузите файл, и ИИ проверит его подлинность.",
+                    coin: "TM Coin – цифровая государственная валюта. Используйте для платежей на платформе и смотрите прогнозы.",
+                    analytics: "В разделе Аналитика отображаются отчеты за день, неделю, месяц, квартал и год. Ознакомьтесь с графиками и статистикой.",
+                    reports: "В разделе Отчеты вы можете создавать и отправлять отчеты Президенту и Кабинету Министров.",
+                    fallback: "Спасибо за вопрос. О чем вы хотите узнать? (Маркетплейс, Банк, Почта, Мессенджер, Документы, TM Coin, Аналитика, Отчеты)"
+                },
+                en: {
+                    greet: "Hello! I am the Sfera platform assistant. How can I help you? (Marketplace, Bank, Mail, Messenger, Documents, TM Coin)",
+                    market: "Marketplace module – electronic trading platform. Here you can buy and sell goods.",
+                    bank: "TM Bank – digital banking services. Check your balance, make transfers, and view history.",
+                    mail: "TM Mail – internal mail system. Send and receive emails with attachments.",
+                    msg: "Messenger – instant messaging system. Create private and group chats, make audio and video calls.",
+                    docs: "Documents module – automatic verification. Upload a file and AI will verify its authenticity.",
+                    coin: "TM Coin – digital state currency. Use it for payments on the platform and view forecasts.",
+                    analytics: "The Analytics section displays reports for day, week, month, quarter, and year. Review charts and statistics.",
+                    reports: "In the Reports section, you can create and send reports to the President and the Cabinet of Ministers.",
+                    fallback: "Thanks for the question. What would you like to know about? (Marketplace, Bank, Mail, Messenger, Documents, TM Coin, Analytics, Reports)"
+                }
+            };
+
+            const dict = botReplies[lang] || botReplies['tm'];
+
+            if (lower.includes('salam') || lower.includes('hello') || lower.includes('привет')) return dict.greet;
+            if (lower.includes('market') || lower.includes('söwda') || lower.includes('бирж')) return dict.market;
+            if (lower.includes('bank') || lower.includes('pul')) return dict.bank;
+            if (lower.includes('poçta') || lower.includes('mail') || lower.includes('почт')) return dict.mail;
+            if (lower.includes('mesenjer') || lower.includes('chat') || lower.includes('мессендж')) return dict.msg;
+            if (lower.includes('resmiýet') || lower.includes('document') || lower.includes('документ')) return dict.docs;
+            if (lower.includes('tm coin') || lower.includes('coín') || lower.includes('монета')) return dict.coin;
+            if (lower.includes('analitika') || lower.includes('analytics') || lower.includes('отчёт')) return dict.analytics;
+            if (lower.includes('prezident') || lower.includes('kabmin') || lower.includes('hasabat')) return dict.reports;
+            
+            return dict.fallback;
         }
 
         chatSend.addEventListener('click', function() {
@@ -899,7 +786,7 @@ if (backLink) {
         });
 
         // ============================================================
-        // АНАЛИТИКА (графики)
+        // 5. АНАЛИТИКА (графики)
         // ============================================================
         let currentPeriod = 'day';
         let analyticsChart = null;
@@ -926,12 +813,15 @@ if (backLink) {
             const data = generateAnalyticsData(currentPeriod);
             const ctx = document.getElementById('analyticsChart').getContext('2d');
             if (analyticsChart) analyticsChart.destroy();
+            
+            const labelTxt = currentLang === 'ru' ? 'Активность' : currentLang === 'en' ? 'Activity' : 'Işjeňlik';
+            
             analyticsChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: data.labels,
                     datasets: [{
-                        label: 'Işjeňlik',
+                        label: labelTxt,
                         data: data.values,
                         borderColor: '#00d4ff',
                         backgroundColor: 'rgba(0,212,255,0.1)',
@@ -957,7 +847,6 @@ if (backLink) {
             document.getElementById('statRevenue').textContent = (Math.floor(total * 0.8 + 1000)) + ' TMT';
         }
 
-        // Обработчики кнопок периода (уже используют улучшенные стили)
         document.querySelectorAll('#reportPeriod button').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('#reportPeriod button').forEach(b => b.classList.remove('active'));
@@ -968,7 +857,7 @@ if (backLink) {
         });
 
         // ============================================================
-        // ПРОГНОЗЫ
+        // 6. ПРОГНОЗЫ
         // ============================================================
         let currentForecastPeriod = '7d';
         let forecastChart = null;
@@ -1000,22 +889,28 @@ if (backLink) {
             currentForecastPeriod = period;
             const data = generateForecastData(period);
             const list = document.getElementById('forecastList');
+            
+            const confTxt = currentLang === 'ru' ? 'Уверенность' : currentLang === 'en' ? 'Confidence' : 'Ynam';
+            
             list.innerHTML = data.map(f => `
                 <div class="forecast-item">
                     <span class="date">${f.label}</span>
                     <span class="price">${f.price} TMT</span>
-                    <span class="confidence">Ynam: ${(f.confidence * 100).toFixed(0)}%</span>
+                    <span class="confidence">${confTxt}: ${(f.confidence * 100).toFixed(0)}%</span>
                 </div>
             `).join('');
 
             const ctx = document.getElementById('forecastChart').getContext('2d');
             if (forecastChart) forecastChart.destroy();
+            
+            const labelTxt = currentLang === 'ru' ? 'Прогноз цены' : currentLang === 'en' ? 'Price forecast' : 'Çaklama baha';
+            
             forecastChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: data.map(f => f.label),
                     datasets: [{
-                        label: 'Çaklama baha',
+                        label: labelTxt,
                         data: data.map(f => parseFloat(f.price)),
                         borderColor: '#00ffa3',
                         backgroundColor: 'rgba(0,255,170,0.1)',
@@ -1045,20 +940,20 @@ if (backLink) {
         });
 
         // ============================================================
-        // ОТЧЁТЫ
+        // 7. ОТЧЁТЫ
         // ============================================================
         let reports = JSON.parse(localStorage.getItem('ai_reports') || '[]');
 
         function renderReports() {
             const list = document.getElementById('reportsList');
             if (!reports.length) {
-                list.innerHTML = `<li style="color:#9fb5c8; padding:20px 0; text-align:center;">${translations[currentLang].no_reports}</li>`;
+                list.innerHTML = `<li style="color:#9fb5c8; padding:20px 0; text-align:center;">${tr('no_reports', 'Hiç hili hasabat ýok.')}</li>`;
                 return;
             }
             const statusMap = {
-                sent: translations[currentLang].status_sent,
-                approved: translations[currentLang].status_approved,
-                rejected: translations[currentLang].status_rejected
+                sent: tr('status_sent', 'Iberilen'),
+                approved: tr('status_approved', 'Tassyklandy'),
+                rejected: tr('status_rejected', 'Ret edildi')
             };
             list.innerHTML = reports.map(r => `
                 <li>
@@ -1079,19 +974,12 @@ if (backLink) {
             const content = document.getElementById('reportContent').value.trim();
 
             if (!title || !content) {
-                showMessage(translations[currentLang].report_error, 'error');
+                showMessage(tr('report_error', 'Hasabat iberilmedi.'), 'error');
                 return;
             }
 
-            const recipientLabel = recipient === 'president' ?
-                translations[currentLang].recipient_president :
-                translations[currentLang].recipient_cabinet;
-
-            const periodLabel = period === 'month' ?
-                translations[currentLang].period_month :
-                period === 'quarter' ?
-                translations[currentLang].period_quarter :
-                translations[currentLang].period_year;
+            const recipientLabel = recipient === 'president' ? tr('recipient_president', 'Türkmenistanyň Prezidenti') : tr('recipient_cabinet', 'Türkmenistanyň Kabinet Ministrleri');
+            const periodLabel = period === 'month' ? tr('period_month', 'Aý') : period === 'quarter' ? tr('period_quarter', 'Kvartal') : tr('period_year', 'Ýyl');
 
             const newReport = {
                 id: 'r' + Date.now(),
@@ -1106,11 +994,11 @@ if (backLink) {
             localStorage.setItem('ai_reports', JSON.stringify(reports));
             renderReports();
             this.reset();
-            showMessage(translations[currentLang].report_sent, 'success');
+            showMessage(tr('report_sent', 'Hasabat üstünlikli iberildi!'), 'success');
         });
 
         // ============================================================
-        // ПРОВЕРКА ДОКУМЕНТОВ
+        // 8. ПРОВЕРКА ДОКУМЕНТОВ
         // ============================================================
         let selectedFile = null;
         const uploadArea = document.getElementById('uploadArea');
@@ -1122,7 +1010,7 @@ if (backLink) {
         function resetDocumentUpload() {
             selectedFile = null;
             fileInput.value = '';
-            uploadArea.querySelector('p').textContent = translations[currentLang].upload_hint;
+            uploadArea.querySelector('p').textContent = tr('upload_hint', 'Faýly bu ýere süýşüriň ýa-da basyň');
             resultDiv.style.display = 'none';
         }
 
@@ -1150,7 +1038,7 @@ if (backLink) {
 
         verifyBtn.addEventListener('click', function() {
             if (!selectedFile) {
-                resultDiv.textContent = translations[currentLang].upload_hint;
+                resultDiv.textContent = tr('upload_hint', 'Faýly bu ýere süýşüriň ýa-da basyň');
                 resultDiv.className = 'verification-result';
                 resultDiv.style.display = 'block';
                 return;
@@ -1160,10 +1048,10 @@ if (backLink) {
             setTimeout(() => {
                 const isValid = Math.random() > 0.3;
                 if (isValid) {
-                    resultDiv.textContent = '✅ ' + translations[currentLang].verify_success;
+                    resultDiv.textContent = '✅ ' + tr('verify_success', 'Resmiýet dogry!');
                     resultDiv.style.color = '#00ffa3';
                 } else {
-                    resultDiv.textContent = '❌ ' + translations[currentLang].verify_fail;
+                    resultDiv.textContent = '❌ ' + tr('verify_fail', 'Resmiýet nädogry!');
                     resultDiv.style.color = '#ff6b6b';
                 }
                 resultDiv.className = 'verification-result';
@@ -1173,7 +1061,7 @@ if (backLink) {
         clearDocBtn.addEventListener('click', resetDocumentUpload);
 
         // ============================================================
-        // ОБНОВЛЕНИЕ СТРАНИЦЫ
+        // 9. ОБНОВЛЕНИЕ СТРАНИЦЫ
         // ============================================================
         document.getElementById('refreshAiBtn').addEventListener('click', function() {
             if (currentTab === 'analytics') initAnalytics();
@@ -1183,7 +1071,7 @@ if (backLink) {
                 const welcome = document.createElement('div');
                 welcome.className = 'msg bot';
                 welcome.id = 'welcomeMsg';
-                welcome.textContent = translations[currentLang].welcome_msg;
+                welcome.textContent = tr('welcome_msg', 'Salam! Men Sfera platformasynyň kömekçisi. Size nähili kömek edip bilerin?');
                 chatMessages.appendChild(welcome);
             }
             if (currentTab === 'documents') resetDocumentUpload();
@@ -1191,7 +1079,7 @@ if (backLink) {
         });
 
         // ============================================================
-        // СООБЩЕНИЯ
+        // 10. СООБЩЕНИЯ (TOAST)
         // ============================================================
         const messageEl = document.createElement('div');
         messageEl.className = 'message';
@@ -1206,29 +1094,79 @@ if (backLink) {
         }
 
         // ============================================================
-        // ЧАСТИЦЫ
+        // 11. ФОН И ЧАСТИЦЫ (ИЗ MESSENGER.HTML)
         // ============================================================
-        const particles = document.getElementById('particles');
-        if (particles && particles.children.length === 0) {
-            for (let i = 0; i < 60; i++) {
-                const p = document.createElement('span');
-                p.className = 'particle';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.top = Math.random() * 100 + '%';
-                p.style.animationDuration = (6 + Math.random() * 12) + 's';
-                p.style.animationDelay = Math.random() * 5 + 's';
-                particles.appendChild(p);
+        document.addEventListener('DOMContentLoaded', () => {
+            const particlesContainer = document.getElementById("particles");
+            if (particlesContainer) {
+                particlesContainer.innerHTML = "";
+                const colors = ['#00d4ff', '#00ffa3', '#1f6bff', '#ffffff'];
+                for (let i = 0; i < 65; i++) {
+                    const particle = document.createElement("div");
+                    particle.className = "particle";
+                    const size = Math.random() * 2.2 + 1.0; 
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.width = size + "px";
+                    particle.style.height = size + "px";
+                    particle.style.backgroundColor = color;
+                    particle.style.boxShadow = `0 0 ${size * 3}px ${color}`;
+                    particle.style.left = (Math.random() * 92 + 4) + "%";
+                    particle.style.top = "0px";
+                    particle.style.animationDuration = (10 + Math.random() * 12) + "s";
+                    particle.style.animationDelay = (Math.random() * -20) + "s";
+                    particlesContainer.appendChild(particle);
+                }
             }
-        }
+
+            const canvas = document.getElementById('bgCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let w, h;
+                function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+                resize();
+                window.addEventListener('resize', resize);
+                const points = Array.from({ length: 60 }, () => ({
+                    x: Math.random() * (w - 45) + 20, y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6,
+                    radius: Math.random() * 1.2 + 0.8
+                }));
+                function drawCanvas() {
+                    ctx.clearRect(0, 0, w, h);
+                    for (let i = 0; i < points.length; i++) {
+                        let p = points[i];
+                        p.x += p.vx; p.y += p.vy;
+                        if (p.x < 20 || p.x > w - 25) p.vx *= -1;
+                        if (p.y < 0 || p.y > h) p.vy *= -1;
+                        for (let j = i + 1; j < points.length; j++) {
+                            let p2 = points[j];
+                            let dx = p.x - p2.x, dy = p.y - p2.y;
+                            let dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < 180) {
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                                ctx.strokeStyle = `rgba(0, 212, 255, ${0.18 * (1 - dist / 180)})`;
+                                ctx.lineWidth = 1; ctx.stroke();
+                            }
+                        }
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(0, 255, 163, 0.85)'; ctx.shadowBlur = 6; ctx.shadowColor = '#00ffa3';
+                        ctx.fill(); ctx.shadowBlur = 0;
+                    }
+                    requestAnimationFrame(drawCanvas);
+                }
+                drawCanvas();
+            }
+        });
 
         // ============================================================
-        // ИНИЦИАЛИЗАЦИЯ
+        // 12. ИНИЦИАЛИЗАЦИЯ
         // ============================================================
-        setLanguage(currentLang);
-        initAnalytics();
-        renderForecasts('7d');
-        renderReports();
-        console.log('✅ AI module with unified design');
+        // Ждем загрузки DOM для инициализации Chart.js и других элементов
+        document.addEventListener('DOMContentLoaded', () => {
+            initAnalytics();
+            renderForecasts('7d');
+            renderReports();
+            console.log('✅ AI module with unified design & auto-translate');
+        });
     </script>
 </body>
 </html>
