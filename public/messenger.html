@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="messenger_page_title">Messenjer — Sfera</title>
+    <title data-i18n="messenger_page_title">Sfera — Habarlaşyk</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +11,7 @@
 
     <style>
         /* ==========================================================================
-           1. ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ (ТЕГ В ТЕГ ИЗ DOCUMENTS.HTML)
+           1. ЦВЕТОВАЯ ПАЛИТРА (ИЗ DOCUMENTS.HTML)
            ========================================================================== */
         :root {
             --primary: #00d4ff;
@@ -39,10 +39,7 @@
             border-radius: 8px;
             border: 1px solid rgba(0, 212, 255, 0.2);
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #00d4ff, #00ffa3);
-            box-shadow: 0 0 12px rgba(0, 212, 255, 0.8);
-        }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #00d4ff, #00ffa3); box-shadow: 0 0 12px rgba(0, 212, 255, 0.8); }
 
         /* ==========================================================================
            3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ
@@ -64,16 +61,12 @@
            ========================================================================== */
         .bg-grid {
             position: fixed; inset: 0; width: 100vw; height: 100vh;
-            background-image:
-                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
             background-size: 50px 50px; pointer-events: none; z-index: 0;
         }
-
         #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; opacity: 0.85; }
         #particles { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; overflow: hidden; z-index: 3; }
         .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: floatParticle linear infinite; }
-
         @keyframes floatParticle {
             0% { transform: translateY(105vh) translateX(0) scale(0.5); opacity: 0; }
             20% { opacity: 0.85; }
@@ -82,24 +75,13 @@
         }
 
         /* ==========================================================================
-           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И СТРУКТУРА (ИЗ DOCUMENTS.HTML)
+           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И ШАПКА
            ========================================================================== */
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: "Inter", sans-serif; scrollbar-width: thin;
-            scrollbar-color: rgba(0, 212, 255, 0.4) #03080e;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; scrollbar-width: thin; scrollbar-color: rgba(0, 212, 255, 0.4) #03080e; }
         html { scroll-behavior: smooth; background-color: var(--dark-bg); }
-
-        body {
-            background-color: var(--dark-bg); color: var(--white);
-            overflow-x: hidden; position: relative; min-height: 100vh;
-        }
-
+        body { background-color: var(--dark-bg); color: var(--white); overflow-x: hidden; position: relative; min-height: 100vh; }
         .container { width: min(1400px, 92%); margin: auto; position: relative; z-index: 10; }
 
-        /* --- ШАПКА (ИЗ DOCUMENTS.HTML) --- */
         header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
             backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
@@ -107,16 +89,15 @@
             box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5); transition: all 0.4s ease;
             transform: translateZ(0); will-change: transform; contain: layout paint style;
         }
-
         header .container { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
-
+        
         .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; transition: transform 0.3s ease; }
         .logo:hover { transform: translateY(-1px) scale(1.02); }
         .logo-icon { width: 54px; height: 54px; display: flex; justify-content: center; align-items: center; }
         .logo-svg { width: 100%; height: 100%; overflow: visible; }
         .logo-svg g { transform-origin: 50px 50px; animation: spinLogo 16s linear infinite; }
         @keyframes spinLogo { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
+        
         .logo-text h2 { font-size: 22px; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #00ffa3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; }
         .logo-text p { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; margin: 4px 0 0 0; color: #9fb5c8; text-transform: uppercase; }
 
@@ -129,41 +110,109 @@
         .logout-btn { background: rgba(200, 0, 0, 0.15); border: 1px solid rgba(200, 0, 0, 0.35); color: #ff6b6b; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s ease; }
         .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
 
-        /* --- ОБЕРТКА СТРАНИЦЫ --- */
-        .messenger-page {
-            padding: 120px 7% 40px;
-            min-height: calc(100vh - 60px);
-            position: relative; z-index: 10;
-            display: flex; flex-direction: column;
+        /* ==========================================================================
+           6. СТИЛИ СТРАНИЦЫ (ИЗ DOCUMENTS.HTML)
+           ========================================================================== */
+        .doc-page {
+            padding: 140px 7% 60px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
         }
 
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .doc-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #b4d7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .doc-header .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            color: white;
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+        }
+
+        /* ==========================================================================
+           7. ЭФФЕКТ ПАРЕНИЯ (ТОЧНАЯ КОПИЯ .DOC-ITEM ИЗ ДОКУМЕНТОВ)
+           ========================================================================== */
         .messenger-container {
-            display: flex; flex: 1;
-            height: calc(100vh - 200px);
-            min-height: 500px;
-            border-radius: 24px; overflow: hidden;
-            background: rgba(10, 18, 32, 0.55);
-            backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border: 1px solid var(--glass-border); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 260px);
+            min-height: 550px;
+            border-radius: 24px;
+            overflow: hidden;
+            
+            /* ТОЧНЫЕ СТИЛИ КАРТОЧЕК ИЗ ДОКУМЕНТОВ */
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.35s ease;
+            position: relative;
+        }
+
+        /* ЭФФЕКТ ПАРЕНИЯ ПРИ НАВЕДЕНИИ */
+        .messenger-container:hover {
+            border-color: var(--glass-hover-border);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.2);
         }
 
         /* --- САЙДБАР --- */
         .messenger-sidebar {
             width: 340px; min-width: 290px;
-            border-right: 1px solid var(--glass-border);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
             display: flex; flex-direction: column;
-            position: relative; z-index: 1; background: rgba(5, 12, 22, 0.45);
+            position: relative; z-index: 1; 
+            background: rgba(0, 0, 0, 0.15);
         }
 
         .sidebar-header {
-            padding: 18px 20px; border-bottom: 1px solid var(--glass-border);
+            padding: 18px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             display: flex; justify-content: space-between; align-items: center; gap: 8px;
         }
         .sidebar-header h2 { font-size: 18px; font-weight: 800; margin: 0; color: #fff; }
 
         .sidebar-header .dropdown-tabs { position: relative; display: inline-block; }
         .sidebar-header .dropdown-tabs .dropbtn {
-            background: rgba(0, 212, 255, 0.1); border: 1px solid var(--glass-border);
+            background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3);
             color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700;
             cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;
         }
@@ -185,15 +234,15 @@
 
         .sidebar-search { padding: 14px 16px; display: flex; gap: 8px; align-items: center; }
         .sidebar-search input {
-            flex: 1; min-width: 0; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.04); color: #fff; font-size: 14px; outline: none; transition: border-color 0.3s;
+            flex: 1; min-width: 0; padding: 12px 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.05); color: #fff; font-size: 14px; outline: none; transition: .3s;
         }
-        .sidebar-search input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
+        .sidebar-search input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,212,255,0.2); }
         .sidebar-search .create-group-btn {
-            flex-shrink: 0; padding: 10px 12px; background: rgba(0, 212, 255, 0.15); border: 1px solid rgba(0, 212, 255, 0.3);
+            flex-shrink: 0; padding: 12px 16px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3);
             border-radius: 14px; color: var(--primary); cursor: pointer; font-weight: 700; transition: all 0.3s; white-space: nowrap;
         }
-        .sidebar-search .create-group-btn:hover { background: rgba(0, 212, 255, 0.3); color: #fff; box-shadow: 0 0 15px rgba(0, 212, 255, 0.3); }
+        .sidebar-search .create-group-btn:hover { background: rgba(0, 212, 255, 0.25); color: #fff; box-shadow: 0 0 15px rgba(0, 212, 255, 0.3); }
 
         .dialogs-list, .news-feed { flex: 1; overflow-y: auto; padding: 8px 0; }
         
@@ -220,7 +269,7 @@
         .ai-badge { background: linear-gradient(135deg, #00ffa3, #00d4ff); color: #000; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 6px; text-transform: uppercase; margin-left: 4px; }
 
         .news-card {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px; padding: 16px; margin: 10px 16px; transition: all 0.3s ease;
         }
         .news-card:hover { background: rgba(0, 212, 255, 0.08); border-color: var(--primary); }
@@ -231,12 +280,12 @@
         /* --- ОКНО ЧАТА --- */
         .messenger-chat { 
             flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1; 
-            background: radial-gradient(circle at top right, rgba(0, 212, 255, 0.08), transparent 60%), radial-gradient(circle at bottom left, rgba(0, 255, 163, 0.05), transparent 60%), rgba(5, 12, 22, 0.3);
+            background: transparent;
         }
 
         .chat-header {
-            padding: 16px 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 14px;
-            min-height: 70px; box-sizing: border-box; background: rgba(5, 14, 26, 0.4);
+            padding: 16px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); display: flex; align-items: center; gap: 14px;
+            min-height: 70px; box-sizing: border-box; background: rgba(255, 255, 255, 0.01);
         }
         .chat-header .back-btn { display: none; background: transparent; border: none; color: inherit; font-size: 20px; cursor: pointer; }
         .chat-header .chat-avatar {
@@ -249,7 +298,7 @@
         .chat-header .chat-actions { margin-left: auto; display: flex; gap: 8px; }
         .chat-header .chat-actions button {
             width: 36px; height: 36px; font-size: 15px; border-radius: 50%; background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--glass-border); color: #fff; cursor: pointer; transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; cursor: pointer; transition: all 0.3s;
         }
         .chat-header .chat-actions button:hover { background: rgba(0, 212, 255, 0.2); border-color: var(--primary); }
 
@@ -262,33 +311,33 @@
         }
         .message.received {
             align-self: flex-start; background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border); border-bottom-left-radius: 4px; color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-bottom-left-radius: 4px; color: var(--text);
         }
         .message .msg-time { font-size: 11px; opacity: 0.6; margin-top: 6px; text-align: right; }
 
         .file-card {
             display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.25);
-            padding: 8px 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 6px;
+            padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 6px;
         }
         .btn-download-file { background: rgba(0, 212, 255, 0.2); border: 1px solid var(--primary); color: #fff; padding: 4px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s ease; }
         .btn-download-file:hover { background: var(--primary); color: #000; font-weight: bold; }
 
         .chat-input-area {
-            padding: 16px 24px; border-top: 1px solid var(--glass-border); display: flex; gap: 12px; align-items: center;
-            background: rgba(5, 14, 26, 0.4); position: relative;
+            padding: 16px 24px; border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; gap: 12px; align-items: center;
+            background: rgba(255, 255, 255, 0.01); position: relative;
         }
         .chat-input-area .input-group { flex: 1; display: flex; gap: 10px; align-items: center; }
         .chat-input-area .input-group input[type="text"] {
-            flex: 1; padding: 12px 20px; border-radius: 24px; border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.04); color: #fff; font-size: 15px; outline: none; transition: border-color 0.3s;
+            flex: 1; padding: 12px 20px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.05); color: #fff; font-size: 15px; outline: none; transition: .3s;
         }
-        .chat-input-area .input-group input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 12px rgba(0, 212, 255, 0.25); }
+        .chat-input-area .input-group input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,212,255,0.2); }
         .chat-input-area .input-group .emoji-btn, .chat-input-area .input-group .file-btn {
             background: transparent; border: none; font-size: 22px; cursor: pointer; opacity: 0.8; transition: transform 0.2s, opacity 0.2s;
         }
         .chat-input-area .input-group .emoji-btn:hover, .chat-input-area .input-group .file-btn:hover { opacity: 1; transform: scale(1.1); }
         .chat-input-area .send-btn {
-            padding: 12px 26px; border: none; border-radius: 24px; background: linear-gradient(135deg, #00d4ff 0%, #1f6bff 100%);
+            padding: 12px 26px; border: none; border-radius: 14px; background: linear-gradient(135deg, #00d4ff 0%, #1f6bff 100%);
             color: #fff; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3); transition: all 0.3s ease;
         }
         .chat-input-area .send-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5); }
@@ -324,18 +373,14 @@
         .btn-neon-danger:hover { background: #ff4d4d; color: #fff; box-shadow: 0 0 25px rgba(255, 77, 77, 0.6); }
 
         /* --- ФУТЕР --- */
-        footer {
-            position: relative; z-index: 20; margin-top: 60px;
-            backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
-            background: var(--header-footer-bg); border-top: 1px solid rgba(0, 212, 255, 0.2);
-            box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.5);
-        }
+        footer { position: relative; z-index: 20; margin-top: 60px; backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%); background: var(--header-footer-bg); border-top: 1px solid rgba(0, 212, 255, 0.2); box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.5); }
         footer .container { display: flex; justify-content: space-between; align-items: center; padding: 28px 0; flex-wrap: wrap; gap: 20px; }
         footer p { color: #c0d8f0; font-size: 14px; }
 
         @media (max-width: 768px) {
-            .messenger-container { flex-direction: column; height: auto; }
-            .messenger-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--glass-border); }
+            .doc-tabs button { padding: 10px 14px; font-size: 13px; }
+            .messenger-container { flex-direction: column; height: auto; transform: none; }
+            .messenger-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
             .chat-header .back-btn { display: block; }
         }
     </style>
@@ -347,6 +392,7 @@
     <canvas id="bgCanvas"></canvas>
     <div id="particles"></div>
 
+    <!-- ШАПКА (ИЗ DOCUMENTS.HTML) -->
     <header>
         <div class="container">
             <a href="index.html" class="logo" aria-label="СФЕРА Главная">
@@ -376,20 +422,31 @@
 
             <div class="header-right header-buttons">
                 <span class="user-info">👤 <strong id="username">User</strong></span>
-                <button class="lang-btn" id="langBtn" type="button">TM</button>
+                <button class="lang-btn" id="langBtn" type="button" aria-label="Переключение языка">TM</button>
                 <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">← Yza</a>
                 <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">🚪 Çykmak</button>
             </div>
         </div>
     </header>
 
-    <section class="messenger-page">
-        <div class="container" style="max-width: 1350px; display: flex; flex-direction: column; height: 100%;">
+    <!-- КОНТЕНТ (СТРУКТУРА КАК В ДОКУМЕНТАХ) -->
+    <section class="doc-page">
+        <div class="container" style="display: flex; flex-direction: column; flex: 1;">
+            
+            <!-- ЗАГОЛОВОК СТРАНИЦЫ -->
+            <div class="doc-header">
+                <h1 data-i18n="messenger_page_title">💬 Sfera Messenjer</h1>
+                <div class="actions">
+                    <button class="btn btn-outline" onclick="window.location.reload()">⟳ Täzele</button>
+                </div>
+            </div>
+
+            <!-- ПАРЯЩИЙ КОНТЕЙНЕР (ЭФФЕКТ .DOC-ITEM) -->
             <div class="messenger-container" id="messengerContainer">
                 <div class="messenger-sidebar" id="sidebar">
                     <div class="sidebar-header">
                         <div class="left-group">
-                            <h2 id="lblSidebarTitle" data-i18n="messenger_sidebar_title">Söhbetdeşlik</h2>
+                            <h2 id="lblSidebarTitle" data-i18n="messenger_tab_chats">Çatlar</h2>
                         </div>
                         <div class="dropdown-tabs" id="tabsDropdown">
                             <button class="dropbtn" id="dropbtn">📋 <span id="currentTabLabel" data-i18n="messenger_tab_chats">Çatlar</span> ▾</button>
@@ -443,8 +500,8 @@
                             <input type="text" id="messageInput" placeholder="Habaryňyzy ýazyň..." data-i18n-placeholder="messenger_type_message" />
                         </div>
                         <div class="call-buttons" style="display: flex; gap: 6px;">
-                            <button id="audioCallBtn" title="Sesli jaň" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 50%; width: 38px; height: 38px; color: #fff; cursor: pointer;">📞</button>
-                            <button id="videoCallBtn" title="Wideojaň" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 50%; width: 38px; height: 38px; color: #fff; cursor: pointer;">📹</button>
+                            <button id="audioCallBtn" title="Sesli jaň" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 14px; width: 42px; height: 42px; color: #fff; cursor: pointer; transition: .3s;">📞</button>
+                            <button id="videoCallBtn" title="Wideojaň" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 14px; width: 42px; height: 42px; color: #fff; cursor: pointer; transition: .3s;">📹</button>
                         </div>
                         <button class="send-btn" id="sendBtn" data-i18n="messenger_send">Iber</button>
 
@@ -457,6 +514,7 @@
         </div>
     </section>
 
+    <!-- ФУТЕР (ИЗ DOCUMENTS.HTML) -->
     <footer>
         <div class="container">
             <a href="index.html" class="logo">
@@ -497,7 +555,6 @@
         </div>
     </div>
 
-    <!-- ПОДКЛЮЧЕНИЕ СКРИПТОВ -->
     <script src="/js/auth-check.js"></script>
     <script src="/scripts/auto_translate_i18n.js"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -506,13 +563,8 @@
     <script src="/js/messenger-backend.js"></script>
 
     <script>
-        // ============================================================
-        // ОСТАВЛЯЕМ ТОЛЬКО ОТРИСОВКУ ФОНА И НАВИГАЦИЮ.
-        // ВСЯ ЛОГИКА ЧАТА ТЕПЕРЬ В messenger-backend.js
-        // ============================================================
+        // Отрисовка фона и навигации (как в документах)
         document.addEventListener('DOMContentLoaded', () => {
-            
-            // 1. Отрисовка частиц и канваса (как в documents.html)
             const particlesContainer = document.getElementById("particles");
             if (particlesContainer) {
                 particlesContainer.innerHTML = "";
@@ -572,15 +624,12 @@
                 drawCanvas();
             }
 
-            // 2. Навигация и профиль
             const user = JSON.parse(localStorage.getItem('user') || '{"username":"User","role":"user"}');
             const usernameEl = document.getElementById('username');
             if (usernameEl) usernameEl.textContent = user.username || 'User';
 
             const backLink = document.getElementById('backLink');
-            if (backLink) {
-               backLink.href = (user && user.role === 'admin') ? 'admin.html' : 'dashboard.html';
-            }
+            if (backLink) backLink.href = (user && user.role === 'admin') ? 'admin.html' : 'dashboard.html';
 
             const logoutBtn = document.getElementById('logoutBtn');
             if (logoutBtn) {
