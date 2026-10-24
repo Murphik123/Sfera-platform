@@ -15,7 +15,7 @@
 
     <style>
         /* ==========================================================================
-           1. ЦВЕТОВАЯ ПАЛИТРА (ИЗ MESSENGER.HTML)
+           1. ЦВЕТОВАЯ ПАЛИТРА (ИЗ INDEX.HTML)
            ========================================================================== */
         :root {
             --primary: #00d4ff;
@@ -112,7 +112,7 @@
         .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
 
         /* ==========================================================================
-           5. СТИЛИ СТРАНИЦЫ (АДМИНКА)
+           5. СТИЛИ СТРАНИЦЫ
            ========================================================================== */
         .doc-page {
             padding: 120px 7% 40px;
@@ -203,7 +203,7 @@
         }
 
         /* ==========================================================================
-           6. КАРТОЧКИ И ЭФФЕКТ ПОДСВЕТКИ (SPOTLIGHT)
+           6. КАРТОЧКИ И ЭФФЕКТ ПОДСВЕТКИ (SPOTLIGHT) КАК В INDEX.HTML
            ========================================================================== */
         .modules-grid {
             display: grid;
@@ -217,7 +217,6 @@
             --mouse-x: 50%;
             --mouse-y: 50%;
             position: relative;
-            /* Динамический градиент, который двигается за мышкой */
             background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(0, 212, 255, 0.15), rgba(255, 255, 255, 0.03));
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(20px);
@@ -231,14 +230,19 @@
             display: block;
         }
 
+        /* Фикс дрожания */
+        .module-card > *, .admin-card > * {
+            pointer-events: none;
+        }
+
         /* Мощная неоновая подсветка при наведении */
         .module-card:hover, .admin-card:hover {
             transform: translateY(-6px);
             border-color: rgba(0, 212, 255, 0.6);
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.4), 
-                0 0 30px rgba(0, 212, 255, 0.25), /* Внешнее свечение */
-                inset 0 0 20px rgba(0, 212, 255, 0.1); /* Внутреннее свечение */
+                0 0 30px rgba(0, 212, 255, 0.25),
+                inset 0 0 20px rgba(0, 212, 255, 0.1);
         }
 
         /* Специфичные стили для карточек модулей */
@@ -253,7 +257,7 @@
         
         .module-card:hover .icon {
             transform: scale(1.15);
-            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.8)); /* Свечение иконки */
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.8));
         }
 
         .module-card h3 { font-size: 18px; margin-bottom: 6px; font-weight: 700; }
@@ -329,6 +333,7 @@
             transition: .2s;
             background: rgba(255,255,255,.1);
             color: white;
+            pointer-events: auto;
         }
         .admin-actions button:hover { background: rgba(255,255,255,.2); }
         .admin-actions button.danger { background: rgba(255,77,77,.2); color: #ff6b6b; border: 1px solid rgba(255,77,77,.3); }
@@ -429,21 +434,83 @@
         </div>
     </footer>
 
+    <!-- ТВОЯ ЛОГИКА ПЕРЕВОДА И АДМИНКИ -->
     <script>
-        // ============================================================
-        // 1. АВТОРИЗАЦИЯ И НАВИГАЦИЯ
-        // ============================================================
+        // Проверка авторизации
         const token = localStorage.getItem('token') || localStorage.getItem('sfera_token');
         const userRaw = localStorage.getItem('sfera_user') || localStorage.getItem('user');
         const userData = JSON.parse(userRaw || '{}');
 
         if (!token || userData.role !== 'admin') {
             window.location.href = 'login.html';
-        }
+        }  
 
         document.getElementById('adminName').textContent = userData.username || 'Admin';
 
+        // Встроенный резервный словарь
+        const fallbackTranslations = {
+            tm: {
+                logout: "Çykmak", back: "← Yza", welcome: "Hoş geldiňiz, Administrator!", dashboard_welcome: "Platformanyň modullaryna giriş etmek üçin aşakdaky kartlardan saýlaň.",
+                menu_dashboard: "Umumy", menu_users: "Ulanyjylar", menu_transactions: "Tranzaksiýalar", menu_listings: "Harytlar", menu_mail: "Poçta", menu_ai: "AI çaklamalar", menu_settings: "Sazlamalar",
+                module_marketplace: "Marketpleýs", module_marketplace_desc: "Birža we söwda meýdançasy", module_bank: "TM Bank", module_bank_desc: "Sanly bank hyzmatlary",
+                module_messenger: "Messenger", module_messenger_desc: "Çalt habarlaşma", module_mail: "TM Poçta", module_mail_desc: "Içki poçta ulgamy",
+                module_ai: "AI analitika", module_ai_desc: "TM Coin prokgnozlary, trendler", module_docs: "Resmiýetler", module_docs_desc: "Awtomatik tassyklama",
+                module_tmpay: "TM Pay", module_tmpay_desc: "Milli töleg ulgamy", module_tmcoin: "TM Coin", module_tmcoin_desc: "Sanly döwlet walýutasy"
+            },
+            ru: {
+                logout: "Выйти", back: "← Назад", welcome: "Добро пожаловать, Администратор!", dashboard_welcome: "Выберите модуль платформы для перехода.",
+                menu_dashboard: "Обзор", menu_users: "Пользователи", menu_transactions: "Транзакции", menu_listings: "Объявления", menu_mail: "Почта", menu_ai: "AI прогнозы", menu_settings: "Настройки",
+                module_marketplace: "Маркетплейс", module_marketplace_desc: "Биржа и торговая площадка", module_bank: "ТМ Банк", module_bank_desc: "Цифровые банковские услуги",
+                module_messenger: "Мессенджер", module_messenger_desc: "Быстрая связь", module_mail: "TM Почта", module_mail_desc: "Внутренняя почта",
+                module_ai: "ИИ-аналитика", module_ai_desc: "Прогнозы TM Coin, тренды", module_docs: "Документы", module_docs_desc: "Автоматическая проверка",
+                module_tmpay: "TM Pay", module_tmpay_desc: "Национальная платёжная система", module_tmcoin: "TM Coin", module_tmcoin_desc: "Цифровая государственная валюта"
+            },
+            en: {
+                logout: "Logout", back: "← Back", welcome: "Welcome, Administrator!", dashboard_welcome: "Select a platform module to navigate.",
+                menu_dashboard: "Dashboard", menu_users: "Users", menu_transactions: "Transactions", menu_listings: "Listings", menu_mail: "Mail", menu_ai: "AI Predictions", menu_settings: "Settings",
+                module_marketplace: "Marketplace", module_marketplace_desc: "Exchange and trading platform", module_bank: "TM Bank", module_bank_desc: "Digital banking services",
+                module_messenger: "Messenger", module_messenger_desc: "Instant messaging", module_mail: "TM Mail", module_mail_desc: "Internal mail system",
+                module_ai: "AI Analytics", module_ai_desc: "TM Coin forecasts, trends", module_docs: "Documents", module_docs_desc: "Automatic verification",
+                module_tmpay: "TM Pay", module_tmpay_desc: "National payment system", module_tmcoin: "TM Coin", module_tmcoin_desc: "Digital state currency"
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'tm';
+        let loadedTranslations = {};
+
+        async function fetchLanguageFile(lang) {
+            try {
+                const res = await fetch(`languages/${lang}.json`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } catch (err) {
+                console.warn(`Не удалось загрузить languages/${lang}.json, используется встроенный резерв.`, err);
+                return null;
+            }
+        }
+
+        async function setLanguage(lang) {
+            currentLang = lang;
+            const externalData = await fetchLanguageFile(lang);
+            
+            loadedTranslations = Object.assign({}, fallbackTranslations[lang] || {}, externalData || {});
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (loadedTranslations[key]) {
+                    el.textContent = loadedTranslations[key];
+                }
+            });
+
+            document.getElementById('langBtn').textContent = lang.toUpperCase();
+            localStorage.setItem('lang', lang);
+
+            const activeLi = document.querySelector('#adminMenu li.active');
+            if (activeLi) renderSection(activeLi.dataset.section);
+        }
+
         document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (window.SFERA_LOGOUT) return window.SFERA_LOGOUT();
             localStorage.removeItem('token');
             localStorage.removeItem('sfera_token');
             localStorage.removeItem('user');
@@ -451,50 +518,41 @@
             window.location.href = 'login.html';
         });
 
-        // ============================================================
-        // 2. РЕНДЕР СЕКЦИЙ
-        // ============================================================
-        function tr(key, fallback = '') {
-            if (window.SFERA_I18N && window.SFERA_I18N.t) {
-                const val = window.SFERA_I18N.t(key);
-                if (val !== key) return val;
-            }
-            return fallback || key;
-        }
-
+        // Отрисовка секций
         function renderSection(section) {
             const contentArea = document.getElementById('adminContent');
-            
+            const t = loadedTranslations;
+
             if (section === 'dashboard') {
                 contentArea.innerHTML = `
-                    <h1 data-i18n="admin_welcome">Hoş geldiňiz, Administrator!</h1>
-                    <p class="welcome" data-i18n="admin_dashboard_welcome">Platformanyň modullaryna giriş etmek üçin aşakdaky kartlardan saýlaň.</p>
+                    <h1 data-i18n="admin_t_welcome_ho_geldi_iz">${t.welcome || 'Hoş geldiňiz!'}</h1>
+                    <p class="welcome" data-i18n="admin_t_dashboard_welcome">${t.dashboard_welcome || ''}</p>
                     
                     <div class="modules-grid">
-                        <a href="marketplace.html" class="module-card"><div class="icon">🛒</div><h3 data-i18n="mod_marketplace_title">Marketpleýs</h3><p data-i18n="mod_marketplace_desc">Birža we söwda meýdançasy</p></a>
-                        <a href="bank.html" class="module-card"><div class="icon">🏦</div><h3 data-i18n="mod_bank_title">TM Bank</h3><p data-i18n="mod_bank_desc">Sanly bank hyzmatlary</p></a>
-                        <a href="messenger.html" class="module-card"><div class="icon">💬</div><h3 data-i18n="mod_messenger_title">Messenger</h3><p data-i18n="mod_messenger_desc">Çalt habarlaşma</p></a>
-                        <a href="mailtm.html" class="module-card"><div class="icon">✉️</div><h3 data-i18n="mod_mail_title">TM Poçta</h3><p data-i18n="mod_mail_desc">Içki poçta ulgamy</p></a>
-                        <a href="ai.html" class="module-card"><div class="icon">🤖</div><h3 data-i18n="mod_ai_title">AI analitika</h3><p data-i18n="mod_ai_desc">TM Coin prokgnozlary, trendler</p></a>
-                        <a href="documents.html" class="module-card"><div class="icon">📄</div><h3 data-i18n="mod_docs_title">Resmiýetler</h3><p data-i18n="mod_docs_desc">Awotomatik tassyklama</p></a>
-                        <a href="tm-pay.html" class="module-card"><div class="icon">💳</div><h3 data-i18n="mod_pay_title">TM Pay</h3><p data-i18n="mod_pay_desc">Milli töleg ulgamy</p></a>
-                        <a href="tm-coin.html" class="module-card"><div class="icon">₮</div><h3 data-i18n="mod_coin_title">TM Coin</h3><p data-i18n="mod_coin_desc">Sanly döwlet walýutasy</p></a>
+                        <a href="marketplace.html" class="module-card"><div class="icon">🛒</div><h3 data-i18n="admin_t_module_marketplace_marketplace">${t.module_marketplace || 'Marketplace'}</h3><p>${t.module_marketplace_desc || ''}</p></a>
+                        <a href="bank.html" class="module-card"><div class="icon">🏦</div><h3>${t.module_bank || 'TM Bank'}</h3><p>${t.module_bank_desc || ''}</p></a>
+                        <a href="messenger.html" class="module-card"><div class="icon">💬</div><h3>${t.module_messenger || 'Messenger'}</h3><p>${t.module_messenger_desc || ''}</p></a>
+                        <a href="mailtm.html" class="module-card"><div class="icon">✉️</div><h3>${t.module_mail || 'TM Mail'}</h3><p>${t.module_mail_desc || ''}</p></a>
+                        <a href="ai.html" class="module-card"><div class="icon">🤖</div><h3>${t.module_ai || 'AI Analytics'}</h3><p>${t.module_ai_desc || ''}</p></a>
+                        <a href="documents.html" class="module-card"><div class="icon">📄</div><h3>${t.module_docs || 'Documents'}</h3><p>${t.module_docs_desc || ''}</p></a>
+                        <a href="tm-pay.html" class="module-card"><div class="icon">💳</div><h3>${t.module_tmpay || 'TM Pay'}</h3><p>${t.module_tmpay_desc || ''}</p></a>
+                        <a href="tm-coin.html" class="module-card"><div class="icon">₮</div><h3>${t.module_tmcoin || 'TM Coin'}</h3><p>${t.module_tmcoin_desc || ''}</p></a>
                     </div>
 
                     <div class="admin-card">
-                        <h3 data-i18n="admin_platform_status">Platformanyň ýagdaýy</h3>
+                        <h3>Platformanyň ýagdaýy</h3>
                         <div class="stat-grid">
-                            <div class="stat-item"><div class="number" id="statUsers">0</div><div class="label" data-i18n="stat_users">Ulanyjylar</div></div>
-                            <div class="stat-item"><div class="number">24</div><div class="label" data-i18n="stat_orders">Söwdalar</div></div>
-                            <div class="stat-item"><div class="number">142</div><div class="label" data-i18n="admin_coin_trades">TM Coin söwdalary</div></div>
-                            <div class="stat-item"><div class="number">8</div><div class="label" data-i18n="admin_letters">Hatlar</div></div>
+                            <div class="stat-item"><div class="number" id="statUsers">0</div><div class="label" data-i18n="admin_ulanyjylar">Ulanyjylar</div></div>
+                            <div class="stat-item"><div class="number">24</div><div class="label">Sargytlar</div></div>
+                            <div class="stat-item"><div class="number">142</div><div class="label">TM Coin söwdalary</div></div>
+                            <div class="stat-item"><div class="number">8</div><div class="label">Hatlar</div></div>
                         </div>
                     </div>
 
                     <div class="admin-card">
-                        <h3 data-i18n="admin_recent_users">Iň soňky ulanyjylar</h3>
+                        <h3>Iň soňky ulanyjylar</h3>
                         <table class="admin-table">
-                            <thead><tr><th data-i18n="admin_user">Ulanyjy</th><th>Email</th><th data-i18n="admin_role">Rol</th><th data-i18n="admin_created">Döredilen</th></tr></thead>
+                            <thead><tr><th data-i18n="admin_ulanyjy">Ulanyjy</th><th>Email</th><th>Rol</th><th>Döredilen</th></tr></thead>
                             <tbody id="recentUsersBody"></tbody>
                         </table>
                     </div>
@@ -502,31 +560,22 @@
                 loadStats();
             } else if (section === 'users') {
                 contentArea.innerHTML = `
-                    <h1 data-i18n="admin_users_title">Ulanyjylar</h1>
+                    <h1>${t.menu_users || 'Ulanyjylar'}</h1>
                     <div class="admin-card">
-                        <h3 data-i18n="admin_manage_users">Ulanyjylary dolandyrmak</h3>
+                        <h3>Ulanyjylary dolandyrmak</h3>
                         <table class="admin-table">
-                            <thead><tr><th data-i18n="admin_user">Ulanyjy</th><th>Email</th><th data-i18n="admin_role">Rol</th><th data-i18n="admin_action">Hereket</th></tr></thead>
+                            <thead><tr><th>Ulanyjy</th><th>Email</th><th>Rol</th><th>Hereket</th></tr></thead>
                             <tbody>
-                                <tr><td data-i18n="admin_admin">admin</td><td>admin@sfera.tm</td><td><span class="badge admin">admin</span></td><td><div class="admin-actions"><button class="danger" data-i18n="admin_delete">Poz</button></div></td></tr>
-                                <tr><td>user1</td><td>user1@sfera.tm</td><td><span class="badge user">user</span></td><td><div class="admin-actions"><button data-i18n="admin_edit">Üýtget</button><button class="danger" data-i18n="admin_delete">Poz</button></div></td></tr>
+                                <tr><td data-i18n="admin_admin">admin</td><td>admin@sfera.tm</td><td><span class="badge admin">admin</span></td><td><div class="admin-actions"><button class="danger">Poz</button></div></td></tr>
+                                <tr><td>user1</td><td>user1@sfera.tm</td><td><span class="badge user">user</span></td><td><div class="admin-actions"><button>Üýtget</button><button class="danger">Poz</button></div></td></tr>
                             </tbody>
                         </table>
                     </div>`;
             } else {
-                contentArea.innerHTML = `
-                    <h1 data-i18n="menu_${section}">${tr('menu_' + section, section)}</h1>
-                    <div class="admin-card">
-                        <p data-i18n="admin_section_soon">Bölüm taýýarlanýar...</p>
-                    </div>`;
+                contentArea.innerHTML = `<h1>${t['menu_' + section] || section}</h1><div class="admin-card"><p>Bölüm taýýarlanýar...</p></div>`;
             }
 
-            // Принудительно применяем перевод к новым элементам
-            if (window.SFERA_I18N && window.SFERA_I18N.setLanguage) {
-                window.SFERA_I18N.setLanguage(localStorage.getItem('lang') || 'tm');
-            }
-            
-            // Переинициализируем эффект подсветки для новых карточек
+            // ВАЖНО: Переинициализируем эффект подсветки после вставки новых карточек
             initSpotlightEffect();
         }
 
@@ -559,11 +608,10 @@
         }
 
         // ============================================================
-        // 3. ЭФФЕКТ ПРОЖЕКТОРА (SPOTLIGHT)
+        // ЭФФЕКТ ПРОЖЕКТОРА (SPOTLIGHT)
         // ============================================================
         function initSpotlightEffect() {
             document.querySelectorAll(".module-card, .admin-card").forEach(card => {
-                // Удаляем старый слушатель, чтобы не было дублей при перерисовке
                 card.removeEventListener("mousemove", handleMouseMove);
                 card.addEventListener("mousemove", handleMouseMove);
             });
@@ -578,7 +626,7 @@
         }
 
         // ============================================================
-        // 4. ФОН И ЧАСТИЦЫ
+        // ФОН И ЧАСТИЦЫ (КАК В INDEX.HTML)
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const particlesContainer = document.getElementById("particles");
@@ -640,16 +688,14 @@
                 drawCanvas();
             }
 
-            // Первичный рендер
-            renderSection('dashboard');
+            // Первичная инициализация языка
+            setLanguage(currentLang);
         });
 
-        // Слушаем смену языка
-        window.addEventListener('sfera:languageChanged', () => {
-            const activeLi = document.querySelector('#adminMenu li.active');
-            if (activeLi) {
-                setTimeout(() => renderSection(activeLi.dataset.section), 50);
-            }
+        // Слушаем смену языка от авто-переводчика
+        window.addEventListener('sfera:languageChanged', (e) => {
+            currentLang = e.detail.lang;
+            setLanguage(currentLang);
         });
     </script>
 </body>
