@@ -1,24 +1,24 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tm">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="page_title">СФЕРА — TM Pay</title>
+    <title data-i18n="pay_page_title">Sfera — TM Pay</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Проверка авторизации и Глобальный переводчик -->
+    <!-- РџСЂРѕРІРµСЂРєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё Рё Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ РїРµСЂРµРІРѕРґС‡РёРє -->
     <script src="/js/auth-check.js"></script>
     <script src="/scripts/auto_translate_i18n.js"></script>
     
-    <!-- Chart.js для графика -->
+    <!-- Chart.js РґР»СЏ РіСЂР°С„РёРєР° -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
         /* ==========================================================================
-           1. ЦВЕТОВАЯ ПАЛИТРА (ИЗ INDEX.HTML)
+           1. Р¦Р’Р•РўРћР’РђРЇ РџРђР›РРўР Рђ (РР— INDEX.HTML)
            ========================================================================== */
         :root {
             --primary: #00d4ff;
@@ -37,7 +37,7 @@
         }
 
         /* ==========================================================================
-           2. ПОЛЗУНОК ПРОКРУТКИ
+           2. РџРћР›Р—РЈРќРћРљ РџР РћРљР РЈРўРљР
            ========================================================================== */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #03080e; border-left: 1px solid rgba(0, 212, 255, 0.1); }
@@ -49,7 +49,7 @@
         ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #00d4ff, #00ffa3); box-shadow: 0 0 12px rgba(0, 212, 255, 0.8); }
 
         /* ==========================================================================
-           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ФОН
+           3. Р­Р¤Р¤Р•РљРўР« РЎРўР•РљР›РћР’РР”РќРћРЎРўР Р Р¤РћРќ
            ========================================================================== */
         .full-glass-backdrop {
             position: fixed; inset: 0; width: 100vw; height: 100vh;
@@ -79,7 +79,7 @@
         }
 
         /* ==========================================================================
-           4. БАЗОВЫЕ ЭЛЕМЕНТЫ И ШАПКА
+           4. Р‘РђР—РћР’Р«Р• Р­Р›Р•РњР•РќРўР« Р РЁРђРџРљРђ
            ========================================================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; scrollbar-width: thin; scrollbar-color: rgba(0, 212, 255, 0.4) #03080e; }
         html { scroll-behavior: smooth; background-color: var(--dark-bg); }
@@ -115,7 +115,7 @@
         .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
 
         /* ==========================================================================
-           5. СТИЛИ СТРАНИЦЫ (ИЗ DOCUMENTS.HTML)
+           5. РЎРўРР›Р РЎРўР РђРќРР¦Р« (РР— DOCUMENTS.HTML)
            ========================================================================== */
         .doc-page { padding: 140px 7% 60px; min-height: 100vh; position: relative; z-index: 10; }
         .doc-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 30px; gap: 16px; }
@@ -130,7 +130,7 @@
         .btn-success { background: linear-gradient(135deg, #00ffa3, #00b894); color: #08131d; font-weight: 700; }
         .btn-success:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0, 255, 170, 0.3); }
 
-        /* Табы */
+        /* РўР°Р±С‹ */
         .doc-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 30px; border-bottom: 1px solid rgba(0, 212, 255, 0.15); padding-bottom: 8px; }
         .doc-tabs button { background: transparent; border: none; color: var(--text-muted); padding: 12px 24px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s ease; border-bottom: 3px solid transparent; border-radius: 8px 8px 0 0; }
         .doc-tabs button.active { color: #00d4ff; border-bottom-color: #00d4ff; background: rgba(0, 212, 255, 0.05); }
@@ -141,7 +141,7 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ==========================================================================
-           6. КАРТОЧКИ И ПОДСВЕТКА (SPOTLIGHT)
+           6. РљРђР РўРћР§РљР Р РџРћР”РЎР’Р•РўРљРђ (SPOTLIGHT)
            ========================================================================== */
         .card-spotlight {
             --mouse-x: 50%;
@@ -162,11 +162,11 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 212, 255, 0.15);
         }
 
-        /* Фикс дрожания для текста */
+        /* Р¤РёРєСЃ РґСЂРѕР¶Р°РЅРёСЏ РґР»СЏ С‚РµРєСЃС‚Р° */
         .card-spotlight > div, .card-spotlight > h1, .card-spotlight > p, .card-spotlight > span {
             pointer-events: none;
         }
-        /* Разрешаем клики для интерактивных элементов */
+        /* Р Р°Р·СЂРµС€Р°РµРј РєР»РёРєРё РґР»СЏ РёРЅС‚РµСЂР°РєС‚РёРІРЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ */
         .card-spotlight input,
         .card-spotlight button,
         .card-spotlight select,
@@ -176,7 +176,7 @@
             pointer-events: auto;
         }
 
-        /* Конкретные элементы страницы */
+        /* РљРѕРЅРєСЂРµС‚РЅС‹Рµ СЌР»РµРјРµРЅС‚С‹ СЃС‚СЂР°РЅРёС†С‹ */
         .balance-card {
             padding: 30px 35px;
             margin-bottom: 30px;
@@ -254,14 +254,14 @@
         .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
         .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
 
-        /* Уведомления */
+        /* РЈРІРµРґРѕРјР»РµРЅРёСЏ */
         .toast { position: fixed; bottom: 30px; right: 30px; background: rgba(5, 14, 26, 0.95); border: 1px solid rgba(0, 212, 255, 0.4); border-radius: 16px; padding: 16px 24px; color: white; font-weight: 600; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); z-index: 2000; animation: slideUp 0.3s ease; backdrop-filter: blur(15px); }
         .toast.success { border-left: 5px solid #00ffa3; }
         .toast.error { border-left: 5px solid #ff6b6b; }
         .toast.info { border-left: 5px solid #00d4ff; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- ФУТЕР --- */
+        /* --- Р¤РЈРўР•Р  --- */
         footer { position: relative; z-index: 20; margin-top: 60px; backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%); background: var(--header-footer-bg); border-top: 1px solid rgba(0, 212, 255, 0.2); box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.5); }
         footer .container { display: flex; justify-content: space-between; align-items: center; padding: 28px 0; flex-wrap: wrap; gap: 20px; }
         footer p { color: #c0d8f0; font-size: 14px; }
@@ -280,10 +280,10 @@
     <canvas id="bgCanvas"></canvas>
     <div id="particles"></div>
 
-    <!-- ЕДИНАЯ ЭТАЛОННАЯ ШАПКА -->
+    <!-- Р•Р”РРќРђРЇ Р­РўРђР›РћРќРќРђРЇ РЁРђРџРљРђ -->
     <header>
         <div class="container">
-            <a href="index.html" class="logo" aria-label="СФЕРА Главная">
+            <a href="index.html" class="logo" aria-label="РЎР¤Р•Р Рђ Р“Р»Р°РІРЅР°СЏ">
                 <div class="logo-icon">
                     <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
@@ -303,36 +303,36 @@
                     </svg>
                 </div>
                 <div class="logo-text">
-                    <h2 data-i18n="logo_title">СФЕРА</h2>
-                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
+                    <h2 data-i18n="logo_title">РЎР¤Р•Р Рђ</h2>
+                    <p data-i18n="logo_subtitle">РќР°С†РёРѕРЅР°Р»СЊРЅР°СЏ Р¦РёС„СЂРѕРІР°СЏ РџР»Р°С‚С„РѕСЂРјР°</p>
                 </div>
             </a>
 
             <div class="header-right header-buttons">
-                <span class="user-info">👤 <strong id="username">User</strong></span>
+                <span class="user-info">рџ‘¤ <strong id="username">User</strong></span>
                 <button class="lang-btn" id="langBtn" type="button">TM</button>
-                <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">← Yza</a>
-                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">🚪 Çykmak</button>
+                <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">в†ђ Yza</a>
+                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">рџљЄ Г‡ykmak</button>
             </div>
         </div>
     </header>
 
-    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <!-- РћРЎРќРћР’РќРћР™ РљРћРќРўР•РќРў -->
     <section class="doc-page">
         <div class="container">
             <div class="doc-header">
-                <h1 data-i18n="page_title">💳 TM Pay</h1>
+                <h1 data-i18n="pay_header_title">рџ’і TM Pay</h1>
                 <div class="actions">
-                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">⟳ Täzele</button>
+                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">вџі TГ¤zele</button>
                 </div>
             </div>
 
-            <!-- График баланса -->
+            <!-- Р“СЂР°С„РёРє Р±Р°Р»Р°РЅСЃР° -->
             <div class="chart-container card-spotlight">
                 <canvas id="balanceChart"></canvas>
             </div>
 
-            <!-- Баланс -->
+            <!-- Р‘Р°Р»Р°РЅСЃ -->
             <div class="balance-card card-spotlight">
                 <div>
                     <div class="balance-label" data-i18n="total_balance">Jemi balans</div>
@@ -342,28 +342,28 @@
                     </div>
                 </div>
                 <div style="text-align:right; font-size:14px; color:#bdd0df;">
-                    <span data-i18n="wallet_id">Koşelge ID:</span> <span id="walletId">TM-1234-5678</span>
+                    <span data-i18n="wallet_id">KoЕџelge ID:</span> <span id="walletId">TM-1234-5678</span>
                 </div>
             </div>
 
-            <!-- Мультивалютный кошелёк -->
+            <!-- РњСѓР»СЊС‚РёРІР°Р»СЋС‚РЅС‹Р№ РєРѕС€РµР»С‘Рє -->
             <div class="wallet-grid" id="walletGrid"></div>
 
-            <!-- Вкладки -->
+            <!-- Р’РєР»Р°РґРєРё -->
             <div class="doc-tabs">
-                <button class="active" data-tab="transfer" data-i18n="tab_transfer">Geçiriş</button>
-                <button data-tab="international" data-i18n="tab_international">Daşarky</button>
+                <button class="active" data-tab="transfer" data-i18n="tab_transfer">GeГ§iriЕџ</button>
+                <button data-tab="international" data-i18n="tab_international">DaЕџarky</button>
                 <button data-tab="history" data-i18n="tab_history">Taryh</button>
                 <button data-tab="cards" data-i18n="tab_cards">Kartlar</button>
                 <button data-tab="receive" data-i18n="tab_receive">Al</button>
             </div>
 
-            <!-- Вкладка: внутренние переводы -->
+            <!-- Р’РєР»Р°РґРєР°: РІРЅСѓС‚СЂРµРЅРЅРёРµ РїРµСЂРµРІРѕРґС‹ -->
             <div class="tab-content active" id="tab-transfer">
                 <div class="transfer-form card-spotlight" style="padding: 30px; margin: 0 auto;">
                     <form id="transferForm">
                         <div class="form-group">
-                            <label for="transferCurrency" data-i18n="currency">Walýuta</label>
+                            <label for="transferCurrency" data-i18n="currency">WalГЅuta</label>
                             <select id="transferCurrency">
                                 <option value="TMT">TMT</option>
                                 <option value="USD">USD</option>
@@ -372,16 +372,16 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="recipientId" data-i18n="recipient">Alýan (email, telefon ýa-da ID)</label>
-                            <input type="text" id="recipientId" placeholder="mysal@mail.com ýa-da +993 63 000000" required />
+                            <label for="recipientId" data-i18n="recipient">AlГЅan (email, telefon ГЅa-da ID)</label>
+                            <input type="text" id="recipientId" placeholder="mysal@mail.com ГЅa-da +993 63 000000" required />
                         </div>
                         <div class="form-group">
                             <label for="transferAmount" data-i18n="amount">Mukdar</label>
                             <input type="number" id="transferAmount" step="0.01" min="0.01" required placeholder="100.00" />
                         </div>
                         <div class="form-group">
-                            <label for="transferDesc" data-i18n="description">Düşündiriş</label>
-                            <textarea id="transferDesc" placeholder="Geçiriş sebäbi..."></textarea>
+                            <label for="transferDesc" data-i18n="description">DГјЕџГјndiriЕџ</label>
+                            <textarea id="transferDesc" placeholder="GeГ§iriЕџ sebГ¤bi..."></textarea>
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary" id="transferBtn" data-i18n="send">Iber</button>
@@ -390,12 +390,12 @@
                 </div>
             </div>
 
-            <!-- Вкладка: международные переводы -->
+            <!-- Р’РєР»Р°РґРєР°: РјРµР¶РґСѓРЅР°СЂРѕРґРЅС‹Рµ РїРµСЂРµРІРѕРґС‹ -->
             <div class="tab-content" id="tab-international">
                 <div class="transfer-form card-spotlight" style="padding: 30px; margin: 0 auto;">
                     <form id="internationalForm">
                         <div class="form-group">
-                            <label for="intCurrency" data-i18n="currency">Walýuta</label>
+                            <label for="intCurrency" data-i18n="currency">WalГЅuta</label>
                             <select id="intCurrency">
                                 <option value="USD">USD</option>
                                 <option value="EUR">EUR</option>
@@ -404,8 +404,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="intCountry" data-i18n="country">Ýurt</label>
-                            <input type="text" id="intCountry" placeholder="Türkiýe, ABŞ, Germaniýa..." required />
+                            <label for="intCountry" data-i18n="country">Гќurt</label>
+                            <input type="text" id="intCountry" placeholder="TГјrkiГЅe, ABЕћ, GermaniГЅa..." required />
                         </div>
                         <div class="form-group">
                             <label for="intBank" data-i18n="bank">Bank</label>
@@ -413,79 +413,79 @@
                         </div>
                         <div class="form-group">
                             <label for="intAccount" data-i18n="account_number">Hasap belgisi (IBAN / SWIFT)</label>
-                            <input type="text" id="intAccount" placeholder="IBAN ýa-da SWIFT kody" required />
+                            <input type="text" id="intAccount" placeholder="IBAN ГЅa-da SWIFT kody" required />
                         </div>
                         <div class="form-group">
                             <label for="intAmount" data-i18n="amount">Mukdar</label>
                             <input type="number" id="intAmount" step="0.01" min="0.01" required placeholder="100.00" />
                         </div>
                         <div class="form-group">
-                            <label for="intDesc" data-i18n="description">Düşündiriş</label>
-                            <textarea id="intDesc" placeholder="Geçiriş sebäbi..."></textarea>
+                            <label for="intDesc" data-i18n="description">DГјЕџГјndiriЕџ</label>
+                            <textarea id="intDesc" placeholder="GeГ§iriЕџ sebГ¤bi..."></textarea>
                         </div>
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary" id="intTransferBtn" data-i18n="send_international">Daşarky geçir</button>
+                            <button type="submit" class="btn btn-primary" id="intTransferBtn" data-i18n="send_international">DaЕџarky geГ§ir</button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Вкладка: история -->
+            <!-- Р’РєР»Р°РґРєР°: РёСЃС‚РѕСЂРёСЏ -->
             <div class="tab-content" id="tab-history">
                 <div class="filter-bar">
-                    <label for="txFilter" data-i18n="filter_type">Görnüşi:</label>
+                    <label for="txFilter" data-i18n="filter_type">GГ¶rnГјЕџi:</label>
                     <select id="txFilter">
-                        <option value="all" data-i18n="all">Ählisi</option>
+                        <option value="all" data-i18n="all">Г„hlisi</option>
                         <option value="credit" data-i18n="filter_credit">Gelen</option>
-                        <option value="debit" data-i18n="filter_debit">Çykdajy</option>
-                        <option value="transfer" data-i18n="filter_transfer">Geçiriş</option>
-                        <option value="international" data-i18n="filter_international">Daşarky</option>
+                        <option value="debit" data-i18n="filter_debit">Г‡ykdajy</option>
+                        <option value="transfer" data-i18n="filter_transfer">GeГ§iriЕџ</option>
+                        <option value="international" data-i18n="filter_international">DaЕџarky</option>
                     </select>
                 </div>
                 <ul class="transactions-list card-spotlight" id="transactionsList" style="padding: 20px;"></ul>
                 <div class="empty-state" id="emptyTx" style="display:none;">
-                    <div class="icon">📭</div>
-                    <p data-i18n="no_transactions">Hiç hili amal ýok</p>
+                    <div class="icon">рџ“­</div>
+                    <p data-i18n="no_transactions">HiГ§ hili amal ГЅok</p>
                 </div>
             </div>
 
-            <!-- Вкладка: карты -->
+            <!-- Р’РєР»Р°РґРєР°: РєР°СЂС‚С‹ -->
             <div class="tab-content" id="tab-cards">
                 <div id="cardsContainer" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px;"></div>
                 <div style="margin-top:20px;">
-                    <button class="btn btn-outline" id="addCardBtn" data-i18n="add_card">+ Täze kart</button>
+                    <button class="btn btn-outline" id="addCardBtn" data-i18n="add_card">+ TГ¤ze kart</button>
                 </div>
             </div>
 
-            <!-- Вкладка: получение платежей (QR) -->
+            <!-- Р’РєР»Р°РґРєР°: РїРѕР»СѓС‡РµРЅРёРµ РїР»Р°С‚РµР¶РµР№ (QR) -->
             <div class="tab-content" id="tab-receive">
                 <div class="qr-container card-spotlight" style="margin: 0 auto; max-width: 400px;">
-                    <div style="font-size:18px; font-weight:600; margin-bottom:12px;" data-i18n="receive_qr">Töleg almak üçin QR kody</div>
+                    <div style="font-size:18px; font-weight:600; margin-bottom:12px;" data-i18n="receive_qr">TГ¶leg almak ГјГ§in QR kody</div>
                     <img id="qrCodeImage" src="" alt="QR code" style="width:150px; height:150px;" />
                     <div style="margin-top:12px; color:#00d4ff; word-break:break-all; font-family:monospace;" id="qrDataText">TM-1234-5678</div>
-                    <button class="btn btn-outline" id="copyQrDataBtn" style="margin-top:12px;" data-i18n="copy_address">Kopiýa</button>
+                    <button class="btn btn-outline" id="copyQrDataBtn" style="margin-top:12px;" data-i18n="copy_address">KopiГЅa</button>
                 </div>
             </div>
 
         </div>
     </section>
 
-    <!-- ФУТЕР -->
+    <!-- Р¤РЈРўР•Р  -->
     <footer>
         <div class="container">
             <a href="index.html" class="logo">
                 <div class="logo-text">
-                    <h2 data-i18n="logo_title">СФЕРА</h2>
-                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
+                    <h2 data-i18n="logo_title">РЎР¤Р•Р Рђ</h2>
+                    <p data-i18n="logo_subtitle">РќР°С†РёРѕРЅР°Р»СЊРЅР°СЏ Р¦РёС„СЂРѕРІР°СЏ РџР»Р°С‚С„РѕСЂРјР°</p>
                 </div>
             </a>
-            <p data-i18n="footer_copy">© 2026 — Единая цифровая платформа Туркменистана</p>
+            <p data-i18n="footer_copy">В© 2026 вЂ” Р•РґРёРЅР°СЏ С†РёС„СЂРѕРІР°СЏ РїР»Р°С‚С„РѕСЂРјР° РўСѓСЂРєРјРµРЅРёСЃС‚Р°РЅР°</p>
         </div>
     </footer>
 
     <script>
         // ============================================================
-        // 1. ИНИЦИАЛИЗАЦИЯ ПЕРЕВОДЧИКА
+        // 1. РРќРР¦РРђР›РР—РђР¦РРЇ РџР•Р Р•Р’РћР”Р§РРљРђ
         // ============================================================
         if (!localStorage.getItem('sfera_lang') && !localStorage.getItem('lang')) {
             localStorage.setItem('sfera_lang', 'tm');
@@ -511,7 +511,7 @@
         });
 
         // ============================================================
-        // 2. АВТОРИЗАЦИЯ И НАВИГАЦИЯ
+        // 2. РђР’РўРћР РР—РђР¦РРЇ Р РќРђР’РР“РђР¦РРЇ
         // ============================================================
         const token = localStorage.getItem('token');
         if (!token) window.location.href = 'login.html';
@@ -532,7 +532,7 @@
         });
 
         // ============================================================
-        // 3. ДАННЫЕ (localStorage)
+        // 3. Р”РђРќРќР«Р• (localStorage)
         // ============================================================
         let wallets = [];
         let transactions = [];
@@ -561,10 +561,10 @@
             if (storedTx) { try { transactions = JSON.parse(storedTx); } catch(e) { transactions = []; } }
             if (!transactions || transactions.length === 0) {
                 transactions = [
-                    { id: 'tx1', type: 'transfer', from: 'TMT', to: 'USD', amount: 200, description: 'Aýlyk geçiriş', date: new Date(Date.now() - 3600000 * 2).toISOString(), status: 'completed' },
+                    { id: 'tx1', type: 'transfer', from: 'TMT', to: 'USD', amount: 200, description: 'AГЅlyk geГ§iriЕџ', date: new Date(Date.now() - 3600000 * 2).toISOString(), status: 'completed' },
                     { id: 'tx2', type: 'debit', from: 'TMT', to: 'external', amount: 150, description: 'Konserwa satyn almak', date: new Date(Date.now() - 3600000 * 5).toISOString(), status: 'completed' },
-                    { id: 'tx3', type: 'credit', from: 'external', to: 'TMT', amount: 300, description: 'Aýlyk girdeji', date: new Date(Date.now() - 3600000 * 24).toISOString(), status: 'completed' },
-                    { id: 'tx4', type: 'international', from: 'USD', to: 'EUR', amount: 100, description: 'Daşarky geçiriş', date: new Date(Date.now() - 3600000 * 48).toISOString(), status: 'pending' }
+                    { id: 'tx3', type: 'credit', from: 'external', to: 'TMT', amount: 300, description: 'AГЅlyk girdeji', date: new Date(Date.now() - 3600000 * 24).toISOString(), status: 'completed' },
+                    { id: 'tx4', type: 'international', from: 'USD', to: 'EUR', amount: 100, description: 'DaЕџarky geГ§iriЕџ', date: new Date(Date.now() - 3600000 * 48).toISOString(), status: 'pending' }
                 ];
                 saveTransactions();
             }
@@ -618,7 +618,7 @@
         }
 
         // ============================================================
-        // 4. ГРАФИК
+        // 4. Р“Р РђР¤РРљ
         // ============================================================
         function renderChart() {
             const ctx = document.getElementById('balanceChart').getContext('2d');
@@ -652,7 +652,7 @@
         }
 
         // ============================================================
-        // 5. ЭФФЕКТ ПРОЖЕКТОРА (SPOTLIGHT)
+        // 5. Р­Р¤Р¤Р•РљРў РџР РћР–Р•РљРўРћР Рђ (SPOTLIGHT)
         // ============================================================
         function initSpotlightEffect() {
             document.querySelectorAll(".card-spotlight").forEach(card => {
@@ -668,7 +668,7 @@
         }
 
         // ============================================================
-        // 6. ОТРИСОВКА ЭЛЕМЕНТОВ
+        // 6. РћРўР РРЎРћР’РљРђ Р­Р›Р•РњР•РќРўРћР’
         // ============================================================
         function renderWallets() {
             const container = document.getElementById('walletGrid');
@@ -721,7 +721,7 @@
         function renderCards() {
             const container = document.getElementById('cardsContainer');
             if (!cards.length) {
-                container.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><div class="icon">💳</div><p>${tr('no_cards', 'Kartlar ýok')}</p></div>`;
+                container.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><div class="icon">рџ’і</div><p>${tr('no_cards', 'Kartlar ГЅok')}</p></div>`;
                 return;
             }
             container.innerHTML = cards.map(c => `
@@ -729,7 +729,7 @@
                     <div style="font-size:12px; color:#00d4ff;">${c.type}</div>
                     <div style="font-size:20px; font-weight:600; margin:8px 0;">${c.number}</div>
                     <div style="font-size:14px; color:#bdd0df;">${c.holder}</div>
-                    <div style="font-size:12px; color:#9fb5c8; margin-top: 8px;">${tr('card_expiry', 'Işleýän çenli')}: ${c.expiry}</div>
+                    <div style="font-size:12px; color:#9fb5c8; margin-top: 8px;">${tr('card_expiry', 'IЕџleГЅГ¤n Г§enli')}: ${c.expiry}</div>
                 </div>
             `).join('');
             initSpotlightEffect();
@@ -744,14 +744,14 @@
         }
 
         // ============================================================
-        // 7. ОБРАБОТЧИКИ СОБЫТИЙ
+        // 7. РћР‘Р РђР‘РћРўР§РРљР РЎРћР‘Р«РўРР™
         // ============================================================
         document.getElementById('txFilter').addEventListener('change', renderTransactions);
 
         document.getElementById('copyQrDataBtn').addEventListener('click', function() {
             const text = document.getElementById('qrDataText').textContent;
             navigator.clipboard.writeText(text).then(() => {
-                showToast('Kopiýalandy!', 'success');
+                showToast('KopiГЅalandy!', 'success');
             });
         });
 
@@ -762,21 +762,21 @@
             const amount = parseFloat(document.getElementById('transferAmount').value);
             const desc = document.getElementById('transferDesc').value.trim();
 
-            if (!recipient || !amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ýalňyş.'), 'error');
+            if (!recipient || !amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ГЅalЕ€yЕџ.'), 'error');
             const wallet = wallets.find(w => w.currency === currency);
-            if (!wallet || wallet.balance < amount) return showToast(tr('insufficient', 'Balans ýeterlik däl.'), 'error');
+            if (!wallet || wallet.balance < amount) return showToast(tr('insufficient', 'Balans ГЅeterlik dГ¤l.'), 'error');
 
             wallet.balance -= amount;
             saveWallets();
 
             transactions.push({
                 id: 'tx' + Date.now(), type: 'transfer', from: currency, to: recipient,
-                amount: amount, description: desc || 'Içki geçiriş', date: new Date().toISOString(), status: 'completed'
+                amount: amount, description: desc || 'IГ§ki geГ§iriЕџ', date: new Date().toISOString(), status: 'completed'
             });
             saveTransactions();
 
             updateTotalBalance(); renderWallets(); renderTransactions();
-            showToast(tr('transfer_success', 'Geçiriş üstünlikli tamamlandy!'), 'success');
+            showToast(tr('transfer_success', 'GeГ§iriЕџ ГјstГјnlikli tamamlandy!'), 'success');
             this.reset();
         });
 
@@ -789,21 +789,21 @@
             const amount = parseFloat(document.getElementById('intAmount').value);
             const desc = document.getElementById('intDesc').value.trim();
 
-            if (!country || !bank || !account || !amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ýalňyş.'), 'error');
+            if (!country || !bank || !account || !amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ГЅalЕ€yЕџ.'), 'error');
             const wallet = wallets.find(w => w.currency === currency);
-            if (!wallet || wallet.balance < amount) return showToast(tr('insufficient', 'Balans ýeterlik däl.'), 'error');
+            if (!wallet || wallet.balance < amount) return showToast(tr('insufficient', 'Balans ГЅeterlik dГ¤l.'), 'error');
 
             wallet.balance -= amount;
             saveWallets();
 
             transactions.push({
                 id: 'tx' + Date.now(), type: 'international', from: currency, to: `${country}, ${bank}`,
-                amount: amount, description: desc || 'Daşarky geçiriş', date: new Date().toISOString(), status: 'pending'
+                amount: amount, description: desc || 'DaЕџarky geГ§iriЕџ', date: new Date().toISOString(), status: 'pending'
             });
             saveTransactions();
 
             updateTotalBalance(); renderWallets(); renderTransactions();
-            showToast(tr('transfer_success', 'Geçiriş üstünlikli tamamlandy!'), 'success');
+            showToast(tr('transfer_success', 'GeГ§iriЕџ ГјstГјnlikli tamamlandy!'), 'success');
             this.reset();
         });
 
@@ -816,13 +816,13 @@
             };
             cards.push(newCard);
             saveCards(); renderCards();
-            showToast('Täze kart goşuldy!', 'success');
+            showToast('TГ¤ze kart goЕџuldy!', 'success');
         });
 
         document.getElementById('refreshBtn').addEventListener('click', function() {
             renderWallets(); renderTransactions(); renderCards();
             updateTotalBalance(); updateQR();
-            showToast('Täzelendi!', 'success');
+            showToast('TГ¤zelendi!', 'success');
         });
 
         document.querySelectorAll('.doc-tabs button').forEach(btn => {
@@ -849,7 +849,7 @@
         }
 
         // ============================================================
-        // 8. ФОН И ЧАСТИЦЫ
+        // 8. Р¤РћРќ Р Р§РђРЎРўРР¦Р«
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const particlesContainer = document.getElementById("particles");
@@ -911,7 +911,7 @@
                 drawCanvas();
             }
 
-            // Инициализация
+            // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
             loadData();
             updateTotalBalance();
             renderWallets();
@@ -920,8 +920,9 @@
             updateQR();
             renderChart();
             initSpotlightEffect();
-            console.log('✅ TM Pay loaded');
+            console.log('вњ… TM Pay loaded');
         });
     </script>
 </body>
 </html>
+
