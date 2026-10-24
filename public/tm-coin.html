@@ -9,16 +9,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- РџСЂРѕРІРµСЂРєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё Рё Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ РїРµСЂРµРІРѕРґС‡РёРє -->
+    <!-- Проверка авторизации и Глобальный переводчик -->
     <script src="/js/auth-check.js"></script>
     <script src="/scripts/auto_translate_i18n.js"></script>
     
-    <!-- Chart.js РґР»СЏ РіСЂР°С„РёРєР° -->
+    <!-- Chart.js для графика -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
         /* ==========================================================================
-           1. Р¦Р’Р•РўРћР’РђРЇ РџРђР›РРўР Рђ (РР— INDEX.HTML)
+           1. ЦВЕТОВАЯ ПАЛРТР А (РЗ INDEX.HTML)
            ========================================================================== */
         :root {
             --primary: #00d4ff;
@@ -37,7 +37,7 @@
         }
 
         /* ==========================================================================
-           2. РџРћР›Р—РЈРќРћРљ РџР РћРљР РЈРўРљР
+           2. ПОЛЗУНОК ПР ОКР УТКР
            ========================================================================== */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #03080e; border-left: 1px solid rgba(0, 212, 255, 0.1); }
@@ -49,7 +49,7 @@
         ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #00d4ff, #00ffa3); box-shadow: 0 0 12px rgba(0, 212, 255, 0.8); }
 
         /* ==========================================================================
-           3. Р­Р¤Р¤Р•РљРўР« РЎРўР•РљР›РћР’РР”РќРћРЎРўР Р Р¤РћРќ
+           3. Р­ФФЕКТЫ СТЕКЛОВРДНОСТР Р ФОН
            ========================================================================== */
         .full-glass-backdrop {
             position: fixed; inset: 0; width: 100vw; height: 100vh;
@@ -79,7 +79,7 @@
         }
 
         /* ==========================================================================
-           4. Р‘РђР—РћР’Р«Р• Р­Р›Р•РњР•РќРўР« Р РЁРђРџРљРђ
+           4. БАЗОВЫЕ Р­ЛЕМЕНТЫ Р ШАПКА
            ========================================================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; scrollbar-width: thin; scrollbar-color: rgba(0, 212, 255, 0.4) #03080e; }
         html { scroll-behavior: smooth; background-color: var(--dark-bg); }
@@ -115,7 +115,7 @@
         .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
 
         /* ==========================================================================
-           5. РЎРўРР›Р РЎРўР РђРќРР¦Р« (РР— DOCUMENTS.HTML)
+           5. СТРЛР СТР АНРЦЫ (РЗ DOCUMENTS.HTML)
            ========================================================================== */
         .doc-page { padding: 140px 7% 60px; min-height: 100vh; position: relative; z-index: 10; }
         .doc-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 30px; gap: 16px; }
@@ -132,7 +132,7 @@
         .btn-danger { background: rgba(255, 77, 77, 0.15); border: 1px solid rgba(255, 77, 77, 0.3); color: #ff6b6b; }
         .btn-danger:hover { background: rgba(255, 77, 77, 0.3); border-color: #ff6b6b; }
 
-        /* РўР°Р±С‹ */
+        /* Табы */
         .doc-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 30px; border-bottom: 1px solid rgba(0, 212, 255, 0.15); padding-bottom: 8px; }
         .doc-tabs button { background: transparent; border: none; color: var(--text-muted); padding: 12px 24px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s ease; border-bottom: 3px solid transparent; border-radius: 8px 8px 0 0; }
         .doc-tabs button.active { color: #00d4ff; border-bottom-color: #00d4ff; background: rgba(0, 212, 255, 0.05); }
@@ -143,7 +143,7 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ==========================================================================
-           6. РљРђР РўРћР§РљР Р РџРћР”РЎР’Р•РўРљРђ (SPOTLIGHT)
+           6. КАР ТОЧКР Р ПОДСВЕТКА (SPOTLIGHT)
            ========================================================================== */
         .card-spotlight {
             --mouse-x: 50%;
@@ -164,12 +164,12 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 212, 255, 0.15);
         }
 
-        /* Р¤РёРєСЃ РґСЂРѕР¶Р°РЅРёСЏ РґР»СЏ С‚РµРєСЃС‚Р° */
+        /* Фикс дрожания для текста */
         .card-spotlight > div, .card-spotlight > h1, .card-spotlight > p, .card-spotlight > span {
             pointer-events: none;
         }
 
-        /* РљРѕРЅРєСЂРµС‚РЅС‹Рµ СЌР»РµРјРµРЅС‚С‹ СЃС‚СЂР°РЅРёС†С‹ */
+        /* Конкретные элементы страницы */
         .balance-card {
             padding: 30px 35px;
             margin-bottom: 30px;
@@ -261,14 +261,14 @@
         .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
         .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
 
-        /* РЈРІРµРґРѕРјР»РµРЅРёСЏ */
+        /* Уведомления */
         .toast { position: fixed; bottom: 30px; right: 30px; background: rgba(5, 14, 26, 0.95); border: 1px solid rgba(0, 212, 255, 0.4); border-radius: 16px; padding: 16px 24px; color: white; font-weight: 600; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); z-index: 2000; animation: slideUp 0.3s ease; backdrop-filter: blur(15px); }
         .toast.success { border-left: 5px solid #00ffa3; }
         .toast.error { border-left: 5px solid #ff6b6b; }
         .toast.info { border-left: 5px solid #00d4ff; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Р¤РЈРўР•Р  --- */
+        /* --- ФУТЕР  --- */
         footer { position: relative; z-index: 20; margin-top: 60px; backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%); background: var(--header-footer-bg); border-top: 1px solid rgba(0, 212, 255, 0.2); box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.5); }
         footer .container { display: flex; justify-content: space-between; align-items: center; padding: 28px 0; flex-wrap: wrap; gap: 20px; }
         footer p { color: #c0d8f0; font-size: 14px; }
@@ -287,10 +287,10 @@
     <canvas id="bgCanvas"></canvas>
     <div id="particles"></div>
 
-    <!-- Р•Р”РРќРђРЇ Р­РўРђР›РћРќРќРђРЇ РЁРђРџРљРђ -->
+    <!-- ЕДРНАЯ Р­ТАЛОННАЯ ШАПКА -->
     <header>
         <div class="container">
-            <a href="index.html" class="logo" aria-label="РЎР¤Р•Р Рђ Р“Р»Р°РІРЅР°СЏ">
+            <a href="index.html" class="logo" aria-label="СФЕР А Главная">
                 <div class="logo-icon">
                     <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
@@ -310,31 +310,31 @@
                     </svg>
                 </div>
                 <div class="logo-text">
-                    <h2 data-i18n="logo_title">РЎР¤Р•Р Рђ</h2>
-                    <p data-i18n="logo_subtitle">РќР°С†РёРѕРЅР°Р»СЊРЅР°СЏ Р¦РёС„СЂРѕРІР°СЏ РџР»Р°С‚С„РѕСЂРјР°</p>
+                    <h2 data-i18n="logo_title">СФЕР А</h2>
+                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
                 </div>
             </a>
 
             <div class="header-right header-buttons">
                 <span class="user-info">рџ‘¤ <strong id="username">User</strong></span>
                 <button class="lang-btn" id="langBtn" type="button">TM</button>
-                <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">в†ђ Yza</a>
+                <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">← Yza</a>
                 <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">рџљЄ Г‡ykmak</button>
             </div>
         </div>
     </header>
 
-    <!-- РћРЎРќРћР’РќРћР™ РљРћРќРўР•РќРў -->
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
     <section class="doc-page">
         <div class="container">
             <div class="doc-header">
                 <h1 data-i18n="coin_header_title">в‚® TM Coin</h1>
                 <div class="actions">
-                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">вџі TГ¤zele</button>
+                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">вџі Täzele</button>
                 </div>
             </div>
 
-            <!-- РўРёРєРµСЂ С†РµРЅ + РїРѕСЂС‚С„РµР»СЊ -->
+            <!-- Тикер цен + портфель -->
             <div class="price-ticker card-spotlight" style="padding: 20px; margin-bottom: 30px;">
                 <div class="pair" data-i18n="tmc_pair">TM Coin / TMT: <span class="value" id="tmcPrice">125.75</span> <span class="change up" id="priceChange">+2.3%</span></div>
                 <div class="pair" data-i18n="btc_pair">BTC / USD: <span class="value" id="btcPrice">67250</span> <span class="change up">+0.8%</span></div>
@@ -342,12 +342,12 @@
                 <div class="portfolio-usd" data-i18n="portfolio_usd">рџЏ¦ Jemi portfel: <span id="totalPortfolioUsd">0.00</span> USD</div>
             </div>
 
-            <!-- Р“СЂР°С„РёРє С†РµРЅС‹ TM Coin -->
+            <!-- График цены TM Coin -->
             <div class="chart-container card-spotlight">
                 <canvas id="priceChart"></canvas>
             </div>
 
-            <!-- Р‘Р°Р»Р°РЅСЃ -->
+            <!-- Баланс -->
             <div class="balance-card card-spotlight">
                 <div>
                     <div class="balance-label" data-i18n="total_balance">Jemi balans</div>
@@ -358,25 +358,25 @@
                     <div class="wallet-address" id="walletAddress">0x3f5b...7e9a</div>
                 </div>
                 <div style="pointer-events: auto;">
-                    <button class="btn btn-outline" id="copyAddressBtn" data-i18n="copy_address">KopiГЅa</button>
+                    <button class="btn btn-outline" id="copyAddressBtn" data-i18n="copy_address">Kopiýa</button>
                 </div>
             </div>
 
-            <!-- РњСѓР»СЊС‚РёРІР°Р»СЋС‚РЅС‹Р№ РєРѕС€РµР»С‘Рє -->
+            <!-- Мультивалютный кошелёк -->
             <div class="coin-grid" id="coinGrid"></div>
 
             <div id="message" class="message" style="display:none;"></div>
 
-            <!-- Р’РєР»Р°РґРєРё -->
+            <!-- Вкладки -->
             <div class="doc-tabs">
                 <button class="active" data-tab="send" data-i18n="tab_send">Iber</button>
                 <button data-tab="receive" data-i18n="tab_receive">Al</button>
-                <button data-tab="swap" data-i18n="tab_swap">Г‡alyЕџ</button>
+                <button data-tab="swap" data-i18n="tab_swap">Г‡alyş</button>
                 <button data-tab="staking" data-i18n="tab_staking">Staking</button>
                 <button data-tab="history" data-i18n="tab_history">Taryh</button>
             </div>
 
-            <!-- Р’РєР»Р°РґРєР°: РѕС‚РїСЂР°РІРєР° -->
+            <!-- Вкладка: отправка -->
             <div class="tab-content active" id="tab-send">
                 <div class="transfer-form card-spotlight" style="padding: 30px; pointer-events: auto;">
                     <form id="sendForm">
@@ -391,15 +391,15 @@
                         </div>
                         <div class="form-group">
                             <label for="sendAddress" data-i18n="address">Adres</label>
-                            <input type="text" id="sendAddress" placeholder="0x... ГЅa-da bc1..." required />
+                            <input type="text" id="sendAddress" placeholder="0x... ýa-da bc1..." required />
                         </div>
                         <div class="form-group">
                             <label for="sendAmount" data-i18n="amount">Mukdar</label>
                             <input type="number" id="sendAmount" step="0.0001" min="0.0001" required placeholder="1.00" />
                         </div>
                         <div class="form-group">
-                            <label for="sendDesc" data-i18n="description">DГјЕџГјndiriЕџ (islege gГ¶rГ¤)</label>
-                            <textarea id="sendDesc" placeholder="GeГ§iriЕџ sebГ¤bi..."></textarea>
+                            <label for="sendDesc" data-i18n="description">Düşündiriş (islege görä)</label>
+                            <textarea id="sendDesc" placeholder="Geçiriş sebäbi..."></textarea>
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary" id="sendBtn" data-i18n="send">Iber</button>
@@ -408,7 +408,7 @@
                 </div>
             </div>
 
-            <!-- Р’РєР»Р°РґРєР°: РїРѕР»СѓС‡РµРЅРёРµ -->
+            <!-- Вкладка: получение -->
             <div class="tab-content" id="tab-receive">
                 <div class="transfer-form card-spotlight" style="padding: 30px; pointer-events: auto;">
                     <div class="form-group">
@@ -421,14 +421,14 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label data-i18n="your_address">SiziЕ€ adresiЕ€iz</label>
+                        <label data-i18n="your_address">Siziň adresiňiz</label>
                         <div style="background:rgba(3,8,14,0.6); border:1px solid rgba(0,212,255,0.2); padding:14px 18px; border-radius:14px; word-break:break-all; color:#00d4ff; font-family:monospace;" id="receiveAddressDisplay">0x3f5b...7e9a</div>
                     </div>
-                    <button class="btn btn-outline" id="copyReceiveBtn" data-i18n="copy_address">KopiГЅa</button>
+                    <button class="btn btn-outline" id="copyReceiveBtn" data-i18n="copy_address">Kopiýa</button>
                 </div>
             </div>
 
-            <!-- Р’РєР»Р°РґРєР°: РѕР±РјРµРЅ -->
+            <!-- Вкладка: обмен -->
             <div class="tab-content" id="tab-swap">
                 <div class="transfer-form card-spotlight" style="padding: 30px; pointer-events: auto;">
                     <form id="swapForm">
@@ -442,7 +442,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="swapTo" data-i18n="to_coin">NirГ¤</label>
+                            <label for="swapTo" data-i18n="to_coin">Nirä</label>
                             <select id="swapTo">
                                 <option value="BTC">Bitcoin (BTC)</option>
                                 <option value="ETH">Ethereum (ETH)</option>
@@ -455,25 +455,25 @@
                             <input type="number" id="swapAmount" step="0.0001" min="0.0001" required placeholder="1.00" />
                         </div>
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-success" id="swapBtn" data-i18n="swap">Г‡alyЕџ</button>
+                            <button type="submit" class="btn btn-success" id="swapBtn" data-i18n="swap">Г‡alyş</button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Р’РєР»Р°РґРєР°: СЃС‚РµР№РєРёРЅРі -->
+            <!-- Вкладка: стейкинг -->
             <div class="tab-content" id="tab-staking">
                 <div class="transfer-form card-spotlight" style="padding: 30px; pointer-events: auto; margin-bottom: 30px;">
                     <div class="form-group">
-                        <label for="stakeAmount" data-i18n="stake_amount">Staking ГјГ§in mukdar (TM Coin)</label>
+                        <label for="stakeAmount" data-i18n="stake_amount">Staking üçin mukdar (TM Coin)</label>
                         <input type="number" id="stakeAmount" step="0.0001" min="0.0001" required placeholder="100" />
                     </div>
                     <div class="form-group">
-                        <label for="stakeTerm" data-i18n="stake_term">MГ¶hlet (gГјn)</label>
+                        <label for="stakeTerm" data-i18n="stake_term">Möhlet (gün)</label>
                         <select id="stakeTerm">
-                            <option value="30">30 gГјn (5% APY)</option>
-                            <option value="60">60 gГјn (7% APY)</option>
-                            <option value="90">90 gГјn (10% APY)</option>
+                            <option value="30">30 gün (5% APY)</option>
+                            <option value="60">60 gün (7% APY)</option>
+                            <option value="90">90 gün (10% APY)</option>
                         </select>
                     </div>
                     <div class="form-actions">
@@ -481,39 +481,39 @@
                     </div>
                 </div>
                 <div>
-                    <h4 data-i18n="active_stakes" style="margin-bottom: 16px; color: var(--text-muted);">IЕџjeЕ€ stakingler</h4>
+                    <h4 data-i18n="active_stakes" style="margin-bottom: 16px; color: var(--text-muted);">Işjeň stakingler</h4>
                     <div class="staking-grid" id="stakingGrid"></div>
                 </div>
             </div>
 
-            <!-- Р’РєР»Р°РґРєР°: РёСЃС‚РѕСЂРёСЏ -->
+            <!-- Вкладка: история -->
             <div class="tab-content" id="tab-history">
                 <ul class="transactions-list card-spotlight" id="transactionsList" style="padding: 20px; pointer-events: auto;"></ul>
                 <div class="empty-state" id="emptyTx" style="display:none;">
                     <div class="icon">рџ“­</div>
-                    <p data-i18n="no_transactions">HiГ§ hili amal ГЅok</p>
+                    <p data-i18n="no_transactions">Hiç hili amal ýok</p>
                 </div>
             </div>
 
         </div>
     </section>
 
-    <!-- Р¤РЈРўР•Р  -->
+    <!-- ФУТЕР  -->
     <footer>
         <div class="container">
             <a href="index.html" class="logo">
                 <div class="logo-text">
-                    <h2 data-i18n="logo_title">РЎР¤Р•Р Рђ</h2>
-                    <p data-i18n="logo_subtitle">РќР°С†РёРѕРЅР°Р»СЊРЅР°СЏ Р¦РёС„СЂРѕРІР°СЏ РџР»Р°С‚С„РѕСЂРјР°</p>
+                    <h2 data-i18n="logo_title">СФЕР А</h2>
+                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
                 </div>
             </a>
-            <p data-i18n="footer_copy">В© 2026 вЂ” Р•РґРёРЅР°СЏ С†РёС„СЂРѕРІР°СЏ РїР»Р°С‚С„РѕСЂРјР° РўСѓСЂРєРјРµРЅРёСЃС‚Р°РЅР°</p>
+            <p data-i18n="footer_copy">© 2026 — Единая цифровая платформа Туркменистана</p>
         </div>
     </footer>
 
     <script>
         // ============================================================
-        // 1. Р›РћР“РРљРђ РџР•Р Р•Р’РћР”Рђ (РЎ РРЎРџРћР›Р¬Р—РћР’РђРќРР•Рњ Р“Р›РћР‘РђР›Р¬РќРћР“Рћ РЎР›РћР’РђР РЇ)
+        // 1. ЛОГРКА ПЕР ЕВОДА (С РСПОЛЬЗОВАНРЕМ ГЛОБАЛЬНОГО СЛОВАР Я)
         // ============================================================
         if (!localStorage.getItem('sfera_lang') && !localStorage.getItem('lang')) {
             localStorage.setItem('sfera_lang', 'tm');
@@ -530,14 +530,14 @@
             return fallback || key;
         }
 
-        // РЎР»СѓС€Р°РµРј СЃРјРµРЅСѓ СЏР·С‹РєР° РґР»СЏ РїРµСЂРµСЂРёСЃРѕРІРєРё РґРёРЅР°РјРёС‡РµСЃРєРёС… СЌР»РµРјРµРЅС‚РѕРІ
+        // Слушаем смену языка для перерисовки динамических элементов
         window.addEventListener('sfera:languageChanged', (e) => {
             currentLang = e.detail.lang;
             updateUI();
         });
 
         // ============================================================
-        // 2. РђР’РўРћР РР—РђР¦РРЇ Р РќРђР’РР“РђР¦РРЇ
+        // 2. АВТОР РЗАЦРЯ Р НАВРГАЦРЯ
         // ============================================================
         const token = localStorage.getItem('token');
         if (!token) window.location.href = 'login.html';
@@ -558,7 +558,7 @@
         });
 
         // ============================================================
-        // 3. Р”РђРќРќР«Р• (localStorage)
+        // 3. ДАННЫЕ (localStorage)
         // ============================================================
         let coins = [];
         let transactions = [];
@@ -584,9 +584,9 @@
             if (storedTx) { try { transactions = JSON.parse(storedTx); } catch(e) { transactions = []; } }
             if (!transactions || transactions.length === 0) {
                 transactions = [
-                    { id: 'tx1', type: 'sent', coin: 'TM Coin', amount: 50, to: '0x1a2b...', status: 'completed', date: new Date(Date.now() - 3600000 * 2).toISOString(), description: 'Satyjyna tГ¶leg' },
-                    { id: 'tx2', type: 'received', coin: 'BTC', amount: 0.01, from: 'bc1q...', status: 'confirmed', date: new Date(Date.now() - 3600000 * 5).toISOString(), description: 'AГЅlyk girdeji' },
-                    { id: 'tx3', type: 'swap', coin: 'ETH', amount: 0.5, to: 'USDT', status: 'completed', date: new Date(Date.now() - 3600000 * 24).toISOString(), description: 'Г‡alyЕџma' }
+                    { id: 'tx1', type: 'sent', coin: 'TM Coin', amount: 50, to: '0x1a2b...', status: 'completed', date: new Date(Date.now() - 3600000 * 2).toISOString(), description: 'Satyjyna töleg' },
+                    { id: 'tx2', type: 'received', coin: 'BTC', amount: 0.01, from: 'bc1q...', status: 'confirmed', date: new Date(Date.now() - 3600000 * 5).toISOString(), description: 'Aýlyk girdeji' },
+                    { id: 'tx3', type: 'swap', coin: 'ETH', amount: 0.5, to: 'USDT', status: 'completed', date: new Date(Date.now() - 3600000 * 24).toISOString(), description: 'Г‡alyşma' }
                 ];
                 saveTransactions();
             }
@@ -639,7 +639,7 @@
         }
 
         // ============================================================
-        // 4. РћРўР РРЎРћР’РљРђ РљРђР РўРћР§Р•Рљ РЎ Р­Р¤Р¤Р•РљРўРћРњ SPOTLIGHT
+        // 4. ОТР РСОВКА КАР ТОЧЕК С Р­ФФЕКТОМ SPOTLIGHT
         // ============================================================
         function initSpotlightEffect() {
             document.querySelectorAll(".card-spotlight").forEach(card => {
@@ -701,7 +701,7 @@
         function renderStaking() {
             const container = document.getElementById('stakingGrid');
             if (!stakes || stakes.length === 0) {
-                container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">рџ”’</div><p>${tr('no_stakes', 'IЕџjeЕ€ staking ГЅok')}</p></div>`;
+                container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">рџ”’</div><p>${tr('no_stakes', 'Işjeň staking ýok')}</p></div>`;
                 return;
             }
             container.innerHTML = stakes.map(s => {
@@ -709,7 +709,7 @@
                 return `
                     <div class="staking-card card-spotlight">
                         <div class="apy">${apy}%</div>
-                        <div class="term">${s.term} ${tr('term_days', 'gГјn')}</div>
+                        <div class="term">${s.term} ${tr('term_days', 'gün')}</div>
                         <div class="locked-amount">${s.amount.toFixed(2)} TM Coin</div>
                         <div style="font-size:12px; color:var(--text-muted);">${new Date(s.startDate).toLocaleDateString()}</div>
                         <button class="btn btn-danger unstake-btn" data-id="${s.id}">${tr('unstake', 'Г‡ykar')}</button>
@@ -724,7 +724,7 @@
         }
 
         // ============================================================
-        // 5. Р“Р РђР¤РРљ
+        // 5. ГР АФРК
         // ============================================================
         function renderChart() {
             const ctx = document.getElementById('priceChart').getContext('2d');
@@ -787,7 +787,7 @@
         }
 
         // ============================================================
-        // 6. РћРџР•Р РђР¦РР (РћРўРџР РђР’РљРђ, РћР‘РњР•Рќ, РЎРўР•Р™РљРРќР“)
+        // 6. ОПЕР АЦРР (ОТПР АВКА, ОБМЕН, СТЕЙКРНГ)
         // ============================================================
         document.getElementById('sendForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -796,19 +796,19 @@
             const amount = parseFloat(document.getElementById('sendAmount').value);
             const desc = document.getElementById('sendDesc').value.trim();
 
-            if (!address || !amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ГЅalЕ€yЕџ.'), 'error');
+            if (!address || !amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ýalňyş.'), 'error');
             const c = coins.find(c => c.symbol === coin);
-            if (!c || c.balance < amount) return showToast(tr('insufficient', 'Balans ГЅeterlik dГ¤l.'), 'error');
+            if (!c || c.balance < amount) return showToast(tr('insufficient', 'Balans ýeterlik däl.'), 'error');
 
             c.balance -= amount;
             c.usdValue = c.balance * getPrice(c.symbol);
             saveCoins();
 
-            transactions.push({ id: 'tx' + Date.now(), type: 'sent', coin: coin, amount: amount, to: address, status: 'pending', date: new Date().toISOString(), description: desc || 'GeГ§iriЕџ' });
+            transactions.push({ id: 'tx' + Date.now(), type: 'sent', coin: coin, amount: amount, to: address, status: 'pending', date: new Date().toISOString(), description: desc || 'Geçiriş' });
             saveTransactions();
 
             updateTotalBalance(); renderCoins(); renderTransactions();
-            showToast(tr('transfer_success', 'GeГ§iriЕџ ГјstГјnlikli tamamlandy!'), 'success');
+            showToast(tr('transfer_success', 'Geçiriş üstünlikli tamamlandy!'), 'success');
             this.reset(); updatePortfolio();
         });
 
@@ -818,10 +818,10 @@
             const toCoin = document.getElementById('swapTo').value;
             const amount = parseFloat(document.getElementById('swapAmount').value);
 
-            if (!amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ГЅalЕ€yЕџ.'), 'error');
+            if (!amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ýalňyş.'), 'error');
             const from = coins.find(c => c.symbol === fromCoin);
             const to = coins.find(c => c.symbol === toCoin);
-            if (!from || !to || from.balance < amount) return showToast(tr('insufficient', 'Balans ГЅeterlik dГ¤l.'), 'error');
+            if (!from || !to || from.balance < amount) return showToast(tr('insufficient', 'Balans ýeterlik däl.'), 'error');
 
             const rates = { 'TM Coin': 1, 'BTC': 0.00002, 'ETH': 0.0003, 'USDT': 0.8 };
             const received = (amount * (rates[fromCoin] || 1)) / (rates[toCoin] || 1);
@@ -830,11 +830,11 @@
             from.usdValue = from.balance * getPrice(fromCoin); to.usdValue = to.balance * getPrice(toCoin);
             saveCoins();
 
-            transactions.push({ id: 'tx' + Date.now(), type: 'swap', coin: fromCoin, amount: amount, to: toCoin, status: 'completed', date: new Date().toISOString(), description: `${fromCoin} в†’ ${toCoin}` });
+            transactions.push({ id: 'tx' + Date.now(), type: 'swap', coin: fromCoin, amount: amount, to: toCoin, status: 'completed', date: new Date().toISOString(), description: `${fromCoin} → ${toCoin}` });
             saveTransactions();
 
             updateTotalBalance(); renderCoins(); renderTransactions();
-            showToast('Г‡alyЕџma tamamlandy!', 'success');
+            showToast('Г‡alyşma tamamlandy!', 'success');
             this.reset(); updatePortfolio();
         });
 
@@ -847,9 +847,9 @@
             const amount = parseFloat(document.getElementById('stakeAmount').value);
             const term = parseInt(document.getElementById('stakeTerm').value);
 
-            if (!amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ГЅalЕ€yЕџ.'), 'error');
+            if (!amount || amount <= 0) return showToast(tr('invalid_amount', 'Mukdar ýalňyş.'), 'error');
             const tmCoin = coins.find(c => c.symbol === 'TM Coin');
-            if (!tmCoin || tmCoin.balance < amount) return showToast(tr('stake_error', 'Staking ГјГ§in ГЅeterlik seriЕџde ГЅok.'), 'error');
+            if (!tmCoin || tmCoin.balance < amount) return showToast(tr('stake_error', 'Staking üçin ýeterlik serişde ýok.'), 'error');
 
             tmCoin.balance -= amount; tmCoin.usdValue = tmCoin.balance * getPrice('TM Coin');
             saveCoins();
@@ -857,7 +857,7 @@
             stakes.push({ id: 'stake_' + Date.now(), amount: amount, term: term, startDate: new Date().toISOString(), apy: term === 30 ? 5 : term === 60 ? 7 : 10 });
             saveStakes();
 
-            transactions.push({ id: 'tx' + Date.now(), type: 'staking', coin: 'TM Coin', amount: amount, status: 'locked', date: new Date().toISOString(), description: `Staking ${term} gГјn` });
+            transactions.push({ id: 'tx' + Date.now(), type: 'staking', coin: 'TM Coin', amount: amount, status: 'locked', date: new Date().toISOString(), description: `Staking ${term} gün` });
             saveTransactions();
 
             updateTotalBalance(); renderCoins(); renderStaking(); renderTransactions();
@@ -878,18 +878,18 @@
             }
             stakes.splice(index, 1); saveStakes();
 
-            transactions.push({ id: 'tx' + Date.now(), type: 'received', coin: 'TM Coin', amount: stake.amount, status: 'completed', date: new Date().toISOString(), description: 'Staking Г§ykaryldy' });
+            transactions.push({ id: 'tx' + Date.now(), type: 'received', coin: 'TM Coin', amount: stake.amount, status: 'completed', date: new Date().toISOString(), description: 'Staking çykaryldy' });
             saveTransactions();
 
             updateTotalBalance(); renderCoins(); renderStaking(); renderTransactions();
-            showToast(tr('unstake_success', 'Staking Г§ykaryldy!'), 'success'); updatePortfolio();
+            showToast(tr('unstake_success', 'Staking çykaryldy!'), 'success'); updatePortfolio();
         }
 
         // ============================================================
-        // 7. РљРћРџРР РћР’РђРќРР•, Р’РљР›РђР”РљР, TOASTS
+        // 7. КОПРР ОВАНРЕ, ВКЛАДКР, TOASTS
         // ============================================================
-        document.getElementById('copyAddressBtn').addEventListener('click', () => navigator.clipboard.writeText(walletAddress).then(() => showToast('Adres kopiГЅalandy!', 'success')));
-        document.getElementById('copyReceiveBtn').addEventListener('click', () => navigator.clipboard.writeText(walletAddress).then(() => showToast('Adres kopiГЅalandy!', 'success')));
+        document.getElementById('copyAddressBtn').addEventListener('click', () => navigator.clipboard.writeText(walletAddress).then(() => showToast('Adres kopiýalandy!', 'success')));
+        document.getElementById('copyReceiveBtn').addEventListener('click', () => navigator.clipboard.writeText(walletAddress).then(() => showToast('Adres kopiýalandy!', 'success')));
 
         document.querySelectorAll('.doc-tabs button').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -906,7 +906,7 @@
         document.getElementById('refreshBtn').addEventListener('click', function() {
             renderCoins(); renderTransactions(); renderStaking();
             updateTotalBalance(); updatePrices();
-            showToast('TГ¤zelendi!', 'success'); updatePortfolio();
+            showToast('Täzelendi!', 'success'); updatePortfolio();
         });
 
         function showToast(message, type = 'info') {
@@ -926,7 +926,7 @@
         }
 
         // ============================================================
-        // 8. Р¤РћРќ Р Р§РђРЎРўРР¦Р«
+        // 8. ФОН Р ЧАСТРЦЫ
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const particlesContainer = document.getElementById("particles");
@@ -988,7 +988,7 @@
                 drawCanvas();
             }
 
-            // РџРµСЂРІРёС‡РЅР°СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
+            // Первичная инициализация
             loadData();
             updateTotalBalance();
             renderCoins();

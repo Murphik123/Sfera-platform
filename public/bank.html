@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SFERA вЂ” TM Bank</title>
+    <title>SFERA — TM Bank</title>
 
     <!-- SFERA V19 visual foundation: backdrop, grid, canvas, particles, glass layers -->
     <style id="sfera-v19-foundation">
         /* ==========================================================================
-           1. Р¦Р’Р•РўРћР’РђРЇ РџРђР›РРўР Рђ Р Р”РР—РђР™Рќ-РўРћРљР•РќР« (THEME & COLOR VARIABLES)
+           1. ЦВЕТОВАЯ ПАЛРТР А Р ДРЗАЙН-ТОКЕНЫ (THEME & COLOR VARIABLES)
            ========================================================================== */
         :root {
             --primary: #00d4ff;
@@ -27,7 +27,7 @@
         }
 
         /* ==========================================================================
-           2. РЎРўРР›РР—РђР¦РРЇ РџРћР›Р—РЈРќРљРђ РџР РћРљР РЈРўРљР (NEON SCROLLBAR MODULE)
+           2. СТРЛРЗАЦРЯ ПОЛЗУНКА ПР ОКР УТКР (NEON SCROLLBAR MODULE)
            ========================================================================== */
         ::-webkit-scrollbar {
             width: 8px;
@@ -50,7 +50,7 @@
         }
 
         /* ==========================================================================
-           3. Р­Р¤Р¤Р•РљРўР« РЎРўР•РљР›РћР’РР”РќРћРЎРўР Р Р“Р РђР”РР•РќРўР« (GLASSMORPHISM & GRADIENTS)
+           3. Р­ФФЕКТЫ СТЕКЛОВРДНОСТР Р ГР АДРЕНТЫ (GLASSMORPHISM & GRADIENTS)
            ========================================================================== */
         .full-glass-backdrop {
             position: fixed;
@@ -89,7 +89,7 @@
         }
 
         /* ==========================================================================
-           4. РџР›РђР’РђР®Р©РР• РўРћР§РљР Р РќР•РћРќРћР’РђРЇ РЎР•РўРљРђ (PARTICLES & NEON FX)
+           4. ПЛАВАЮЩРЕ ТОЧКР Р НЕОНОВАЯ СЕТКА (PARTICLES & NEON FX)
            ========================================================================== */
         .bg-grid {
             position: fixed;
@@ -150,7 +150,7 @@
         }
 
         /* ==========================================================================
-           5. Р‘РђР—РћР’Р«Р• Р­Р›Р•РњР•РќРўР« Р РЎРўР РЈРљРўРЈР Рђ (LAYOUT & UI COMPONENTS)
+           5. БАЗОВЫЕ Р­ЛЕМЕНТЫ Р СТР УКТУР А (LAYOUT & UI COMPONENTS)
            ========================================================================== */
         * {
             margin: 0;
@@ -603,11 +603,11 @@
     
     </style>
 
-    <!-- РћР±С‰РёР№ CSS -->
+    <!-- Общий CSS -->
     <link rel="stylesheet" href="/css/style.css" />
 
     <style>
-        /* ===== РЎРџР•Р¦РР¤РР§РќР«Р• РЎРўРР›Р Р”Р›РЇ Р‘РђРќРљРђ ===== */
+        /* ===== СПЕЦРФРЧНЫЕ СТРЛР ДЛЯ БАНКА ===== */
         .bank-page {
             padding: 128px 0 70px;
             min-height: 100vh;
@@ -687,7 +687,7 @@
             background: rgba(200,0,0,.25);
         }
 
-        /* Р‘Р°Р»Р°РЅСЃРѕРІР°СЏ РєР°СЂС‚Р° */
+        /* Балансовая карта */
         .balance-card {
             background: rgba(255,255,255,.06);
             border: 1px solid rgba(255,255,255,.12);
@@ -721,7 +721,7 @@
             color: #9fb5c8;
         }
 
-        /* Р’РєР»Р°РґРєРё */
+        /* Вкладки */
         .bank-tabs {
             display: flex;
             gap: 4px;
@@ -761,7 +761,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* РљР°СЂС‚РѕС‡РєРё СЃС‡С‘С‚Р° */
+        /* Карточки счёта */
         .accounts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -795,7 +795,7 @@
             color: #9fb5c8;
         }
 
-        /* РљР°СЂС‚С‹ */
+        /* Карты */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -832,7 +832,7 @@
             margin-top: 8px;
         }
 
-        /* Р¤РѕСЂРјР° РїРµСЂРµРІРѕРґР° */
+        /* Форма перевода */
         .transfer-form {
             max-width: 500px;
             margin: 0 auto;
@@ -877,7 +877,7 @@
             margin-top: 10px;
         }
 
-        /* РСЃС‚РѕСЂРёСЏ */
+        /* Рстория */
         .transactions-list {
             list-style: none;
             padding: 0;
@@ -929,7 +929,7 @@
         .message.error { display: block; background: rgba(255,0,0,.1); border: 1px solid rgba(255,0,0,.2); color: #ff6b6b; }
         .message.success { display: block; background: rgba(0,255,170,.1); border: 1px solid rgba(0,255,170,.2); color: #00ffa3; }
 
-        /* РЈРІРµРґРѕРјР»РµРЅРёСЏ */
+        /* Уведомления */
         .notification-badge {
             background: #00d4ff;
             color: #08131d;
@@ -1087,7 +1087,7 @@
             .balance-card { width: 100%; }
         }
 
-        /* V19 particle glow вЂ” stronger, but still behind all UI */
+        /* V19 particle glow — stronger, but still behind all UI */
         #particles .particle {
             width: var(--particle-size, 3px);
             height: var(--particle-size, 3px);
@@ -1110,13 +1110,13 @@
     <script src="/js/i18n.js"></script>
 </head>
 <body>
-    <!-- V19 BACKGROUND LAYERS вЂ” РїРѕСЂСЏРґРѕРє РЅРµ РјРµРЅСЏС‚СЊ -->
+    <!-- V19 BACKGROUND LAYERS — порядок не менять -->
     <div class="full-glass-backdrop"></div>
     <div class="bg-grid"></div>
     <canvas id="bgCanvas" aria-hidden="true"></canvas>
     <div id="particles" aria-hidden="true"></div>
 
-    <!-- РЁРђРџРљРђ (РµРґРёРЅР°СЏ) -->
+    <!-- ШАПКА (единая) -->
     <header>
         <div class="container">
             <a href="index.html" class="logo">
@@ -1151,22 +1151,22 @@
                 <span class="user-info">рџ‘¤ <strong id="username">User</strong></span>
                 <button class="lang lang-btn" id="langBtn" type="button" aria-label="Language">TM</button>
                 <button class="logout-btn glass-header-btn" id="logoutBtn" type="button" data-i18n="logout">рџљЄ Г‡ykmak</button>
-                <a href="#" id="backLink" class="btn-switch glass-header-btn" data-i18n="back">в†ђ Yza</a>
+                <a href="#" id="backLink" class="btn-switch glass-header-btn" data-i18n="back">← Yza</a>
             </div>
         </div>
     </header>
 
-    <!-- РћРЎРќРћР’РќРћР™ РљРћРќРўР•РќРў -->
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
     <section class="bank-page">
         <div class="container">
             <div class="bank-header">
                 <h1 data-i18n="bank_header_title">рџЏ¦ TM Bank</h1>
                 <div class="actions">
-                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">вџі TГ¤zele</button>
+                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">вџі Täzele</button>
                 </div>
             </div>
 
-            <!-- Р‘Р°Р»Р°РЅСЃРѕРІР°СЏ РєР°СЂС‚Р° -->
+            <!-- Балансовая карта -->
             <div class="balance-card">
                 <div>
                     <div class="balance-label" data-i18n="total_balance">Jemi balans</div>
@@ -1178,22 +1178,22 @@
                 </div>
                 <div style="text-align:right;">
                     <div style="font-size:14px; color:#bdd0df;" data-i18n="premium_label">в… Premium hyzmat</div>
-                    <div style="font-size:12px; color:#9fb5c8;" data-i18n="active_since_label">IЕџjeЕ€: <span id="activeSince">2024</span></div>
+                    <div style="font-size:12px; color:#9fb5c8;" data-i18n="active_since_label">Işjeň: <span id="activeSince">2024</span></div>
                 </div>
             </div>
 
             <div id="message" class="message"></div>
 
-            <!-- Р’РєР»Р°РґРєРё -->
+            <!-- Вкладки -->
             <div class="bank-tabs">
                 <button class="active" data-tab="accounts" data-i18n="tab_accounts">Hasap</button>
                 <button data-tab="cards" data-i18n="tab_cards">Kartlar</button>
-                <button data-tab="transfer" data-i18n="tab_transfer">GeГ§iriЕџ</button>
+                <button data-tab="transfer" data-i18n="tab_transfer">Geçiriş</button>
                 <button data-tab="history" data-i18n="tab_history">Taryh</button>
-                <button data-tab="notifications" data-i18n="tab_notifications">BildiriЕџler</button>
+                <button data-tab="notifications" data-i18n="tab_notifications">Bildirişler</button>
             </div>
 
-            <!-- РЎРѕРґРµСЂР¶РёРјРѕРµ РІРєР»Р°РґРѕРє -->
+            <!-- Содержимое вкладок -->
             <div class="tab-content active" id="tab-accounts">
                 <div class="accounts-grid" id="accountsGrid"></div>
             </div>
@@ -1210,19 +1210,19 @@
                             <select id="fromAccount" required></select>
                         </div>
                         <div class="form-group">
-                            <label for="toAccount" data-i18n="to_account">NirГ¤ (hasap belgisi ГЅa-da ulanyjy)</label>
-                            <input type="text" id="toAccount" placeholder="Mysal: 1234 5678 9012 3456 ГЅa-da ulanyjy ady" required />
+                            <label for="toAccount" data-i18n="to_account">Nirä (hasap belgisi ýa-da ulanyjy)</label>
+                            <input type="text" id="toAccount" placeholder="Mysal: 1234 5678 9012 3456 ýa-da ulanyjy ady" required />
                         </div>
                         <div class="form-group">
                             <label for="transferAmount" data-i18n="amount">Mukdar (TMT)</label>
                             <input type="number" id="transferAmount" step="0.01" min="0.01" required placeholder="100.00" />
                         </div>
                         <div class="form-group">
-                            <label for="transferDesc" data-i18n="description">DГјЕџГјndiriЕџ</label>
-                            <textarea id="transferDesc" placeholder="GeГ§iriЕџ sebГ¤bi..."></textarea>
+                            <label for="transferDesc" data-i18n="description">Düşündiriş</label>
+                            <textarea id="transferDesc" placeholder="Geçiriş sebäbi..."></textarea>
                         </div>
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary" id="transferBtn" data-i18n="send_transfer">GeГ§ir</button>
+                            <button type="submit" class="btn btn-primary" id="transferBtn" data-i18n="send_transfer">Geçir</button>
                         </div>
                     </form>
                 </div>
@@ -1232,7 +1232,7 @@
                 <ul class="transactions-list" id="transactionsList"></ul>
                 <div class="empty-state" id="emptyTx" style="display:none;">
                     <div class="icon">рџ“­</div>
-                    <p data-i18n="no_transactions">HiГ§ hili amal ГЅok</p>
+                    <p data-i18n="no_transactions">Hiç hili amal ýok</p>
                 </div>
             </div>
 
@@ -1240,7 +1240,7 @@
                 <div id="notificationsList"></div>
                 <div class="empty-state" id="emptyNotif" style="display:none;">
                     <div class="icon">рџ””</div>
-                    <p data-i18n="no_notifications">TГ¤ze bildiriЕџ ГЅok</p>
+                    <p data-i18n="no_notifications">Täze bildiriş ýok</p>
                 </div>
             </div>
 
@@ -1249,7 +1249,7 @@
 
     <script>
         /* ============================================================
-           SFERA BANK вЂ” approval candidate v22
+           SFERA BANK — approval candidate v22
            Visual DOM/CSS preserved; demo financial mutations removed.
            ============================================================ */
         const langButton = document.getElementById('langBtn');
@@ -1349,7 +1349,7 @@
 
         // Central SFERA language manager is the only language authority.
         addEventListener('sfera:language-changed',()=>{
-            document.title=t('bank_page_title','SFERA вЂ” TM Bank');
+            document.title=t('bank_page_title','SFERA — TM Bank');
             renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
         });
 
@@ -1357,7 +1357,7 @@
             const grid=$('accountsGrid'); if(!grid) return;
             grid.replaceChildren();
             if(!bankState.accounts.length) {
-                const p=document.createElement('p'); p.className='empty-state'; p.textContent=t('no_accounts','Hasaplar elГЅeterli dГ¤l'); grid.appendChild(p); return;
+                const p=document.createElement('p'); p.className='empty-state'; p.textContent=t('no_accounts','Hasaplar elýeterli däl'); grid.appendChild(p); return;
             }
             bankState.accounts.forEach(acc=>{
                 const card=document.createElement('div'); card.className='account-card';
@@ -1370,11 +1370,11 @@
 
         function renderCards() {
             const grid=$('cardsGrid'); if(!grid) return; grid.replaceChildren();
-            if(!bankState.cards.length){ const p=document.createElement('p'); p.className='empty-state'; p.textContent=t('no_cards','Kartlar elГЅeterli dГ¤l'); grid.appendChild(p); return; }
+            if(!bankState.cards.length){ const p=document.createElement('p'); p.className='empty-state'; p.textContent=t('no_cards','Kartlar elýeterli däl'); grid.appendChild(p); return; }
             bankState.cards.forEach(c=>{
                 const card=document.createElement('div'); card.className='card-item';
                 const type=document.createElement('div'); type.className='card-type'; type.textContent=t(`card_type_${c.type}`,c.type||'Card');
-                const num=document.createElement('div'); num.className='card-number'; num.textContent=c.maskedNumber||'вЂўвЂўвЂўвЂў вЂўвЂўвЂўвЂў вЂўвЂўвЂўвЂў вЂўвЂўвЂўвЂў';
+                const num=document.createElement('div'); num.className='card-number'; num.textContent=c.maskedNumber||'•••• •••• •••• ••••';
                 const exp=document.createElement('div'); exp.className='card-expiry'; exp.textContent=c.expiry||'';
                 const logo=document.createElement('div'); logo.className='card-logo'; logo.textContent='рџ’і';
                 card.append(type,num,exp,logo); grid.appendChild(card);
@@ -1387,7 +1387,7 @@
             $('emptyTx').style.display='none';
             bankState.transactions.forEach(tx=>{
                 const li=document.createElement('li');
-                li.textContent=`${tx.description||'Transaction'} вЂ” ${Number(tx.amount||0).toFixed(2)} ${tx.currency||'TMT'}`;
+                li.textContent=`${tx.description||'Transaction'} — ${Number(tx.amount||0).toFixed(2)} ${tx.currency||'TMT'}`;
                 list.appendChild(li);
             });
         }
@@ -1404,7 +1404,7 @@
         function populateFromAccounts(){
             const select=$('fromAccount'); if(!select) return; select.replaceChildren();
             bankState.accounts.filter(a=>a.currency==='TMT').forEach(a=>{
-                const opt=document.createElement('option'); opt.value=a.id; opt.textContent=`${a.name||a.id} вЂ” ${Number(a.balance||0).toFixed(2)} TMT`; select.appendChild(opt);
+                const opt=document.createElement('option'); opt.value=a.id; opt.textContent=`${a.name||a.id} — ${Number(a.balance||0).toFixed(2)} TMT`; select.appendChild(opt);
             });
         }
 
@@ -1417,7 +1417,7 @@
         async function loadBankData(){
             // Backend contract remains the source of truth; no client-side financial mutation.
             if(!window.api || typeof window.api.request!=='function') {
-                showMessage(t('bank_api_unavailable','Bank API elГЅeterli dГ¤l'),'error'); return;
+                showMessage(t('bank_api_unavailable','Bank API elýeterli däl'),'error'); return;
             }
             try {
                 const response=await window.api.request('/bank/balance');
@@ -1428,14 +1428,14 @@
                 bankState.notifications=Array.isArray(data.notifications)?data.notifications:[];
                 renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
             } catch(err) {
-                showMessage(err.message || t('bank_load_error','Bank maglumatlaryny ГЅГјklemek baЕџartmady'),'error');
+                showMessage(err.message || t('bank_load_error','Bank maglumatlaryny ýüklemek başartmady'),'error');
             }
         }
 
         $('refreshBtn')?.addEventListener('click',loadBankData);
         $('transferForm')?.addEventListener('submit',(e)=>{
             e.preventDefault();
-            showMessage(t('bank_transfer_contract_pending','GeГ§iriЕџ API Еџertnamasy tassyklanylГЅanГ§a amal ГЅapyk'),'error');
+            showMessage(t('bank_transfer_contract_pending','Geçiriş API şertnamasy tassyklanylýança amal ýapyk'),'error');
         });
 
         $('logoutBtn')?.addEventListener('click',async()=>{
