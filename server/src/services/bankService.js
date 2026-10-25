@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
+const Notification = require('../models/Notification');
 
 async function transfer(userId, { fromAccountId, toAccount, amount, description, idempotencyKey }) {
   if (idempotencyKey) {
@@ -40,6 +41,30 @@ async function transfer(userId, { fromAccountId, toAccount, amount, description,
       idempotencyKey: idempotencyKey || undefined
     }], { session });
     await session.commitTransaction();
+
+    // SFERA-PATCH:SPRINT2.2a:notify — sender out + recipient in (best-effort, after commit)
+    try {
+      const notes = [
+        {
+          userId,
+          type: 'transfer_out',
+          message: 'Перевод ' + amount + ' ' + sender.currency + ' на ' + recipient.number,
+          meta: { transactionId: tx._id, amount, direction: 'out', counterparty: recipient.number }
+        }
+      ];
+      if (recipient.userId) {
+        notes.push({
+          userId: recipient.userId,
+          type: 'transfer_in',
+          message: 'Поступление ' + amount + ' ' + recipient.currency + ' от ' + (sender.number || 'счёта'),
+          meta: { transactionId: tx._id, amount, direction: 'in', counterparty: sender.number || '' }
+        });
+      }
+      await Notification.insertMany(notes);
+    } catch (e) {
+      console.warn('[SFERA-PATCH:SPRINT2.2a] Notification insert failed:', e.message);
+    }
+
     return { transactionId: tx._id, balance: sender.balance };
   } catch (err) {
     await session.abortTransaction();
