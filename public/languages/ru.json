@@ -345,5 +345,9 @@
   "no_cards": "Нет карт",
   "card_expiry": "Действует до: {expiry}",
   "messenger_page_title": "Сфера — Мессенджер",
-  "module_marketplace": "Маркетплейс"
+  "module_marketplace": "Маркетплейс",
+  "no_accounts": "Нет доступных счетов",
+  "bank_api_unavailable": "Bank API недоступен",
+  "bank_load_error": "Не удалось загрузить данные банка",
+  "bank_transfer_contract_pending": "Перевод заблокирован до утверждения API-контракта"
 }

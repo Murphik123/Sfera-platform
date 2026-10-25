@@ -346,5 +346,9 @@
   "card_expiry": "Valid until: {expiry}",
   "dashboard_page_title": "Sfera — Dashboard",
   "messenger_page_title": "Sfera — Messenger",
-  "module_marketplace": "Marketplace"
+  "module_marketplace": "Marketplace",
+  "no_accounts": "No accounts available",
+  "bank_api_unavailable": "Bank API unavailable",
+  "bank_load_error": "Failed to load bank data",
+  "bank_transfer_contract_pending": "Transfer disabled until API contract is approved"
 }

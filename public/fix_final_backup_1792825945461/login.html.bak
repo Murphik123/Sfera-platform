@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="tm">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="login_page_title">SFERA — Giriş</title>
+
+    <!-- Шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Проверка авторизации -->
+    <script src="js/auth-check.js"></script>
+    <script src="/scripts/auto_translate_i18n.js"></script>
+
+    <style>
+        /* ==========================================================================
+           1. ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ (THEME & COLOR VARIABLES)
+           ========================================================================== */
+        :root {
+            --primary: #00d4ff;
+            --secondary: #1f6bff;
+            --accent: #00ffa3;
+            --dark-bg: #03080e;
+            --glass-bg: rgba(255, 255, 255, 0.035);
+            --glass-border: rgba(0, 212, 255, 0.18);
+            --glass-hover-bg: rgba(0, 212, 255, 0.08);
+            --glass-hover-border: rgba(0, 212, 255, 0.45);
+            --header-footer-bg: rgba(5, 14, 26, 0.75);
+            --white: #ffffff;
+            --text: #dbe9ff;
+            --text-muted: #9bb3cc;
+            --radius: 22px;
+        }
+
+        /* ==========================================================================
+           2. СТИЛИЗАЦИЯ ПОЛЗУНКА ПРОКРУТКИ
+           ========================================================================== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #03080e; border-left: 1px solid rgba(0, 212, 255, 0.1); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.4), rgba(31, 107, 255, 0.5));
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00d4ff, #00ffa3);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.8);
+        }
+
+        /* ==========================================================================
+           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ГРАДИЕНТЫ
+           ========================================================================== */
+        .full-glass-backdrop {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.16), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 163, 0.12), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(31, 107, 255, 0.1), transparent 60%),
+                rgba(3, 8, 14, 0.72);
+            backdrop-filter: blur(65px) saturate(180%);
+            -webkit-backdrop-filter: blur(65px) saturate(180%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* ==========================================================================
+           4. ПЛАВАЮЩИЕ ТОЧКИ И НЕОНОВАЯ СЕТКА
+           ========================================================================== */
+        .bg-grid {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px; pointer-events: none; z-index: 0;
+        }
+
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; opacity: 0.85; }
+        #particles { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; overflow: hidden; z-index: 3; }
+        .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: floatParticle linear infinite; }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(105vh) translateX(0) scale(0.5); opacity: 0; }
+            20% { opacity: 0.85; }
+            80% { opacity: 0.85; }
+            100% { transform: translateY(-10vh) translateX(15px) scale(1.1); opacity: 0; }
+        }
+
+        /* ==========================================================================
+           5. БАЗОВЫЕ ЭЛЕМЕНТЫ И ШАПКА
+           ========================================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; scrollbar-width: thin; scrollbar-color: rgba(0, 212, 255, 0.4) #03080e; }
+        html { scroll-behavior: smooth; background-color: var(--dark-bg); }
+        body { background-color: var(--dark-bg); color: var(--white); overflow-x: hidden; position: relative; min-height: 100vh; }
+        .container { width: min(1400px, 92%); margin: auto; position: relative; z-index: 10; }
+
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
+            backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
+            background: var(--header-footer-bg); border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5); transition: all 0.4s ease;
+            transform: translateZ(0); will-change: transform; contain: layout paint style;
+        }
+        header .container { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
+        
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; transition: transform 0.3s ease; }
+        .logo:hover { transform: translateY(-1px) scale(1.02); }
+        .logo-icon { width: 54px; height: 54px; display: flex; justify-content: center; align-items: center; }
+        .logo-svg { width: 100%; height: 100%; overflow: visible; }
+        .logo-svg g { transform-origin: 50px 50px; animation: spinLogo 16s linear infinite; }
+        @keyframes spinLogo { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .logo-text h2 { font-size: 22px; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #00ffa3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; }
+        .logo-text p { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; margin: 4px 0 0 0; color: #9fb5c8; text-transform: uppercase; }
+
+        .header-right { display: flex; gap: 12px; align-items: center; }
+        .lang-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(0, 212, 255, 0.3); color: white; backdrop-filter: blur(10px); padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; outline: none; transition: all 0.35s ease; user-select: none; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; }
+        .lang-btn:hover { background: rgba(0, 212, 255, 0.2); border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); transform: translateY(-1px); }
+        .btn-switch { text-decoration: none; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--white); backdrop-filter: blur(12px); transition: all 0.3s ease; }
+        .btn-switch:hover { background: rgba(0, 212, 255, 0.15); border-color: var(--primary); color: var(--primary); }
+
+        /* ==========================================================================
+           6. ФОРМА ВХОДА (ЦЕНТРИРОВАНА НА ВЕСЬ ЭКРАН)
+           ========================================================================== */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 20px 40px; /* Отступ сверху для фиксированной шапки */
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-box {
+            background: radial-gradient(circle at 50% 30%, rgba(0, 212, 255, 0.15), rgba(255, 255, 255, 0.03));
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 35px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 35px rgba(0, 212, 255, 0.18);
+            animation: fadeUp 0.8s ease;
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .login-box h2 { text-align: center; font-size: 30px; margin-bottom: 8px; font-weight: 800; background: linear-gradient(to right, #ffffff, #b4d7ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .login-box .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 13px 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.05); color: #ffffff; font-size: 15px; transition: 0.3s; outline: none; }
+        .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 212, 255, 0.25); background: rgba(255, 255, 255, 0.08); }
+
+        .password-toggle { position: relative; }
+        .password-toggle input { padding-right: 48px; }
+        .toggle-eye { position: absolute; right: 14px; top: 36px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 4px; }
+        .toggle-eye:hover { color: #ffffff; }
+
+        .login-btn {
+            width: 100%; padding: 15px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer;
+            background: linear-gradient(135deg, #00d4ff, #008cff); color: #ffffff; transition: 0.35s;
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.3); margin-top: 10px;
+        }
+        .login-btn:hover { transform: translateY(-3px); box-shadow: 0 25px 50px rgba(0, 212, 255, 0.5); }
+        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .register-link { text-align: center; margin-top: 22px; color: var(--text-muted); font-size: 14px; }
+        .register-link a { color: #00d4ff; text-decoration: none; font-weight: 600; margin-left: 5px; }
+        .register-link a:hover { text-decoration: underline; }
+
+        .message { padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; display: none; }
+        .message.error { display: block; background: rgba(255, 0, 0, 0.15); border: 1px solid rgba(255, 0, 0, 0.3); color: #ff6b6b; }
+        .message.success { display: block; background: rgba(0, 255, 170, 0.1); border: 1px solid rgba(0, 255, 170, 0.3); color: #00ffa3; }
+    </style>
+</head>
+<body>
+
+    <!-- ФОН (ИЗ ЭТАЛОНА) -->
+    <div class="full-glass-backdrop"></div>
+    <div class="bg-grid"></div>
+    <canvas id="bgCanvas"></canvas>
+    <div id="particles"></div>
+
+    <!-- ШАПКА (ИЗ ЭТАЛОНА) -->
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo" aria-label="СФЕРА Главная">
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00ffa3"/>
+                                <stop offset="50%" stop-color="#00d4ff"/>
+                                <stop offset="100%" stop-color="#1f6bff"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15"/>
+                        <g>
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" 
+                                  stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h2 data-i18n="logo_title">СФЕРА</h2>
+                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
+                </div>
+            </a>
+
+            <div class="header-right header-buttons">
+                <button class="lang-btn" id="langBtn" type="button">TM</button>
+                <a href="index.html" class="btn-switch" data-i18n="back">← Yza</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ФОРМА ВХОДА -->
+    <section class="login-page">
+        <div class="login-box">
+            <h2 data-i18n="login_title">Giriş</h2>
+            <p class="subtitle" data-i18n="login_subtitle">Platforma girmek üçin hasabyňyzy ulanyň</p>
+
+            <div id="message" class="message"></div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="email" data-i18n="login_email_label">Email ýa-da ulanyjy ady</label>
+                    <input type="email" id="email" name="email" autocomplete="username" placeholder="email@example.com" required />
+                </div>
+
+                <div class="form-group password-toggle">
+                    <label for="password" data-i18n="login_password_label">Parol</label>
+                    <input type="password" id="password" placeholder="••••••••" required />
+                    <button type="button" class="toggle-eye" id="togglePassword">👁️</button>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn" data-i18n="login_button">Girmek</button>
+            </form>
+
+            <div class="register-link">
+                <span data-i18n="login_no_account">Hasabyňyz ýokmy?</span>
+                <a href="register.html" data-i18n="login_register_link">Hasap dörediň</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ЛОГИКА ФОРМЫ И ФОНА -->
+    <script>
+        // Встроенные переводы для страницы входа
+        const translations = {
+            tm: {
+                login_title: "Giriş",
+                login_subtitle: "Platforma girmek üçin hasabyňyzy ulanyň",
+                login_email_label: "Email ýa-da ulanyjy ady",
+                login_password_label: "Parol",
+                login_button: "Girmek",
+                login_no_account: "Hasabyňyz ýokmy?",
+                login_register_link: "Hasap dörediň",
+                login_error: "Nädogry email ýa-da parol",
+                login_success: "Giriş başaryldy!",
+                login_loading: "Girilýär..."
+            },
+            ru: {
+                login_title: "Вход",
+                login_subtitle: "Используйте свою учётную запись для входа",
+                login_email_label: "Email или имя пользователя",
+                login_password_label: "Пароль",
+                login_button: "Войти",
+                login_no_account: "Нет аккаунта?",
+                login_register_link: "Зарегистрироваться",
+                login_error: "Неверный email или пароль",
+                login_success: "Вход выполнен!",
+                login_loading: "Вход..."
+            },
+            en: {
+                login_title: "Login",
+                login_subtitle: "Use your account to access the platform",
+                login_email_label: "Email or username",
+                login_password_label: "Password",
+                login_button: "Login",
+                login_no_account: "Don't have an account?",
+                login_register_link: "Register",
+                login_error: "Invalid email or password",
+                login_success: "Login successful!",
+                login_loading: "Logging in..."
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || localStorage.getItem('sfera_lang') || 'tm';
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) el.textContent = translations[lang][key];
+            });
+            const langBtn = document.getElementById('langBtn');
+            if (langBtn) langBtn.textContent = lang.toUpperCase();
+            localStorage.setItem('lang', lang);
+            localStorage.setItem('sfera_lang', lang);
+        }
+
+        const langBtn = document.getElementById('langBtn');
+        const langCycle = ['tm', 'ru', 'en'];
+        let langIndex = langCycle.indexOf(currentLang);
+
+        if (langBtn) {
+            langBtn.addEventListener('click', () => {
+                langIndex = (langIndex + 1) % langCycle.length;
+                setLanguage(langCycle[langIndex]);
+            });
+        }
+
+        // Переключение видимости пароля
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const input = document.getElementById('password');
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            this.textContent = isPassword ? '🙈' : '👁️';
+        });
+
+        const messageEl = document.getElementById('message');
+        function showMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
+            messageEl.style.display = 'block';
+            clearTimeout(window.messageTimeout);
+            window.messageTimeout = setTimeout(() => { messageEl.style.display = 'none'; }, 5000);
+        }
+
+        // Разогрев сервера
+        function wakeupServer() {
+            fetch('/api/stats', { method: 'GET' }).catch(() => {});
+        }
+
+        // Обработка формы входа
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (!email || !password) {
+                showMessage(translations[currentLang].login_error, 'error');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = translations[currentLang].login_loading;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('sfera_token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('sfera_user', JSON.stringify(data.user));
+                    localStorage.setItem('sfera_role', data.user.role || 'user');
+
+                    showMessage(translations[currentLang].login_success, 'success');
+
+                    const role = data.user.role || 'user';
+                    setTimeout(() => {
+                        window.location.href = role === 'admin' ? 'admin.html' : 'dashboard.html';
+                    }, 800);
+                } else {
+                    showMessage(data.message || translations[currentLang].login_error, 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = translations[currentLang].login_button;
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                loginBtn.disabled = false;
+                loginBtn.textContent = translations[currentLang].login_button;
+            }
+        });
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage(currentLang);
+            wakeupServer();
+
+            // ============================================================
+            // ГЕНЕРАЦИЯ ФОНА (КАК В ДОКУМЕНТАХ)
+            // ============================================================
+            const particlesContainer = document.getElementById("particles");
+            if (particlesContainer) {
+                particlesContainer.innerHTML = "";
+                const colors = ['#00d4ff', '#00ffa3', '#1f6bff', '#ffffff'];
+                for (let i = 0; i < 65; i++) {
+                    const particle = document.createElement("div");
+                    particle.className = "particle";
+                    const size = Math.random() * 2.2 + 1.0; 
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.width = size + "px";
+                    particle.style.height = size + "px";
+                    particle.style.backgroundColor = color;
+                    particle.style.boxShadow = `0 0 ${size * 3}px ${color}`;
+                    particle.style.left = (Math.random() * 92 + 4) + "%";
+                    particle.style.top = "0px";
+                    particle.style.animationDuration = (10 + Math.random() * 12) + "s";
+                    particle.style.animationDelay = (Math.random() * -20) + "s";
+                    particlesContainer.appendChild(particle);
+                }
+            }
+
+            const canvas = document.getElementById('bgCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let w, h;
+                function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+                resize();
+                window.addEventListener('resize', resize);
+                const points = Array.from({ length: 60 }, () => ({
+                    x: Math.random() * (w - 45) + 20, y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6,
+                    radius: Math.random() * 1.2 + 0.8
+                }));
+                function drawCanvas() {
+                    ctx.clearRect(0, 0, w, h);
+                    for (let i = 0; i < points.length; i++) {
+                        let p = points[i];
+                        p.x += p.vx; p.y += p.vy;
+                        if (p.x < 20 || p.x > w - 25) p.vx *= -1;
+                        if (p.y < 0 || p.y > h) p.vy *= -1;
+                        for (let j = i + 1; j < points.length; j++) {
+                            let p2 = points[j];
+                            let dx = p.x - p2.x, dy = p.y - p2.y;
+                            let dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < 180) {
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                                ctx.strokeStyle = `rgba(0, 212, 255, ${0.18 * (1 - dist / 180)})`;
+                                ctx.lineWidth = 1; ctx.stroke();
+                            }
+                        }
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(0, 255, 163, 0.85)'; ctx.shadowBlur = 6; ctx.shadowColor = '#00ffa3';
+                        ctx.fill(); ctx.shadowBlur = 0;
+                    }
+                    requestAnimationFrame(drawCanvas);
+                }
+                drawCanvas();
+            }
+        });
+    </script>
+</body>
+</html>

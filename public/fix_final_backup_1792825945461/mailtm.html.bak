@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="tm">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="mail_page_title">СФЕРА — TM Poçta</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Проверка авторизации и Глобальный переводчик -->
+    <script src="/js/auth-check.js"></script>
+    <script src="/scripts/auto_translate_i18n.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <style>
+        /* ==========================================================================
+           1. ЦВЕТОВАЯ ПАЛИТРА (ИЗ MESSENGER.HTML)
+           ========================================================================== */
+        :root {
+            --primary: #00d4ff;
+            --secondary: #1f6bff;
+            --accent: #00ffa3;
+            --dark-bg: #03080e;
+            --glass-bg: rgba(255, 255, 255, 0.035);
+            --glass-border: rgba(0, 212, 255, 0.18);
+            --glass-hover-bg: rgba(0, 212, 255, 0.08);
+            --glass-hover-border: rgba(0, 212, 255, 0.45);
+            --header-footer-bg: rgba(5, 14, 26, 0.75);
+            --white: #ffffff;
+            --text: #dbe9ff;
+            --text-muted: #9bb3cc;
+        }
+
+        /* ==========================================================================
+           2. ПОЛЗУНОК ПРОКРУТКИ (ДЛЯ ВСЕЙ СТРАНИЦЫ)
+           ========================================================================== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #03080e; border-left: 1px solid rgba(0, 212, 255, 0.1); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.4), rgba(31, 107, 255, 0.5));
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #00d4ff, #00ffa3); box-shadow: 0 0 12px rgba(0, 212, 255, 0.8); }
+
+        /* ==========================================================================
+           3. ЭФФЕКТЫ СТЕКЛОВИДНОСТИ И ФОН
+           ========================================================================== */
+        .full-glass-backdrop {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.16), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 163, 0.12), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(31, 107, 255, 0.1), transparent 60%),
+                rgba(3, 8, 14, 0.72);
+            backdrop-filter: blur(65px) saturate(180%);
+            -webkit-backdrop-filter: blur(65px) saturate(180%);
+            pointer-events: none; z-index: 1;
+        }
+
+        .bg-grid {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px; pointer-events: none; z-index: 0;
+        }
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; opacity: 0.85; }
+        #particles { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; overflow: hidden; z-index: 3; }
+        .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: floatParticle linear infinite; }
+        @keyframes floatParticle {
+            0% { transform: translateY(105vh) translateX(0) scale(0.5); opacity: 0; }
+            20% { opacity: 0.85; }
+            80% { opacity: 0.85; }
+            100% { transform: translateY(-10vh) translateX(15px) scale(1.1); opacity: 0; }
+        }
+
+        /* ==========================================================================
+           4. БАЗОВЫЕ ЭЛЕМЕНТЫ
+           ========================================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; scrollbar-width: thin; scrollbar-color: rgba(0, 212, 255, 0.4) #03080e; }
+        html { scroll-behavior: smooth; background-color: var(--dark-bg); }
+        body { background-color: var(--dark-bg); color: var(--white); overflow-x: hidden; position: relative; min-height: 100vh; }
+        .container { width: min(1400px, 92%); margin: auto; position: relative; z-index: 10; }
+
+        /* --- ШАПКА --- */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
+            backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
+            background: var(--header-footer-bg); border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5); transition: all 0.4s ease;
+            transform: translateZ(0); will-change: transform; contain: layout paint style;
+        }
+        header .container { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
+        
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; transition: transform 0.3s ease; }
+        .logo:hover { transform: translateY(-1px) scale(1.02); }
+        .logo-icon { width: 54px; height: 54px; display: flex; justify-content: center; align-items: center; }
+        .logo-svg { width: 100%; height: 100%; overflow: visible; }
+        .logo-svg g { transform-origin: 50px 50px; animation: spinLogo 16s linear infinite; }
+        @keyframes spinLogo { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .logo-text h2 { font-size: 22px; font-weight: 800; margin: 0; line-height: 1.1; background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #00ffa3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; }
+        .logo-text p { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; margin: 4px 0 0 0; color: #9fb5c8; text-transform: uppercase; }
+
+        .header-right { display: flex; gap: 12px; align-items: center; }
+        .user-info { font-size: 14px; color: var(--text); font-weight: 600; background: rgba(255, 255, 255, 0.04); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.15); }
+        .lang-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(0, 212, 255, 0.3); color: white; backdrop-filter: blur(10px); padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; outline: none; transition: all 0.35s ease; user-select: none; display: inline-flex; align-items: center; justify-content: center; min-width: 54px; }
+        .lang-btn:hover { background: rgba(0, 212, 255, 0.2); border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); transform: translateY(-1px); }
+        .btn-switch { text-decoration: none; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--white); backdrop-filter: blur(12px); transition: all 0.3s ease; }
+        .btn-switch:hover { background: rgba(0, 212, 255, 0.15); border-color: var(--primary); color: var(--primary); }
+        .logout-btn { background: rgba(200, 0, 0, 0.15); border: 1px solid rgba(200, 0, 0, 0.35); color: #ff6b6b; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s ease; }
+        .logout-btn:hover { background: rgba(200, 0, 0, 0.3); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 107, 107, 0.3); }
+
+        /* ==========================================================================
+           5. СТИЛИ СТРАНИЦЫ
+           ========================================================================== */
+        .doc-page {
+            padding: 140px 7% 40px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .doc-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #b4d7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .doc-header .actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+        .btn {
+            padding: 10px 24px; border: none; border-radius: 12px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease; text-decoration: none;
+            display: inline-block; font-size: 14px;
+        }
+        .btn-outline { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(0, 212, 255, 0.2); color: white; }
+        .btn-outline:hover { background: rgba(0, 212, 255, 0.1); border-color: #00d4ff; }
+
+        /* --- ПОЧТОВЫЙ КОНТЕЙНЕР (ФИКСИРОВАННАЯ ВЫСОТА) --- */
+        .mail-container {
+            display: flex;
+            flex: 1;
+            height: 600px; /* Фиксированная высота */
+            max-height: calc(100vh - 280px);
+            border-radius: 24px;
+            overflow: hidden;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.35s ease;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .mail-container:hover {
+            border-color: var(--glass-hover-border);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.2);
+        }
+
+        /* --- САЙДБАР --- */
+        .mail-sidebar {
+            width: 240px; min-width: 200px;
+            background: rgba(0,0,0,.15);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex; flex-direction: column;
+            padding: 20px 16px; gap: 12px;
+        }
+
+        .mail-sidebar .compose-btn {
+            padding: 14px; border: none; border-radius: 14px;
+            background: linear-gradient(135deg, #00d4ff, #008cff);
+            color: white; font-weight: 700; font-size: 16px;
+            cursor: pointer; transition: .3s; width: 100%;
+            box-shadow: 0 10px 30px rgba(0,212,255,.25);
+        }
+        .mail-sidebar .compose-btn:hover { transform: scale(1.02); box-shadow: 0 15px 40px rgba(0,212,255,.4); }
+
+        .folder-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+        .folder-list li {
+            padding: 12px 16px; border-radius: 12px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px;
+            transition: .2s; font-weight: 500; color: #bdd0df;
+        }
+        .folder-list li:hover { background: rgba(255,255,255,.05); color: white; }
+        .folder-list li.active { background: rgba(0,212,255,.12); color: #00d4ff; font-weight: 600; }
+        .folder-list li .badge { margin-left: auto; background: rgba(0,212,255,.2); padding: 2px 10px; border-radius: 20px; font-size: 12px; color: #00d4ff; }
+        .folder-list li .icon { font-size: 20px; width: 28px; text-align: center; }
+
+        /* --- СПИСОК ПИСЕМ --- */
+        .mail-list { flex: 1; display: flex; flex-direction: column; background: rgba(0,0,0,.1); overflow: hidden; }
+        .mail-list-header {
+            padding: 16px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+            background: rgba(0,0,0,.15);
+        }
+        .mail-list-header .folder-title { flex: 1; font-size: 20px; font-weight: 700; }
+        .mail-list-header .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .mail-list-header .actions button {
+            background: transparent; border: none; color: #9fb5c8;
+            padding: 6px 12px; border-radius: 8px; cursor: pointer;
+            transition: .2s; font-size: 14px;
+        }
+        .mail-list-header .actions button:hover { background: rgba(255,255,255,.05); color: white; }
+        
+        .mail-list-header .search-box {
+            display: flex; gap: 6px; align-items: center;
+            background: rgba(255,255,255,.05); border-radius: 12px;
+            padding: 4px 12px; border: 1px solid rgba(255,255,255,.12);
+        }
+        .mail-list-header .search-box input {
+            background: transparent; border: none; color: white;
+            padding: 6px 0; outline: none; font-size: 14px; width: 150px;
+        }
+        .mail-list-header .search-box input::placeholder { color: #9fb5c8; }
+        .mail-list-header .search-box button { background: transparent; border: none; color: #9fb5c8; cursor: pointer; font-size: 16px; }
+
+        .mail-items { flex: 1; overflow-y: auto; padding: 8px 0; }
+        .mail-item {
+            display: flex; align-items: center; padding: 12px 24px;
+            border-bottom: 1px solid rgba(255,255,255,.04);
+            cursor: pointer; transition: .15s; gap: 16px;
+        }
+        .mail-item:hover { background: rgba(255,255,255,.04); }
+        .mail-item.unread { background: rgba(0,212,255,.05); border-left: 3px solid #00d4ff; }
+        
+        .mail-item .checkbox {
+            width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.2);
+            border-radius: 4px; cursor: pointer; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: transparent; transition: .2s;
+        }
+        .mail-item .checkbox.checked { background: #00d4ff; border-color: #00d4ff; color: #08131d; }
+        
+        .mail-item .mail-from { font-weight: 600; min-width: 150px; color: white; font-size: 15px; }
+        .mail-item .mail-subject {
+            flex: 1; font-size: 15px; color: #dbe9ff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+        }
+        .mail-item .mail-subject .snippet { color: #9fb5c8; font-weight: 400; margin-left: 8px; }
+        .mail-item .mail-date { font-size: 13px; color: #9fb5c8; flex-shrink: 0; }
+        .mail-item .star { font-size: 18px; cursor: pointer; color: #9fb5c8; transition: .2s; flex-shrink: 0; }
+        .mail-item .star.active { color: #f5c542; }
+
+        /* --- ПРОСМОТР ПИСЬМА --- */
+        .mail-view { display: none; flex-direction: column; background: rgba(0,0,0,.1); padding: 24px; overflow-y: auto; flex: 1; }
+        .mail-view.active { display: flex; }
+        .mail-view .view-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .mail-view .back-btn { background: transparent; border: none; color: #9fb5c8; font-size: 18px; cursor: pointer; padding: 8px 0; transition: .2s; }
+        .mail-view .back-btn:hover { color: white; }
+        .mail-view .print-btn { background: transparent; border: 1px solid rgba(255,255,255,.15); color: #9fb5c8; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: .2s; }
+        .mail-view .print-btn:hover { background: rgba(255,255,255,.05); color: white; }
+        
+        .mail-view .mail-header-view { margin: 12px 0 20px; border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 16px; }
+        .mail-view .mail-header-view .subject { font-size: 24px; font-weight: 700; }
+        .mail-view .mail-header-view .meta { display: flex; justify-content: space-between; color: #9fb5c8; font-size: 14px; margin-top: 8px; flex-wrap: wrap; gap: 6px; }
+        .mail-view .mail-body-view { font-size: 16px; line-height: 1.7; color: #dbe9ff; white-space: pre-wrap; }
+        .mail-view .attachments { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .mail-view .attachments .file { background: rgba(255,255,255,.05); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 8px; font-size: 13px; color: #bdd0df; }
+
+        /* ==========================================================================
+           6. МОДАЛЬНОЕ ОКНО "НАПИСАТЬ ПИСЬМО" (ТОЧЬ-В-ТОЧЬ КАК В MESSENGER)
+           ========================================================================== */
+        .compose-modal {
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(3, 8, 14, 0.6);
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px);
+            justify-content: center; 
+            align-items: center; 
+            z-index: 2000; 
+        }
+        .compose-modal.active { display: flex; }
+
+        .compose-modal .compose-box {
+            background: rgba(10, 18, 32, 0.65);
+            backdrop-filter: blur(40px) saturate(200%); 
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            border-radius: 28px;
+            padding: 30px 36px;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 212, 255, 0.05);
+            animation: modalSlideUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+            /* Скрываем стандартный скроллбар */
+            scrollbar-width: none;
+        }
+        .compose-modal .compose-box::-webkit-scrollbar { display: none; }
+        
+        @keyframes modalSlideUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .compose-modal .compose-box h2 {
+            font-size: 22px; color: #fff; margin-bottom: 20px; font-weight: 800;
+            text-align: center; text-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .compose-modal .form-group { margin-bottom: 16px; text-align: left; }
+        .compose-modal .form-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: var(--text-muted); margin-bottom: 6px;
+        }
+        .compose-modal .form-group input,
+        .compose-modal .form-group textarea {
+            width: 100%; padding: 14px 18px; border-radius: 14px;
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            background: rgba(3, 8, 14, 0.6);
+            color: white; font-size: 15px; transition: .3s; outline: none;
+        }
+        .compose-modal .form-group input:focus,
+        .compose-modal .form-group textarea:focus {
+            border-color: #00d4ff; box-shadow: 0 0 15px rgba(0,212,255,.3);
+        }
+        .compose-modal .form-group textarea { min-height: 100px; resize: vertical; }
+        
+        /* КАСТОМНОЕ ПОЛЕ ДЛЯ ФАЙЛА */
+        .file-upload-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px;
+            border: 1px dashed rgba(0, 212, 255, 0.4);
+            border-radius: 14px;
+            background: rgba(0, 212, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #00d4ff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .file-upload-wrapper:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+        }
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        /* КНОПКИ В РЯД */
+        .compose-modal .form-actions {
+            display: flex; gap: 12px; margin-top: 20px;
+            justify-content: space-between;
+        }
+        .compose-modal .form-actions button {
+            padding: 12px 20px; border-radius: 14px; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease; font-size: 14px;
+            flex: 0 0 auto; /* Чтобы кнопки не растягивались */
+        }
+        
+        .compose-modal .form-actions .btn-cancel {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: white;
+        }
+        .compose-modal .form-actions .btn-cancel:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3);
+        }
+
+        .compose-modal .form-actions .btn-draft {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            color: #00d4ff;
+        }
+        .compose-modal .form-actions .btn-draft:hover {
+            background: rgba(0, 212, 255, 0.2); box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .compose-modal .form-actions .btn-send {
+            background: linear-gradient(135deg, #00d4ff 0%, #1f6bff 100%);
+            border: none; color: white; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+            flex: 1; /* Кнопка отправить занимает всё оставшееся место */
+        }
+        .compose-modal .form-actions .btn-send:hover {
+            transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+        }
+
+        /* ==========================================================================
+           7. ПРОЧЕЕ (ТОСТЫ, МАССОВЫЕ ДЕЙСТВИЯ, ФУТЕР)
+           ========================================================================== */
+        .empty-state { text-align: center; padding: 60px 20px; color: #9fb5c8; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+
+        .toast {
+            position: fixed; bottom: 30px; right: 30px;
+            background: rgba(13,28,41,.95); border: 1px solid rgba(0,212,255,.3);
+            border-radius: 16px; padding: 16px 24px; color: white; font-weight: 500;
+            box-shadow: 0 20px 40px rgba(0,0,0,.4); z-index: 2000; animation: slideUp 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .toast.success { border-left: 4px solid #00ffa3; }
+        .toast.error { border-left: 4px solid #ff6b6b; }
+        .toast.info { border-left: 4px solid #00d4ff; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .bulk-actions {
+            display: none; padding: 8px 24px; background: rgba(0,0,0,.2);
+            border-top: 1px solid rgba(255,255,255,.05); gap: 12px; flex-wrap: wrap; align-items: center;
+        }
+        .bulk-actions.visible { display: flex; }
+        .bulk-actions span { color: #9fb5c8; font-size: 14px; }
+        .bulk-actions button {
+            background: transparent; border: 1px solid rgba(255,255,255,.15);
+            color: #9fb5c8; padding: 4px 16px; border-radius: 8px; cursor: pointer;
+            font-size: 13px; transition: .2s;
+        }
+        .bulk-actions button:hover { background: rgba(255,255,255,.05); color: white; }
+        .bulk-actions select {
+            background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.15);
+            color: white; padding: 4px 12px; border-radius: 8px; outline: none;
+        }
+
+        footer { 
+            position: relative; z-index: 20; 
+            backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%); 
+            background: var(--header-footer-bg); border-top: 1px solid rgba(0, 212, 255, 0.2); 
+            box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.5); 
+        }
+        footer .container { display: flex; justify-content: space-between; align-items: center; padding: 28px 0; flex-wrap: wrap; gap: 20px; }
+        footer p { color: #c0d8f0; font-size: 14px; }
+
+        @media (max-width: 992px) {
+            .mail-sidebar { width: 180px; min-width: 150px; padding: 16px 12px; }
+            .mail-item .mail-from { min-width: 100px; }
+        }
+        @media (max-width: 768px) {
+            .mail-container { flex-direction: column; height: auto; max-height: none; transform: none; }
+            .mail-sidebar { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
+            .mail-sidebar .compose-btn { flex: 1; min-width: 120px; }
+            .folder-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+            .folder-list li { padding: 8px 12px; }
+            .mail-item { flex-wrap: wrap; padding: 12px 16px; gap: 8px; }
+            .mail-item .mail-from { min-width: 80px; }
+            .mail-item .mail-subject { width: 100%; order: 3; }
+            .mail-list-header .search-box input { width: 100px; }
+            .compose-modal .compose-box { padding: 20px; }
+            .bulk-actions { padding: 8px 16px; }
+            .compose-modal .form-actions { flex-wrap: wrap; }
+            .compose-modal .form-actions button { flex: 1 1 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="full-glass-backdrop"></div>
+    <div class="bg-grid"></div>
+    <canvas id="bgCanvas"></canvas>
+    <div id="particles"></div>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo" aria-label="СФЕРА Главная">
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00ffa3"/>
+                                <stop offset="50%" stop-color="#00d4ff"/>
+                                <stop offset="100%" stop-color="#1f6bff"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15"/>
+                        <g>
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" 
+                                  stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h2 data-i18n="logo_title">СФЕРА</h2>
+                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
+                </div>
+            </a>
+
+            <div class="header-right header-buttons">
+                <span class="user-info">👤 <strong id="username">User</strong></span>
+                <button class="lang-btn" id="langBtn" type="button" aria-label="Переключение языка">TM</button>
+                <a href="#" id="backLink" class="btn-switch" data-i18n="btn_back">← Yza</a>
+                <button class="logout-btn" id="logoutBtn" data-i18n="btn_logout">🚪 Çykmak</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="doc-page">
+        <div class="container" style="display: flex; flex-direction: column;">
+            
+            <div class="doc-header">
+                <h1 data-i18n="mail_header_title">📬 TM Poçta</h1>
+                <div class="actions">
+                    <button class="btn btn-outline" id="refreshBtn" data-i18n="btn_refresh">⟳ Täzele</button>
+                </div>
+            </div>
+
+            <div class="mail-container">
+                <div class="mail-sidebar">
+                    <button class="compose-btn" id="composeBtn" data-i18n="compose">✏️ Täze hat</button>
+                    <ul class="folder-list" id="folderList">
+                        <li class="active" data-folder="inbox" data-i18n="folder_inbox"><span class="icon">📥</span> Gelen <span class="badge" id="inboxCount">0</span></li>
+                        <li data-folder="sent" data-i18n="folder_sent"><span class="icon">📤</span> Iberilen</li>
+                        <li data-folder="drafts" data-i18n="folder_drafts"><span class="icon">📝</span> Garamalar</li>
+                        <li data-folder="trash" data-i18n="folder_trash"><span class="icon">🗑️</span> Pozulan</li>
+                    </ul>
+                </div>
+
+                <div class="mail-list" id="mailList">
+                    <div class="mail-list-header">
+                        <div class="folder-title" id="folderTitle" data-i18n="folder_inbox">Gelen</div>
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Gözlemek..." data-i18n-placeholder="search_placeholder" />
+                            <button id="clearSearchBtn" title="Arassala">✕</button>
+                        </div>
+                        <div class="actions">
+                            <button id="selectAllBtn" data-i18n="select_all">☑︎</button>
+                        </div>
+                    </div>
+                    <div class="mail-items" id="mailItems"></div>
+                    <div class="bulk-actions" id="bulkActions">
+                        <span id="selectedCount">0 saýlandy</span>
+                        <select id="moveFolderSelect">
+                            <option value="inbox">Gelen</option>
+                            <option value="sent">Iberilen</option>
+                            <option value="drafts">Garamalar</option>
+                            <option value="trash">Pozulan</option>
+                        </select>
+                        <button id="moveSelectedBtn" data-i18n="move_selected">Göçür</button>
+                        <button id="deleteSelectedBtn" data-i18n="delete_selected">Poz</button>
+                        <button id="clearSelectionBtn" data-i18n="clear_selection">Saýlamany arassala</button>
+                    </div>
+                </div>
+
+                <div class="mail-view" id="mailView">
+                    <div class="view-header">
+                        <button class="back-btn" id="backToList" data-i18n="view_back">←</button>
+                        <button class="print-btn" id="printMailBtn" data-i18n="print">🖨️ Çap et</button>
+                    </div>
+                    <div class="mail-header-view">
+                        <div class="subject" id="viewSubject">Тема</div>
+                        <div class="meta">
+                            <span id="viewFrom" data-i18n="from_label">От: </span>
+                            <span id="viewDate" data-i18n="date_label">Дата: </span>
+                        </div>
+                    </div>
+                    <div class="mail-body-view" id="viewBody">Текст письма</div>
+                    <div class="attachments" id="viewAttachments"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-text">
+                    <h2 data-i18n="logo_title">СФЕРА</h2>
+                    <p data-i18n="logo_subtitle">Национальная Цифровая Платформа</p>
+                </div>
+            </a>
+            <p data-i18n="footer_copy">© 2026 — Единая цифровая платформа Туркменистана</p>
+        </div>
+    </footer>
+
+    <!-- МОДАЛЬНОЕ ОКНО (ПОЛНОСТЬЮ ИСПРАВЛЕНО) -->
+    <div class="compose-modal" id="composeModal">
+        <div class="compose-box">
+            <h2 data-i18n="compose_title">Täze hat</h2>
+            <form id="composeForm">
+                <div class="form-group">
+                    <label for="composeTo" data-i18n="to_label">Kime</label>
+                    <input type="text" id="composeTo" placeholder="alýan@example.com" required />
+                </div>
+                <div class="form-group">
+                    <label for="composeSubject" data-i18n="subject_label">Tema</label>
+                    <input type="text" id="composeSubject" placeholder="Hatyň temasy" required />
+                </div>
+                <div class="form-group">
+                    <label for="composeBody" data-i18n="body_label">Hatyň teksti</label>
+                    <textarea id="composeBody" placeholder="Bu ýere hatyňyzy ýazyň..." rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="composeFile" multiple />
+                        <span>📎 Faýl goşmak (islege görä)</span>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="cancelComposeBtn" data-i18n="cancel">Ýatyr</button>
+                    <button type="button" class="btn-draft" id="saveDraftBtn" data-i18n="save_draft">💾 Garaýama</button>
+                    <button type="submit" class="btn-send" data-i18n="send">Iber</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // 1. ИНИЦИАЛИЗАЦИЯ И ПРИНУДИТЕЛЬНЫЙ ТУРКМЕНСКИЙ ЯЗЫК
+        // ============================================================
+        if (!localStorage.getItem('sfera_lang') && !localStorage.getItem('lang')) {
+            localStorage.setItem('sfera_lang', 'tm');
+            localStorage.setItem('lang', 'tm');
+        }
+
+        let currentLang = window.SFERA_I18N ? window.SFERA_I18N.getLanguage() : 'tm';
+
+        function tr(key, fallback = '') {
+            if (window.SFERA_I18N && window.SFERA_I18N.t) {
+                const val = window.SFERA_I18N.t(key);
+                if (val !== key) return val;
+            }
+            return fallback || key;
+        }
+
+        window.addEventListener('sfera:languageChanged', (e) => {
+            currentLang = e.detail.lang;
+            updateUI();
+            renderMails();
+            if (document.getElementById('mailView').classList.contains('active')) {
+                const activeId = document.getElementById('mailView').dataset.activeId;
+                if (activeId) openMailView(activeId, false);
+            }
+        });
+
+        function updateUI() {
+            const folderNames = {
+                inbox: tr('folder_inbox', 'Gelen'),
+                sent: tr('folder_sent', 'Iberilen'),
+                drafts: tr('folder_drafts', 'Garamalar'),
+                trash: tr('folder_trash', 'Pozulan')
+            };
+            const folderTitleEl = document.getElementById('folderTitle');
+            if (folderTitleEl) {
+                folderTitleEl.textContent = folderNames[currentFolder] || tr('folder_inbox', 'Gelen');
+            }
+            const composeBtn = document.getElementById('composeBtn');
+            if (composeBtn) {
+                composeBtn.innerHTML = `✏️ ${tr('compose', 'Täze hat')}`;
+            }
+        }
+
+        // ============================================================
+        // 2. АВТОРИЗАЦИЯ И НАВИГАЦИЯ
+        // ============================================================
+        const token = localStorage.getItem('sfera_token') || localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        const user = JSON.parse(localStorage.getItem('sfera_user') || localStorage.getItem('user') || '{"username":"User","role":"user"}');
+        document.getElementById('username').textContent = user.username || 'User';
+
+        const backLink = document.getElementById('backLink');
+        if (backLink) {
+            if (user.role === 'admin') {
+                backLink.href = 'admin.html';
+            } else {
+                backLink.href = 'dashboard.html';
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('sfera_token');
+            localStorage.removeItem('sfera_user');
+            window.location.href = 'login.html';
+        });
+
+        // ============================================================
+        // 3. ДАННЫЕ
+        // ============================================================
+        let currentFolder = 'inbox';
+        let mails = [];
+        let selectedMails = new Set();
+        let searchQuery = '';
+
+        function generateMockMails() {
+            const now = Date.now();
+            const fromUsers = ['Aýdar', 'Meret', 'Gülşat', 'Saparmyrat', 'Oguljeren', 'Nyýaz', 'Jeren'];
+            const subjects = ['Gepleşeliň', 'Täze mümkinçilikler', 'Duşuşyk', 'Kömek gerek', 'Söwda barada', 'Taslama', 'Hasabat'];
+            const bodies = [
+                'Salam, ýagdaýlar nähili? Men size teklip bermek isleýärin.',
+                'Biz täze taslamany başladýarys, sizi hem goşulmaga çagyrýarys.',
+                'Ertir sagat 10-da duşuşalykmy?',
+                'Maňa bu mesele boýunça maslahat gerek, kömek edip bilersiňizmi?',
+                'Siziň üçin täze harytlar geldi, gyzyklanýan bolsaňyz habarlaşyň.',
+                'Taslama boýunça maglumatlar aşakda.',
+                'Hasabat taýýar, synlap bilersiňiz.'
+            ];
+            const mails = [];
+            for (let i = 0; i < 15; i++) {
+                const from = fromUsers[i % fromUsers.length];
+                const subject = subjects[i % subjects.length];
+                const body = bodies[i % bodies.length] + (i % 3 === 0 ? ' Goşmaça maglumat: ...' : '');
+                const isUnread = i < 5;
+                const date = new Date(now - i * 3600000 - Math.random() * 60000);
+                const folder = i < 10 ? 'inbox' : (i < 13 ? 'sent' : 'drafts');
+                mails.push({
+                    id: `mail-${i}`,
+                    from,
+                    to: user.username || 'User',
+                    subject,
+                    body,
+                    date: date.toISOString(),
+                    unread: isUnread,
+                    folder,
+                    starred: i % 3 === 0,
+                    attachments: i % 4 === 0 ? ['файл1.pdf', 'файл2.jpg'] : []
+                });
+            }
+            return mails;
+        }
+
+        const MAIL_STORE_KEY = 'mail_data_' + (user.id || user._id || user.username || 'me');
+
+        async function apiMail(path, options = {}) {
+            const res = await fetch('/api/mail' + path, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    ...(options.headers || {})
+                }
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.status === 401) {
+                window.location.href = 'login.html';
+                throw new Error('Unauthorized');
+            }
+            if (!res.ok || data.success === false) throw new Error(data.message || 'Mail error');
+            return data;
+        }
+
+        async function syncServerMails() {
+            try {
+                const data = await apiMail('');
+                const previous = new Map(mails.map(m => [m.id, m]));
+                const local = mails.filter(m => !m.server);
+                const serverMails = (data.mails || []).map(m => {
+                    const old = previous.get(m.id);
+                    return {
+                        ...m,
+                        attachments: [],
+                        starred: old ? Boolean(old.starred) : false,
+                        folder: old && old.folder === 'trash' ? 'trash' : m.folder,
+                        unread: old && old.unread === false ? false : m.unread
+                    };
+                });
+                mails = [...serverMails, ...local];
+                saveMails();
+                renderMails();
+            } catch (e) {
+                console.warn('TM Mail sync:', e.message);
+            }
+        }
+
+        function loadMails() {
+            try {
+                const stored = JSON.parse(localStorage.getItem(MAIL_STORE_KEY) || '[]');
+                mails = Array.isArray(stored) ? stored : [];
+                if (mails.length === 0) {
+                    mails = generateMockMails();
+                    saveMails();
+                }
+            } catch (e) {
+                mails = generateMockMails();
+                saveMails();
+            }
+        }
+
+        function saveMails() {
+            localStorage.setItem(MAIL_STORE_KEY, JSON.stringify(mails));
+        }
+
+        loadMails();
+
+        function getMailsForFolder(folder) {
+            return mails.filter(m => m.folder === folder);
+        }
+
+        function filterMails(mailsArray) {
+            if (!searchQuery) return mailsArray;
+            const q = searchQuery.toLowerCase();
+            return mailsArray.filter(m =>
+                (m.from && m.from.toLowerCase().includes(q)) ||
+                (m.subject && m.subject.toLowerCase().includes(q)) ||
+                (m.body && m.body.toLowerCase().includes(q))
+            );
+        }
+
+        // ============================================================
+        // 4. РЕНДЕР СПИСКА ПИСЕМ (МАКСИМУМ 5)
+        // ============================================================
+        function renderMails() {
+            const container = document.getElementById('mailItems');
+            if (!container) return;
+
+            const folderMails = getMailsForFolder(currentFolder);
+            const filtered = filterMails(folderMails);
+            
+            // БЕРЕМ ТОЛЬКО ПЕРВЫЕ 5 ПИСЕМ
+            const displayMails = filtered.slice(0, 5);
+
+            const inboxCountEl = document.getElementById('inboxCount');
+            if (inboxCountEl) {
+                const inboxCount = getMailsForFolder('inbox').filter(m => m.unread).length;
+                inboxCountEl.textContent = inboxCount;
+            }
+
+            if (!displayMails.length) {
+                container.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>${tr('no_mails', 'Hiç hili hat ýok')}</p></div>`;
+                updateBulkActions();
+                return;
+            }
+
+            displayMails.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            container.innerHTML = displayMails.map(m => {
+                const isSelected = selectedMails.has(m.id);
+                const unreadClass = m.unread ? 'unread' : '';
+                const starClass = m.starred ? 'active' : '';
+                const dateStr = new Date(m.date).toLocaleString(currentLang === 'ru' ? 'ru-RU' : currentLang === 'en' ? 'en-US' : 'tk-TM', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+                return `
+                    <div class="mail-item ${unreadClass}" data-id="${m.id}">
+                        <div class="checkbox ${isSelected ? 'checked' : ''}" data-id="${m.id}">${isSelected ? '✓' : ''}</div>
+                        <div class="mail-from">${m.from}</div>
+                        <div class="mail-subject">
+                            ${m.subject}
+                            <span class="snippet">${m.body.substring(0, 40)}...</span>
+                        </div>
+                        <div class="star ${starClass}" data-id="${m.id}">${m.starred ? '★' : '☆'}</div>
+                        <div class="mail-date">${dateStr}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.mail-item').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    if (e.target.closest('.checkbox') || e.target.closest('.star')) return;
+                    const id = this.dataset.id;
+                    openMailView(id);
+                });
+            });
+
+            container.querySelectorAll('.checkbox').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    if (selectedMails.has(id)) {
+                        selectedMails.delete(id);
+                        this.classList.remove('checked');
+                        this.textContent = '';
+                    } else {
+                        selectedMails.add(id);
+                        this.classList.add('checked');
+                        this.textContent = '✓';
+                    }
+                    updateBulkActions();
+                });
+            });
+
+            container.querySelectorAll('.star').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const mail = mails.find(m => m.id === id);
+                    if (mail) {
+                        mail.starred = !mail.starred;
+                        saveMails();
+                        renderMails();
+                    }
+                });
+            });
+
+            updateBulkActions();
+        }
+
+        function updateBulkActions() {
+            const bulk = document.getElementById('bulkActions');
+            const selectedCountEl = document.getElementById('selectedCount');
+            if (bulk && selectedCountEl) {
+                const count = selectedMails.size;
+                if (count > 0) {
+                    bulk.classList.add('visible');
+                    selectedCountEl.textContent = `${count} ${tr('selected_count', 'saýlandy')}`;
+                } else {
+                    bulk.classList.remove('visible');
+                }
+            }
+        }
+
+        // ============================================================
+        // 5. МАССОВЫЕ ДЕЙСТВИЯ
+        // ============================================================
+        document.getElementById('deleteSelectedBtn')?.addEventListener('click', function() {
+            if (selectedMails.size === 0) return;
+            if (!confirm(tr('confirm_delete', 'Pozmak isleýärsiňiz?'))) return;
+            const ids = Array.from(selectedMails);
+            ids.forEach(id => {
+                const mail = mails.find(m => m.id === id);
+                if (mail) mail.folder = 'trash';
+            });
+            selectedMails.clear();
+            saveMails();
+            renderMails();
+            showToast(tr('delete_selected', 'Poz') + ' OK', 'success');
+        });
+
+        document.getElementById('moveSelectedBtn')?.addEventListener('click', function() {
+            if (selectedMails.size === 0) return;
+            const target = document.getElementById('moveFolderSelect')?.value;
+            if (target === currentFolder) {
+                showToast('Indiki paýda eýýäm bar', 'info');
+                return;
+            }
+            const ids = Array.from(selectedMails);
+            ids.forEach(id => {
+                const mail = mails.find(m => m.id === id);
+                if (mail) mail.folder = target;
+            });
+            selectedMails.clear();
+            saveMails();
+            renderMails();
+            showToast(tr('move_selected', 'Göçür') + ' OK', 'success');
+        });
+
+        document.getElementById('clearSelectionBtn')?.addEventListener('click', function() {
+            selectedMails.clear();
+            renderMails();
+        });
+
+        // ============================================================
+        // 6. ПОИСК
+        // ============================================================
+        document.getElementById('searchInput')?.addEventListener('input', function() {
+            searchQuery = this.value.trim();
+            renderMails();
+        });
+
+        document.getElementById('clearSearchBtn')?.addEventListener('click', function() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                searchQuery = '';
+                renderMails();
+            }
+        });
+
+        // ============================================================
+        // 7. ПРОСМОТР ПИСЬМА
+        // ============================================================
+        function openMailView(id, updateRead = true) {
+            const mail = mails.find(m => m.id === id);
+            if (!mail) return;
+            
+            if (updateRead && mail.server && mail.unread && mail.folder !== 'sent') {
+                apiMail('/' + mail.id + '/read', { method: 'PUT' }).catch(() => {});
+            }
+            if (updateRead) {
+                mail.unread = false;
+                saveMails();
+            }
+
+            const mailList = document.getElementById('mailList');
+            const mailView = document.getElementById('mailView');
+            mailView.dataset.activeId = id;
+            
+            if (mailList) mailList.style.display = 'none';
+            if (mailView) mailView.classList.add('active');
+
+            const viewSubject = document.getElementById('viewSubject');
+            const viewFrom = document.getElementById('viewFrom');
+            const viewDate = document.getElementById('viewDate');
+            const viewBody = document.getElementById('viewBody');
+            const viewAttachments = document.getElementById('viewAttachments');
+
+            if (viewSubject) viewSubject.textContent = mail.subject;
+            if (viewFrom) viewFrom.textContent = `${tr('from_label', 'Kimden: ')} ${mail.from}`;
+            if (viewDate) viewDate.textContent = `${tr('date_label', 'Senesi: ')} ${new Date(mail.date).toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US')}`;
+            if (viewBody) viewBody.textContent = mail.body || '(Пусто)';
+
+            if (viewAttachments) {
+                if (mail.attachments && mail.attachments.length) {
+                    viewAttachments.innerHTML = mail.attachments.map(f => `<div class="file">📎 ${f}</div>`).join('');
+                } else {
+                    viewAttachments.innerHTML = '';
+                }
+            }
+            renderMails();
+        }
+
+        document.getElementById('backToList')?.addEventListener('click', function() {
+            const mailView = document.getElementById('mailView');
+            const mailList = document.getElementById('mailList');
+            if (mailView) mailView.classList.remove('active');
+            if (mailList) mailList.style.display = 'flex';
+            renderMails();
+        });
+
+        // ============================================================
+        // 8. ПЕЧАТЬ И ПЕРЕКЛЮЧЕНИЕ ПАПОК
+        // ============================================================
+        document.getElementById('printMailBtn')?.addEventListener('click', function() {
+            window.print();
+        });
+
+        document.querySelectorAll('.folder-list li').forEach(li => {
+            li.addEventListener('click', function() {
+                document.querySelectorAll('.folder-list li').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                currentFolder = this.dataset.folder;
+                selectedMails.clear();
+                const mailView = document.getElementById('mailView');
+                const mailList = document.getElementById('mailList');
+                if (mailView) mailView.classList.remove('active');
+                if (mailList) mailList.style.display = 'flex';
+                const folderTitle = document.getElementById('folderTitle');
+                if (folderTitle) {
+                    folderTitle.textContent = tr(`folder_${currentFolder}`, currentFolder);
+                }
+                renderMails();
+            });
+        });
+
+        // ============================================================
+        // 9. КОМПОЗИЦИЯ ПИСЬМА
+        // ============================================================
+        document.getElementById('composeBtn')?.addEventListener('click', function() {
+            const modal = document.getElementById('composeModal');
+            if (modal) {
+                modal.classList.add('active');
+                const form = document.getElementById('composeForm');
+                if (form) form.reset();
+                const fileInput = document.getElementById('composeFile');
+                if (fileInput) fileInput.value = '';
+            }
+        });
+
+        document.getElementById('cancelComposeBtn')?.addEventListener('click', function() {
+            const modal = document.getElementById('composeModal');
+            if (modal) modal.classList.remove('active');
+        });
+
+        document.getElementById('composeModal')?.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+
+        document.getElementById('saveDraftBtn')?.addEventListener('click', function() {
+            const to = document.getElementById('composeTo')?.value.trim() || '';
+            const subject = document.getElementById('composeSubject')?.value.trim() || '';
+            const body = document.getElementById('composeBody')?.value.trim() || '';
+            const fileInput = document.getElementById('composeFile');
+            const files = fileInput?.files ? Array.from(fileInput.files).map(f => f.name) : [];
+
+            if (!subject && !body) {
+                showToast('Hiç zat ýok, ýatyr', 'info');
+                document.getElementById('composeModal')?.classList.remove('active');
+                return;
+            }
+
+            const draftMail = {
+                id: `draft-${Date.now()}`,
+                from: user.username || 'User',
+                to: to || 'Garaýama',
+                subject: subject || 'Garaýama',
+                body: body || '(Boş)',
+                date: new Date().toISOString(),
+                unread: false,
+                folder: 'drafts',
+                starred: false,
+                attachments: files
+            };
+            mails.push(draftMail);
+            saveMails();
+            document.getElementById('composeModal')?.classList.remove('active');
+            showToast(tr('draft_saved', 'Garaýama ýazdyryldy.'), 'success');
+            renderMails();
+        });
+
+        document.getElementById('composeForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const to = document.getElementById('composeTo')?.value.trim() || '';
+            const subject = document.getElementById('composeSubject')?.value.trim() || '';
+            const body = document.getElementById('composeBody')?.value.trim() || '';
+            const fileInput = document.getElementById('composeFile');
+            const files = fileInput?.files ? Array.from(fileInput.files).map(f => f.name) : [];
+            const submitBtn = this.querySelector('button[type="submit"]');
+
+            if (!to || !subject || !body) {
+                showToast('Doldurmaly ýerler boş!', 'error');
+                return;
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '...';
+            }
+
+            try {
+                const data = await apiMail('/send', {
+                    method: 'POST',
+                    body: JSON.stringify({ to, subject, text: body })
+                });
+                document.getElementById('composeModal')?.classList.remove('active');
+                showToast(tr('send_success', 'Hat iberildi!'), 'success');
+                await syncServerMails();
+                if (data) return;
+
+                const newMail = {
+                    id: `mail-${Date.now()}`,
+                    from: user.username || 'User',
+                    to,
+                    subject,
+                    body,
+                    date: new Date().toISOString(),
+                    unread: false,
+                    folder: 'sent',
+                    starred: false,
+                    attachments: files
+                };
+                mails.push(newMail);
+                const receivedMail = {
+                    ...newMail,
+                    id: `mail-${Date.now() + 1}`,
+                    from: user.username || 'User',
+                    to,
+                    folder: 'inbox',
+                    unread: true,
+                    attachments: files
+                };
+                mails.push(receivedMail);
+                saveMails();
+                document.getElementById('composeModal')?.classList.remove('active');
+                showToast(tr('send_success', 'Hat iberildi!'), 'success');
+                renderMails();
+            } catch (error) {
+                console.error('Mail send failed:', error);
+                showToast(error.message || tr('send_error', 'Hat iberilmedi.'), 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = tr('send', 'Iber');
+                }
+            }
+        });
+
+        // ============================================================
+        // 10. АВТООБНОВЛЕНИЕ И ТОСТЫ
+        // ============================================================
+        let autoRefreshInterval = null;
+        function startAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            syncServerMails();
+            autoRefreshInterval = setInterval(syncServerMails, 30000);
+            if (typeof window.io === 'function') {
+                const mailSocket = window.io(window.location.origin, { auth: { token }, transports: ['websocket', 'polling'] });
+                mailSocket.on('new_mail', mail => {
+                    if (!mail || mails.some(m => m.id === mail.id)) return;
+                    mails.unshift({ ...mail, attachments: [], starred: false });
+                    saveMails();
+                    renderMails();
+                    showToast('Täze hat: ' + (mail.subject || ''), 'info');
+                });
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // ============================================================
+        // 11. ВЫБОР ВСЕХ И ОБНОВЛЕНИЕ
+        // ============================================================
+        document.getElementById('selectAllBtn')?.addEventListener('click', function() {
+            const folderMails = getMailsForFolder(currentFolder);
+            const filtered = filterMails(folderMails).slice(0, 5); // Берем только те, что отображаются
+            const allIds = filtered.map(m => m.id);
+            const allSelected = allIds.every(id => selectedMails.has(id));
+            if (allSelected) {
+                allIds.forEach(id => selectedMails.delete(id));
+            } else {
+                allIds.forEach(id => selectedMails.add(id));
+            }
+            renderMails();
+        });
+
+        document.getElementById('refreshBtn')?.addEventListener('click', function() {
+            const stored = localStorage.getItem(MAIL_STORE_KEY);
+            if (stored) {
+                try { mails = JSON.parse(stored); } catch (e) {}
+            }
+            renderMails();
+            showToast('Täzelendi!', 'success');
+        });
+
+        // ============================================================
+        // 12. ФОН И ЧАСТИЦЫ
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const particlesContainer = document.getElementById("particles");
+            if (particlesContainer) {
+                particlesContainer.innerHTML = "";
+                const colors = ['#00d4ff', '#00ffa3', '#1f6bff', '#ffffff'];
+                for (let i = 0; i < 65; i++) {
+                    const particle = document.createElement("div");
+                    particle.className = "particle";
+                    const size = Math.random() * 2.2 + 1.0; 
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.width = size + "px";
+                    particle.style.height = size + "px";
+                    particle.style.backgroundColor = color;
+                    particle.style.boxShadow = `0 0 ${size * 3}px ${color}`;
+                    particle.style.left = (Math.random() * 92 + 4) + "%";
+                    particle.style.top = "0px";
+                    particle.style.animationDuration = (10 + Math.random() * 12) + "s";
+                    particle.style.animationDelay = (Math.random() * -20) + "s";
+                    particlesContainer.appendChild(particle);
+                }
+            }
+
+            const canvas = document.getElementById('bgCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let w, h;
+                function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+                resize();
+                window.addEventListener('resize', resize);
+                const points = Array.from({ length: 60 }, () => ({
+                    x: Math.random() * (w - 45) + 20, y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6,
+                    radius: Math.random() * 1.2 + 0.8
+                }));
+                function drawCanvas() {
+                    ctx.clearRect(0, 0, w, h);
+                    for (let i = 0; i < points.length; i++) {
+                        let p = points[i];
+                        p.x += p.vx; p.y += p.vy;
+                        if (p.x < 20 || p.x > w - 25) p.vx *= -1;
+                        if (p.y < 0 || p.y > h) p.vy *= -1;
+                        for (let j = i + 1; j < points.length; j++) {
+                            let p2 = points[j];
+                            let dx = p.x - p2.x, dy = p.y - p2.y;
+                            let dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < 180) {
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                                ctx.strokeStyle = `rgba(0, 212, 255, ${0.18 * (1 - dist / 180)})`;
+                                ctx.lineWidth = 1; ctx.stroke();
+                            }
+                        }
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(0, 255, 163, 0.85)'; ctx.shadowBlur = 6; ctx.shadowColor = '#00ffa3';
+                        ctx.fill(); ctx.shadowBlur = 0;
+                    }
+                    requestAnimationFrame(drawCanvas);
+                }
+                drawCanvas();
+            }
+        });
+
+        // ============================================================
+        // 13. ИНИЦИАЛИЗАЦИЯ
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+            renderMails();
+            startAutoRefresh();
+            console.log('✅ Mail module loaded');
+        });
+    </script>
+</body>
+</html>

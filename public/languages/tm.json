@@ -346,5 +346,9 @@
   "card_expiry": "Işleýän çenli: {expiry}",
   "dashboard_page_title": "Sfera — Dolandyryş paneli",
   "messenger_page_title": "Sfera — Habarlaşyk",
-  "module_marketplace": "Marketpleýs"
+  "module_marketplace": "Marketpleýs",
+  "no_accounts": "Hasaplar elýeterli däl",
+  "bank_api_unavailable": "Bank API elýeterli däl",
+  "bank_load_error": "Bank maglumatlaryny ýüklemek başartmady",
+  "bank_transfer_contract_pending": "Geçiriş API şertnamasy tassyklanylýança amal ýapyk"
 }
