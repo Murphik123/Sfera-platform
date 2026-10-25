@@ -1377,7 +1377,30 @@
             const grid=$('accountsGrid'); if(!grid) return;
             grid.replaceChildren();
             if(!bankState.accounts.length) {
-                const p=document.createElement('p'); p.className='empty-state'; p.textContent=t('no_accounts','Hasaplar elýeterli däl'); grid.appendChild(p); return;
+                // SFERA-PATCH:SPRINT2.2b1:empty-cta
+                const wrap = document.createElement('div');
+                wrap.className = 'empty-state';
+                const icon = document.createElement('div');
+                icon.className = 'icon';
+                icon.textContent = '🏦';
+                const msg = document.createElement('p');
+                msg.textContent = t('no_accounts','Hasaplar elýeterli däl');
+                const cta = document.createElement('button');
+                cta.type = 'button';
+                cta.className = 'btn btn-primary';
+                cta.style.marginTop = '12px';
+                cta.textContent = t('open_account_cta','Открыть счёт');
+                cta.addEventListener('click', () => {
+                    const role = localStorage.getItem('sfera_role') || 'user';
+                    if (role === 'admin' || role === 'system_admin') {
+                        location.href = 'admin.html';
+                    } else {
+                        showMessage(t('contact_support','Обратитесь в поддержку для открытия счёта'), 'error');
+                    }
+                });
+                wrap.append(icon, msg, cta);
+                grid.appendChild(wrap);
+                return;
             }
             bankState.accounts.forEach(acc=>{
                 const card=document.createElement('div'); card.className='account-card';
@@ -1412,13 +1435,30 @@
             });
         }
 
+        // SFERA-PATCH:SPRINT2.2b1:badge
         function renderNotifications() {
             const list=$('notificationsList'); if(!list) return; list.replaceChildren();
-            if(!bankState.notifications.length){ $('emptyNotif').style.display='block'; return; }
-            $('emptyNotif').style.display='none';
+            if(!bankState.notifications.length){ $('emptyNotif').style.display='block'; }
+            else { $('emptyNotif').style.display='none'; }
             bankState.notifications.forEach(n=>{
-                const item=document.createElement('div'); item.className='notification-item'; item.textContent=n.message||''; list.appendChild(item);
+                const item=document.createElement('div');
+                item.className='notification-item' + (n.read ? '' : ' unread');
+                item.textContent=n.message||'';
+                list.appendChild(item);
             });
+
+            const tabBtn = document.querySelector('.bank-tabs button[data-tab="notifications"]');
+            if (tabBtn) {
+                const existing = tabBtn.querySelector('.notification-badge');
+                if (existing) existing.remove();
+                const unread = bankState.notifications.filter(n => !n.read).length;
+                if (unread > 0) {
+                    const badge = document.createElement('span');
+                    badge.className = 'notification-badge';
+                    badge.textContent = String(unread);
+                    tabBtn.appendChild(badge);
+                }
+            }
         }
 
         function populateFromAccounts(){
@@ -1456,6 +1496,24 @@
                 showMessage(err.message || t('bank_load_error','Load failed'),'error');
             } finally { _bankLoading = false; }
         }
+
+        // SFERA-PATCH:SPRINT2.2b1:copy-iban
+        (function () {
+            const el = document.getElementById('mainAccount');
+            if (!el) return;
+            el.style.cursor = 'pointer';
+            el.title = 'Клик — скопировать IBAN';
+            el.addEventListener('click', async () => {
+                const iban = (el.textContent || '').trim();
+                if (!iban) return;
+                try {
+                    await navigator.clipboard.writeText(iban);
+                    showMessage('IBAN скопирован: ' + iban, 'success');
+                } catch (e) {
+                    showMessage('Не удалось скопировать (браузер запретил)', 'error');
+                }
+            });
+        })();
 
         $('refreshBtn')?.addEventListener('click',loadBankData);
                 // SFERA-PATCH:SPRINT1:html-submit
