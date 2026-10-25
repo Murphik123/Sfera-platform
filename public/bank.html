@@ -1105,6 +1105,23 @@
             88% { opacity: .7; }
             100% { transform: translate3d(calc(var(--particle-drift, 18px) * -1), -118vh, 0) scale(.7); opacity: 0; }
         }
+        /* SFERA-PATCH:SPRINT2.2b2:css — skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg,
+                rgba(255,255,255,.04) 0%,
+                rgba(255,255,255,.10) 50%,
+                rgba(255,255,255,.04) 100%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.4s ease-in-out infinite;
+            border-radius: 8px;
+            color: transparent !important;
+            user-select: none;
+            pointer-events: none;
+        }
+        @keyframes skeletonShimmer {
+            0%   { background-position:  200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
     <script src="/js/api.js"></script>
     <script src="/scripts/auto_translate_i18n.js"></script>
@@ -1344,6 +1361,20 @@
             resize(); addEventListener('resize', resize, {passive:true}); frame();
         }
 
+        // SFERA-PATCH:SPRINT2.2b2:helpers
+        function showSkeletons() {
+            ['totalBalance', 'mainAccount'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('skeleton');
+            });
+        }
+        function hideSkeletons() {
+            ['totalBalance', 'mainAccount'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('skeleton');
+            });
+        }
+
         function showMessage(text, type='success') {
             const el=$('message'); if(!el) return;
             el.textContent=text; el.className=`message ${type}`; el.style.display='block';
@@ -1476,25 +1507,36 @@
 
                 // SFERA-PATCH:SPRINT1:html-load
         let _bankLoading = false;
+        // SFERA-PATCH:SPRINT2.2b2:load — parallel notifications + skeleton
         async function loadBankData(){
             if (_bankLoading) return;
             _bankLoading = true;
+            showSkeletons();
             try {
                 if(!window.api || typeof window.api.request!=='function') {
-                    showMessage(t('bank_api_unavailable','Bank API unavailable'),'error'); return;
+                    showMessage(t('bank_api_unavailable','Bank API elýeterli däl'),'error'); return;
                 }
-                const response = await window.api.request('/bank/balance');
-                const data = response?.data ?? response ?? {};
+                const [response, notifResponse] = await Promise.all([
+                    window.api.request('/bank/balance'),
+                    window.api.request('/bank/notifications').catch(() => null)
+                ]);
+                const data  = response?.data ?? response ?? {};
+                const ndata = notifResponse?.data ?? notifResponse ?? {};
                 bankState.accounts      = Array.isArray(data.accounts)      ? data.accounts      : [];
                 bankState.cards         = Array.isArray(data.cards)         ? data.cards         : [];
                 bankState.transactions  = Array.isArray(data.transactions)  ? data.transactions  : [];
-                bankState.notifications = Array.isArray(data.notifications) ? data.notifications : [];
+                bankState.notifications = Array.isArray(ndata.data)
+                    ? ndata.data
+                    : (Array.isArray(ndata) ? ndata : (Array.isArray(data.notifications) ? data.notifications : []));
                 renderAccounts(); renderCards(); renderHistory(); renderNotifications();
                 populateFromAccounts(); updateTotalBalance();
             } catch(err) {
                 if (err && err.status === 401) { location.href = 'login.html'; return; }
-                showMessage(err.message || t('bank_load_error','Load failed'),'error');
-            } finally { _bankLoading = false; }
+                showMessage(err.message || t('bank_load_error','Ýüklemek başartmady'),'error');
+            } finally {
+                _bankLoading = false;
+                hideSkeletons();
+            }
         }
 
         // SFERA-PATCH:SPRINT2.2b1:copy-iban
