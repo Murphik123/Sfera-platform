@@ -1142,7 +1142,7 @@
                     </svg>
                 </div>
                 <div class="logo-text">
-                    <h2>SFERA</h2>
+                    <h2 data-i18n="logo_title">Sfera</h2>
                     <p id="logoSubtitle" data-i18n="logo_subtitle">Milli Sanly Platforma</p>
                 </div>
             </a>
@@ -1269,6 +1269,25 @@
             if (window.i18n && typeof window.i18n.t === 'function') return window.i18n.t(key, fallback);
             return fallback || key;
         };
+
+        function populateUsername() {
+            const el = document.getElementById('username');
+            if (!el) return;
+            let user = null;
+            try {
+                const raw = localStorage.getItem('sfera_user') || localStorage.getItem('user');
+                if (raw) user = JSON.parse(raw);
+            } catch (e) {}
+            if (user && (user.username || user.name)) {
+                el.textContent = user.username || user.name;
+                return;
+            }
+            if (window.api && typeof window.api.getCurrentUser === 'function') {
+                Promise.resolve(window.api.getCurrentUser()).then(u => {
+                    if (u && (u.username || u.name)) el.textContent = u.username || u.name;
+                }).catch(() => {});
+            }
+        }
 
         function renderParticles() {
             const host = $('particles');
@@ -1460,6 +1479,7 @@
         initBackgroundCanvas();
         renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
         loadBankData();
+        populateUsername();
     </script>
 </body>
 </html>
