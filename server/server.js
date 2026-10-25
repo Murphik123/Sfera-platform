@@ -12,6 +12,7 @@ const cors = require('cors');
 const { checkQdrantConnection } = require('./src/services/qdrant.service');
 const connectDB = require('./src/config/db');
 const initSocket = require('./src/sockets');
+const errorHandler = require('./src/middleware/errorHandler');
 
 
 const app = express();
@@ -53,6 +54,9 @@ if (fs.existsSync(routesDir)) {
 app.get('/api/health', (req, res) => {
   res.json({ success: true, status: 'ok', uptime: Math.floor(process.uptime()) });
 });
+
+// SFERA-PATCH:SPRINT2:mount — global error handler, MUST be after all routes
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 10000;
 const HOST = '0.0.0.0';
