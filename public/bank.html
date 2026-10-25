@@ -1551,9 +1551,19 @@ $('logoutBtn')?.addEventListener('click',async()=>{
         renderParticles();
         initBackgroundCanvas();
         renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
+             // SFERA-PATCH:SPRINT1.5:refresh
         loadBankData();
         populateUsername();
+
+        // Background refresh: получатель видит входящие без F5.
+        // Sprint 3 заменит на Socket.IO (real push).
+        setInterval(() => {
+            if (document.visibilityState === 'visible') loadBankData();
+        }, 30000);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') loadBankData();
+        });
+        window.addEventListener('focus', () => loadBankData());
     </script>
 </body>
 </html>
-
