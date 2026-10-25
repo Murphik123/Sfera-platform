@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
-<html lang="tm">
+<!DOCTYPE html>
+<html lang="tk" translate="no">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SFERA — TM Bank</title>
+    <title data-i18n="bank_page_title">Sfera — TM Bank</title>
 
     <!-- SFERA V19 visual foundation: backdrop, grid, canvas, particles, glass layers -->
     <style id="sfera-v19-foundation">
@@ -1107,7 +1107,7 @@
         }
     </style>
     <script src="/js/api.js"></script>
-    <script src="/js/i18n.js"></script>
+    <script src="/scripts/auto_translate_i18n.js"></script>
 </head>
 <body>
     <!-- V19 BACKGROUND LAYERS — порядок не менять -->
@@ -1150,7 +1150,7 @@
             <div class="header-right">
                 <span class="user-info">👤 <strong id="username">User</strong></span>
                 <button class="lang lang-btn" id="langBtn" type="button" aria-label="Language">TM</button>
-                <button class="logout-btn glass-header-btn" id="logoutBtn" type="button" data-i18n="logout">🚪 Г‡ykmak</button>
+                <button class="logout-btn glass-header-btn" id="logoutBtn" type="button" data-i18n="logout">🚪 Çykmak</button>
                 <a href="#" id="backLink" class="btn-switch glass-header-btn" data-i18n="back">← Yza</a>
             </div>
         </div>
@@ -1162,7 +1162,7 @@
             <div class="bank-header">
                 <h1 data-i18n="bank_header_title">🏦 TM Bank</h1>
                 <div class="actions">
-                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">вџі Täzele</button>
+                    <button class="btn btn-outline" id="refreshBtn" data-i18n="refresh">⟳ Täzele</button>
                 </div>
             </div>
 
@@ -1174,11 +1174,11 @@
                         <span class="balance-amount" id="totalBalance">0.00</span>
                         <span class="balance-currency">TMT</span>
                     </div>
-                    <div class="account-number" data-i18n="account_label">Hasap: <span id="mainAccount">1234 5678 9012 3456</span></div>
+                    <div class="account-number"><span data-i18n="account_label">Hasap:</span> <span id="mainAccount">1234 5678 9012 3456</span></div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:14px; color:#bdd0df;" data-i18n="premium_label">в… Premium hyzmat</div>
-                    <div style="font-size:12px; color:#9fb5c8;" data-i18n="active_since_label">Işjeň: <span id="activeSince">2024</span></div>
+                    <div style="font-size:14px; color:#bdd0df;" data-i18n="premium_label">★ Premium hyzmat</div>
+                    <div style="font-size:12px; color:#9fb5c8;"><span data-i18n="active_since_label">Işjeň:</span> <span id="activeSince">2024</span></div>
                 </div>
             </div>
 
@@ -1252,10 +1252,7 @@
            SFERA BANK — approval candidate v22
            Visual DOM/CSS preserved; demo financial mutations removed.
            ============================================================ */
-        const langButton = document.getElementById('langBtn');
-        if (langButton) langButton.textContent = 'TM';
-
-        const bankState = {
+                const bankState = {
             accounts: [],
             cards: [],
             transactions: [],
@@ -1265,6 +1262,10 @@
 
         const $ = (id) => document.getElementById(id);
         const t = (key, fallback) => {
+            if (window.SFERA_I18N && typeof window.SFERA_I18N.t === 'function') {
+                const val = window.SFERA_I18N.t(key);
+                if (val !== key) return val;
+            }
             if (window.i18n && typeof window.i18n.t === 'function') return window.i18n.t(key, fallback);
             return fallback || key;
         };
@@ -1348,8 +1349,8 @@
         addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 
         // Central SFERA language manager is the only language authority.
-        addEventListener('sfera:language-changed',()=>{
-            document.title=t('bank_page_title','SFERA — TM Bank');
+        addEventListener('sfera:languageChanged',()=>{
+            document.title=t('bank_page_title', 'Sfera — TM Bank');
             renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
         });
 
