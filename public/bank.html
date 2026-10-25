@@ -1434,31 +1434,104 @@
             const main=bankState.accounts.find(a=>a.currency==='TMT'); if(main) $('mainAccount').textContent=main.number||'';
         }
 
+                // SFERA-PATCH:SPRINT1:html-load
+        let _bankLoading = false;
         async function loadBankData(){
-            // Backend contract remains the source of truth; no client-side financial mutation.
-            if(!window.api || typeof window.api.request!=='function') {
-                showMessage(t('bank_api_unavailable','Bank API elýeterli däl'),'error'); return;
-            }
+            if (_bankLoading) return;
+            _bankLoading = true;
             try {
-                const response=await window.api.request('/bank/balance');
-                const data=response?.data ?? response ?? {};
-                bankState.accounts=Array.isArray(data.accounts)?data.accounts:(data.account?[data.account]:[]);
-                bankState.cards=Array.isArray(data.cards)?data.cards:[];
-                bankState.transactions=Array.isArray(data.transactions)?data.transactions:[];
-                bankState.notifications=Array.isArray(data.notifications)?data.notifications:[];
-                renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
+                if(!window.api || typeof window.api.request!=='function') {
+                    showMessage(t('bank_api_unavailable','Bank API unavailable'),'error'); return;
+                }
+                const response = await window.api.request('/bank/balance');
+                const data = response?.data ?? response ?? {};
+                bankState.accounts      = Array.isArray(data.accounts)      ? data.accounts      : [];
+                bankState.cards         = Array.isArray(data.cards)         ? data.cards         : [];
+                bankState.transactions  = Array.isArray(data.transactions)  ? data.transactions  : [];
+                bankState.notifications = Array.isArray(data.notifications) ? data.notifications : [];
+                renderAccounts(); renderCards(); renderHistory(); renderNotifications();
+                populateFromAccounts(); updateTotalBalance();
             } catch(err) {
-                showMessage(err.message || t('bank_load_error','Bank maglumatlaryny ýüklemek başartmady'),'error');
-            }
+                if (err && err.status === 401) { location.href = 'login.html'; return; }
+                showMessage(err.message || t('bank_load_error','Load failed'),'error');
+            } finally { _bankLoading = false; }
         }
 
         $('refreshBtn')?.addEventListener('click',loadBankData);
-        $('transferForm')?.addEventListener('submit',(e)=>{
+                // SFERA-PATCH:SPRINT1:html-submit
+        function isValidIban(raw){
+            if (!raw) return false;
+            const s = String(raw).replace(/\s+/g,'').toUpperCase();
+            if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(s)) return false;
+            const rearr = s.slice(4) + s.slice(0,4);
+            const num = rearr.replace(/[A-Z]/g, ch => (ch.charCodeAt(0)-55).toString());
+            try { return BigInt(num) % 97n === 1n; } catch(e) { return false; }
+        }
+        function confirmTransfer(info){
+            return new Promise(resolve => {
+                const m = document.createElement('div');
+                m.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(3,8,14,.75);z-index:9999;';
+                m.innerHTML = '<div style="background:#08131d;border:1px solid rgba(0,212,255,.4);border-radius:18px;padding:28px;max-width:400px;width:90%;color:#fff;">'
+                  + '<div style="font-weight:700;margin-bottom:14px;">' + t('confirm_transfer','Confirm') + '</div>'
+                  + '<div style="color:#bdd0df;margin-bottom:8px;">' + t('to_account','To') + ': <b>' + info.toAccount + '</b></div>'
+                  + '<div style="color:#bdd0df;margin-bottom:8px;">' + t('amount','Amount') + ': <b>' + Number(info.amount).toFixed(2) + ' TMT</b></div>'
+                  + '<div style="color:#9fb5c8;font-size:12px;margin-bottom:16px;">' + (info.description || '') + '</div>'
+                  + '<div style="display:flex;gap:10px;justify-content:flex-end;">'
+                  + '<button type="button" class="btn btn-outline" id="cfNo">' + t('cancel','Cancel') + '</button>'
+                  + '<button type="button" class="btn btn-primary" id="cfYes">' + t('confirm','Confirm') + '</button>'
+                  + '</div></div>';
+                document.body.appendChild(m);
+                const done = (v) => { m.remove(); resolve(v); };
+                m.querySelector('#cfYes').onclick = () => done(true);
+                m.querySelector('#cfNo').onclick  = () => done(false);
+            });
+        }
+        function handleTransferError(status, body){
+            if (status === 401) { location.href = 'login.html'; return; }
+            if (status === 403) return showMessage(t('err_forbidden','Forbidden'),'error');
+            if (status === 404) return showMessage(t('err_recipient','Recipient not found'),'error');
+            if (status === 409) return showMessage(t('err_funds','Insufficient funds'),'error');
+            if (status === 429) return showMessage(t('err_rate','Too many requests'),'error');
+            if (status === 400) return showMessage(t('err_input','Check data'),'error');
+            showMessage(t('err_server','Server error'),'error');
+        }
+        $('transferForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            showMessage(t('bank_transfer_contract_pending','Geçiriş API şertnamasy tassyklanylýança amal ýapyk'),'error');
+            const fromAccountId = $('fromAccount')?.value;
+            const toAccount = ($('toAccount')?.value || '').trim();
+            const amount = Number($('transferAmount')?.value);
+            const description = ($('transferDesc')?.value || '').trim();
+            if (!fromAccountId) return showMessage(t('err_from','Select account'),'error');
+            if (!isValidIban(toAccount)) return showMessage(t('err_iban','Invalid IBAN'),'error');
+            if (!(amount > 0)) return showMessage(t('err_amount','Invalid amount'),'error');
+            const confirmed = await confirmTransfer({ toAccount, amount, description });
+            if (!confirmed) return;
+            const btn = $('transferBtn');
+            if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = '...'; }
+            try {
+                const token = (function(){
+                    try { return JSON.parse(localStorage.getItem('sfera_user') || '{}').token || localStorage.getItem('token') || ''; }
+                    catch(e) { return localStorage.getItem('token') || ''; }
+                })();
+                const idem = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2);
+                const res = await fetch('/api/bank/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'Idempotency-Key': idem },
+                    body: JSON.stringify({ fromAccountId, toAccount, amount, description })
+                });
+                const body = await res.json().catch(() => ({}));
+                if (!res.ok) return handleTransferError(res.status, body);
+                showMessage(t('transfer_ok','Transfer completed'),'success');
+                $('transferForm')?.reset();
+                await loadBankData();
+            } catch (err) {
+                showMessage(t('net_error','Network error, try later'),'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || 'Send'; }
+            }
         });
 
-        $('logoutBtn')?.addEventListener('click',async()=>{
+$('logoutBtn')?.addEventListener('click',async()=>{
             try { if(window.api?.logout) await window.api.logout(); } finally { location.href='login.html'; }
         });
 

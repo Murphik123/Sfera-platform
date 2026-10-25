@@ -16,7 +16,9 @@ const accountSchema = new mongoose.Schema({
   currency: {
     type: String,
     default: 'TMT'
-  }
+  },
+  // SFERA-PATCH:SPRINT1:account-number
+  number: { type: String, unique: true, sparse: true }
 }, {
   timestamps: true // Автоматически управляет createdAt и updatedAt
 });

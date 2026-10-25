@@ -36,6 +36,12 @@ const transactionSchema = new mongoose.Schema({
         default: ''
     },
     relatedListing: {
+  // SFERA-PATCH:SPRINT1:tx-fields
+  userId:         { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
+  fromAccountId:  { type: mongoose.Schema.Types.ObjectId, ref: 'Account', default: null },
+  toAccountId:    { type: mongoose.Schema.Types.ObjectId, ref: 'Account', default: null },
+  toAccount:      { type: String, default: '' },
+  idempotencyKey: { type: String, index: true, sparse: true },
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Listing',
         default: null

@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
+const { generateIban } = require('../utils/ibanGenerator');
 
 const buildError = (message, status = 500) => {
   const error = new Error(message);
@@ -9,24 +10,45 @@ const buildError = (message, status = 500) => {
   return error;
 };
 
+// SFERA-PATCH:SPRINT1:overview
 exports.getBalance = async (req, res, next) => {
   try {
-    let account = await Account.findOne({ userId: req.userId }).lean();
-
-    if (!account) {
-      account = await Account.create({ userId: req.userId, balance: 0 });
+    let accounts = await Account.find({ userId: req.userId }).lean();
+    if (!accounts.length) {
+      const created = await Account.create({ userId: req.userId, balance: 0, currency: 'TMT', number: generateIban() });
+      accounts = [created.toObject()];
+    } else {
+      for (const acc of accounts) {
+        if (!acc.number) {
+          const newNum = generateIban();
+          await Account.updateOne({ _id: acc._id }, { $set: { number: newNum } });
+          acc.number = newNum;
+        }
+      }
     }
+    const ids = accounts.map(a => a._id);
+    const transactions = await Transaction.find({
+      $or: [
+        { fromAccountId: { $in: ids } },
+        { toAccountId:   { $in: ids } },
+        { sender: req.userId },
+        { recipient: req.userId }
+      ]
+    }).sort({ createdAt: -1 }).limit(20).lean();
 
     return res.status(200).json({
       success: true,
       data: {
-        balance: account.balance,
-        currency: account.currency
+        accounts: accounts.map(a => ({
+          id: String(a._id), number: a.number || '', name: a.name || a.type || 'Account',
+          type: a.type || 'main', balance: a.balance, currency: a.currency || 'TMT'
+        })),
+        cards: [], transactions, notifications: [],
+        balance: accounts.reduce((s, a) => s + ((a.currency || 'TMT') === 'TMT' ? Number(a.balance || 0) : 0), 0),
+        currency: 'TMT'
       }
     });
-  } catch (error) {
-    next(error);
-  }
+  } catch (error) { next(error); }
 };
 
 exports.transfer = async (req, res, next) => {
