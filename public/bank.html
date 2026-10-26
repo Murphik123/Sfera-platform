@@ -1106,6 +1106,83 @@
             88% { opacity: .7; }
             100% { transform: translate3d(calc(var(--particle-drift, 18px) * -1), -118vh, 0) scale(.7); opacity: 0; }
         }
+        /* SFERA-PATCH:SPRINT3.3:css — QR receive */
+        .qr-section {
+            max-width: 480px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 12px 0;
+        }
+        .qr-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .qr-hint {
+            color: #9fb5c8;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .qr-code {
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 16px;
+            border: 2px solid rgba(0,212,255,.4);
+            box-shadow: 0 0 30px rgba(0,212,255,.2);
+            min-width: 240px;
+            min-height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+        }
+        .qr-code img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+        .qr-iban-block {
+            margin-bottom: 20px;
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(0,212,255,.2);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .qr-label {
+            display: block;
+            color: #9fb5c8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .qr-iban {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #00d4ff;
+            letter-spacing: 1px;
+            word-break: break-all;
+        }
+        .qr-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 640px) {
+            .qr-actions button { flex: 1 1 100%; }
+            .qr-iban { font-size: 13px; }
+        }
+
         /* SFERA-PATCH:SPRINT3.2b:css — export button + dropdown */
         .tx-export-wrap {
             position: relative;
@@ -1284,6 +1361,8 @@
     </style>
     <!-- SFERA-PATCH:SPRINT3.1b:script — Socket.IO client -->
     <script src="/socket.io/socket.io.js"></script>
+    <!-- SFERA-PATCH:SPRINT3.3:script — QR lib (UMD) -->
+    <script src="/js/qrcode.min.js"></script>
     <script src="/js/api.js"></script>
     <script src="/scripts/auto_translate_i18n.js"></script>
 </head>
@@ -1369,6 +1448,7 @@
                 <button data-tab="transfer" data-i18n="tab_transfer">Geçiriş</button>
                 <button data-tab="history" data-i18n="tab_history">Taryh</button>
                 <button data-tab="notifications" data-i18n="tab_notifications">Bildirişler</button>
+                <button data-tab="receive" data-i18n="tab_receive">Almak</button>
             </div>
 
             <!-- Содержимое вкладок -->
@@ -1458,6 +1538,25 @@
                 <div class="empty-state" id="emptyNotif" style="display:none;">
                     <div class="icon">🔔</div>
                     <p data-i18n="no_notifications">Täze bildiriş ýok</p>
+                </div>
+            </div>
+
+            <!-- SFERA-PATCH:SPRINT3.3:content -->
+            <div class="tab-content" id="tab-receive">
+                <div class="qr-section">
+                    <h3 class="qr-title" data-i18n="receive_title">Получить перевод</h3>
+                    <p class="qr-hint" data-i18n="receive_hint">Отсканируйте QR в мобильном банке или скопируйте IBAN</p>
+                    <div class="qr-container">
+                        <div id="qrCodeBox" class="qr-code">Загрузка...</div>
+                    </div>
+                    <div class="qr-iban-block">
+                        <label class="qr-label" data-i18n="your_iban">Ваш IBAN</label>
+                        <div class="qr-iban" id="qrIbanText">—</div>
+                    </div>
+                    <div class="qr-actions">
+                        <button type="button" class="btn btn-primary" id="qrCopyBtn">📋 <span data-i18n="copy_iban">Копировать IBAN</span></button>
+                        <button type="button" class="btn btn-outline" id="qrDownloadBtn">💾 <span data-i18n="download_qr">Скачать QR</span></button>
+                    </div>
                 </div>
             </div>
 
@@ -1583,8 +1682,72 @@
         }
 
         // SFERA-PATCH:SPRINT2.2b3:activateTab
+        // SFERA-PATCH:SPRINT3.3:js — renderReceive + actions
+        function renderReceive(){
+            const box = document.getElementById('qrCodeBox');
+            const ibanEl = document.getElementById('qrIbanText');
+            if (!box) return;
+
+            const mainAcc = (bankState.accounts || []).find(a => a.currency === 'TMT' && a.number) || (bankState.accounts || [])[0];
+            const iban = mainAcc && mainAcc.number ? mainAcc.number : '';
+
+            if (ibanEl) ibanEl.textContent = iban || '—';
+            box.replaceChildren();
+
+            if (!iban) {
+                box.textContent = 'IBAN не найден. Обновите страницу.';
+                return;
+            }
+
+            if (typeof qrcode !== 'function') {
+                box.textContent = 'QR-библиотека не загружена';
+                return;
+            }
+
+            try {
+                const qr = qrcode(0, 'M');
+                qr.addData(iban);
+                qr.make();
+                box.innerHTML = qr.createImgTag(6, 4);
+            } catch (e) {
+                box.textContent = 'Ошибка QR: ' + e.message;
+            }
+        }
+
+        function bindReceiveActions(){
+            const copyBtn = document.getElementById('qrCopyBtn');
+            const dlBtn = document.getElementById('qrDownloadBtn');
+            if (copyBtn && copyBtn.dataset.bound !== '1') {
+                copyBtn.dataset.bound = '1';
+                copyBtn.addEventListener('click', async () => {
+                    const iban = document.getElementById('qrIbanText')?.textContent || '';
+                    if (!iban || iban === '—') return;
+                    try {
+                        await navigator.clipboard.writeText(iban);
+                        showMessage('IBAN скопирован: ' + iban, 'success');
+                    } catch (e) {
+                        showMessage('Не удалось скопировать', 'error');
+                    }
+                });
+            }
+            if (dlBtn && dlBtn.dataset.bound !== '1') {
+                dlBtn.dataset.bound = '1';
+                dlBtn.addEventListener('click', () => {
+                    const img = document.querySelector('#qrCodeBox img');
+                    if (!img) return showMessage('QR ещё не сгенерирован', 'error');
+                    const a = document.createElement('a');
+                    a.href = img.src;
+                    a.download = 'sfera-iban-qr.gif';
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => a.remove(), 100);
+                    showMessage('QR скачан', 'success');
+                });
+            }
+        }
+
         function activateTab(tab, updateHash=true) {
-            const valid = ['accounts','cards','transfer','history','notifications'];
+            const valid = ['accounts','cards','transfer','history','notifications','receive']; // SFERA-PATCH:SPRINT3.3
             if (!valid.includes(tab)) tab='accounts';
             bankState.activeTab=tab;
             document.querySelectorAll('.bank-tabs button').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===tab));
@@ -1595,6 +1758,10 @@
                 // SFERA-PATCH:SPRINT3.2b:activateTab
                 if (typeof bindTxExport === 'function') bindTxExport();
                 loadTransactions();
+            }
+            if (tab === 'receive' && typeof renderReceive === 'function') {
+                renderReceive();
+                bindReceiveActions();
             }
             if (updateHash) history.replaceState(null,'',`#${tab}`);
         }
