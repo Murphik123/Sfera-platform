@@ -1705,6 +1705,133 @@
     </style>
     <!-- SFERA-PATCH:SPRINT3.1b:script — Socket.IO client -->
     <!-- SFERA-PATCH:SPRINT3.3:script — QR lib (UMD) -->
+    <style>
+        /* SFERA-PATCH:SPRINT3.4n:css — reveal card modal */
+        .reveal-card-btn {
+            margin-top: auto;
+            padding: 7px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,212,255,.35);
+            background: rgba(0,212,255,.08);
+            color: #dbe9ff;
+            font-size: 12px;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .reveal-card-btn:hover {
+            background: rgba(0,212,255,.2);
+            border-color: rgba(0,212,255,.7);
+            color: #00d4ff;
+        }
+        .card-actions-row {
+            margin-top: auto;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .reveal-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3,8,14,.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            padding: 20px;
+        }
+        .reveal-modal-box {
+            background: #08131d;
+            border: 1px solid rgba(0,212,255,.4);
+            border-radius: 18px;
+            padding: 28px;
+            max-width: 420px;
+            width: 100%;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .reveal-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff, #b4d7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .reveal-modal-hint {
+            color: #9fb5c8;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        .reveal-input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,212,255,.2);
+            background: rgba(255,255,255,.05);
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 14px;
+            outline: none;
+        }
+        .reveal-input:focus {
+            border-color: #00d4ff;
+        }
+        .reveal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .reveal-data {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .reveal-row {
+            padding: 12px 14px;
+            background: rgba(0,212,255,.06);
+            border: 1px solid rgba(0,212,255,.2);
+            border-radius: 10px;
+        }
+        .reveal-row-label {
+            font-size: 11px;
+            color: #9fb5c8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .reveal-row-value {
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            font-weight: 600;
+            color: #00d4ff;
+            letter-spacing: 1px;
+            word-break: break-all;
+            cursor: pointer;
+            user-select: all;
+        }
+        .reveal-row-value:hover {
+            color: #00ffa3;
+        }
+        .reveal-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00d4ff, #00ffa3);
+            transition: width 1s linear;
+        }
+        .reveal-error {
+            color: #ff6b6b;
+            font-size: 13px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255,107,107,.1);
+            border: 1px solid rgba(255,107,107,.3);
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
     <!-- V19 BACKGROUND LAYERS — порядок не менять -->
@@ -2240,6 +2367,131 @@
             });
         }
 
+        // SFERA-PATCH:SPRINT3.4n:js — reveal card modal
+        var _revealTimer = null;
+        var _revealCurrentCardId = null;
+
+        function openRevealPasswordModal(cardId) {
+            _revealCurrentCardId = cardId;
+            var existing = document.getElementById('revealPasswordModal');
+            if (existing) existing.remove();
+
+            var ov = document.createElement('div');
+            ov.className = 'reveal-modal-overlay';
+            ov.id = 'revealPasswordModal';
+            ov.innerHTML = '<div class="reveal-modal-box">'
+                + '<div class="reveal-modal-title">Реквизиты карты</div>'
+                + '<div class="reveal-modal-hint">Введите пароль от аккаунта для просмотра</div>'
+                + '<div id="revealErr" class="reveal-error" style="display:none;"></div>'
+                + '<input type="password" class="reveal-input" id="revealPasswordInput" placeholder="Пароль..." autocomplete="current-password" />'
+                + '<div class="reveal-actions">'
+                + '<button type="button" class="btn btn-outline" id="revealCancel">Отмена</button>'
+                + '<button type="button" class="btn btn-primary" id="revealSubmit">Показать</button>'
+                + '</div></div>';
+            document.body.appendChild(ov);
+
+            var input = document.getElementById('revealPasswordInput');
+            setTimeout(function() { input && input.focus(); }, 50);
+
+            var submit = async function() {
+                var pwd = (input && input.value || '').trim();
+                if (!pwd) { showRevealError('Введите пароль'); return; }
+                var btn = document.getElementById('revealSubmit');
+                if (btn) { btn.disabled = true; btn.textContent = '...'; }
+                try {
+                    var res = await fetch('/api/bank/cards/' + cardId + '/reveal', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getAuthToken() },
+                        body: JSON.stringify({ password: pwd })
+                    });
+                    var body = await res.json().catch(function(){ return {}; });
+                    if (!res.ok) {
+                        if (res.status === 401) showRevealError('Неверный пароль');
+                        else if (res.status === 429) showRevealError('Слишком много попыток. Подождите 5 минут.');
+                        else if (res.status === 403) showRevealError('Карта заморожена');
+                        else showRevealError(body.message || ('Ошибка ' + res.status));
+                        return;
+                    }
+                    ov.remove();
+                    showRevealData(cardId, body.data);
+                } catch (e) {
+                    showRevealError('Сеть: ' + e.message);
+                } finally {
+                    if (btn) { btn.disabled = false; btn.textContent = 'Показать'; }
+                }
+            };
+
+            document.getElementById('revealCancel').onclick = function() { ov.remove(); };
+            document.getElementById('revealSubmit').onclick = submit;
+            input.addEventListener('keydown', function(e) { if (e.key === 'Enter') submit(); });
+            ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+        }
+
+        function showRevealError(msg) {
+            var el = document.getElementById('revealErr');
+            if (el) { el.textContent = msg; el.style.display = 'block'; }
+        }
+
+        function formatCardPan(pan) {
+            var s = String(pan || '').replace(/\s+/g, '');
+            return s.replace(/(.{4})/g, '$1 ').trim();
+        }
+
+        function showRevealData(cardId, data) {
+            _revealCurrentCardId = cardId;
+            if (_revealTimer) { clearInterval(_revealTimer); _revealTimer = null; }
+
+            var existing = document.getElementById('revealDataModal');
+            if (existing) existing.remove();
+
+            var ov = document.createElement('div');
+            ov.className = 'reveal-modal-overlay';
+            ov.id = 'revealDataModal';
+
+            ov.innerHTML = '<div class="reveal-modal-box" style="position:relative;">'
+                + '<div class="reveal-modal-title">Реквизиты карты</div>'
+                + '<div class="reveal-modal-hint">Скрыть через <span id="revealCountdown">15</span> сек. Клик по значению — копирует.</div>'
+                + '<div class="reveal-data">'
+                + '<div class="reveal-row"><div class="reveal-row-label">Номер</div><div class="reveal-row-value" data-copy="' + data.fullNumber + '">' + formatCardPan(data.fullNumber) + '</div></div>'
+                + '<div class="reveal-row"><div class="reveal-row-label">CVV</div><div class="reveal-row-value" data-copy="' + data.cvv + '">' + data.cvv + '</div></div>'
+                + '<div class="reveal-row"><div class="reveal-row-label">Срок действия</div><div class="reveal-row-value" data-copy="' + data.expiry + '">' + data.expiry + '</div></div>'
+                + '</div>'
+                + '<div class="reveal-actions">'
+                + '<button type="button" class="btn btn-outline" id="revealClose">Скрыть</button>'
+                + '</div>'
+                + '<div class="reveal-progress" id="revealProgress" style="width:100%;"></div>'
+                + '</div>';
+            document.body.appendChild(ov);
+
+            ov.querySelectorAll('[data-copy]').forEach(function(el) {
+                el.addEventListener('click', async function() {
+                    try {
+                        await navigator.clipboard.writeText(el.dataset.copy);
+                        showToast('Скопировано: ' + el.dataset.copy, 'success');
+                    } catch (e) {
+                        showToast('Не удалось скопировать', 'error');
+                    }
+                });
+            });
+
+            var close = function() {
+                if (_revealTimer) { clearInterval(_revealTimer); _revealTimer = null; }
+                ov.remove();
+            };
+            document.getElementById('revealClose').onclick = close;
+            ov.addEventListener('click', function(e) { if (e.target === ov) close(); });
+
+            var remaining = 15;
+            var prog = document.getElementById('revealProgress');
+            _revealTimer = setInterval(function() {
+                remaining--;
+                var cd = document.getElementById('revealCountdown');
+                if (cd) cd.textContent = String(Math.max(0, remaining));
+                if (prog) prog.style.width = Math.max(0, (remaining / 15) * 100) + '%';
+                if (remaining <= 0) close();
+            }, 1000);
+        }
+
         function activateTab(tab, updateHash=true) {
             const valid = ['accounts','cards','transfer','history','notifications','receive']; // SFERA-PATCH:SPRINT3.3
             if (!valid.includes(tab)) tab='accounts';
@@ -2359,7 +2611,20 @@
                 btn.dataset.frozen=String(!!c.frozen);
                 btn.textContent = c.frozen ? '🔥 Разморозить' : '❄️ Заморозить';
 
-                card.append(type, num, exp, logo, badge, btn);
+                // SFERA-PATCH:SPRINT3.4n:renderCards — добавляем 👁 кнопку
+                var revealBtn = document.createElement('button');
+                revealBtn.type = 'button';
+                revealBtn.className = 'reveal-card-btn';
+                revealBtn.dataset.action = 'reveal';
+                revealBtn.dataset.cardId = String(c.id || c._id || '');
+                revealBtn.textContent = '👁 Реквизиты';
+
+                var actionsRow = document.createElement('div');
+                actionsRow.className = 'card-actions-row';
+                actionsRow.appendChild(btn);
+                actionsRow.appendChild(revealBtn);
+
+                card.append(type, num, exp, logo, badge, actionsRow);
                 grid.appendChild(card);
             });
 
@@ -2367,6 +2632,14 @@
                 b.addEventListener('click', (e) => {
                     e.stopPropagation();
                     toggleCardFreeze(b.dataset.cardId, b.dataset.frozen === 'true');
+                });
+            });
+
+            // SFERA-PATCH:SPRINT3.4n:reveal-handler
+            grid.querySelectorAll('button[data-action="reveal"]').forEach(b => {
+                b.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openRevealPasswordModal(b.dataset.cardId);
                 });
             });
         }
