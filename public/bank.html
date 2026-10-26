@@ -884,6 +884,7 @@
             margin: 0;
             max-height: 400px;
             overflow-y: auto;
+            overflow-x: hidden; /* SFERA-PATCH:SPRINT2.2b3-fix-scroll — убираем горизонтальный скролл */
         }
         .transactions-list li {
             padding: 14px 0;
@@ -1177,13 +1178,10 @@
             min-width: 80px;
             text-align: center;
         }
+        /* SFERA-PATCH:SPRINT2.2b3-fix-scroll:css — clickable row без горизонтального overflow */
         .transactions-list li.tx-item-clickable {
             cursor: pointer;
             transition: background .2s;
-            padding-left: 8px;
-            padding-right: 8px;
-            margin-left: -8px;
-            margin-right: -8px;
             border-radius: 6px;
         }
         .transactions-list li.tx-item-clickable:hover {
