@@ -1106,6 +1106,60 @@
             88% { opacity: .7; }
             100% { transform: translate3d(calc(var(--particle-drift, 18px) * -1), -118vh, 0) scale(.7); opacity: 0; }
         }
+        /* SFERA-PATCH:SPRINT3.2b:css — export button + dropdown */
+        .tx-export-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+        .tx-export-btn {
+            min-height: 42px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,212,255,.28);
+            background: rgba(255,255,255,.045);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .25s;
+            white-space: nowrap;
+        }
+        .tx-export-btn:hover {
+            background: rgba(0,212,255,.12);
+            border-color: rgba(0,212,255,.55);
+        }
+        .tx-export-menu {
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            min-width: 160px;
+            background: #08131d;
+            border: 1px solid rgba(0,212,255,.3);
+            border-radius: 10px;
+            padding: 6px;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,.5);
+        }
+        .tx-export-menu.active {
+            display: block;
+        }
+        .tx-export-menu button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .tx-export-menu button:hover {
+            background: rgba(0,212,255,.12);
+        }
+
         /* SFERA-PATCH:SPRINT2.2b3:css — tx filters + pagination + clickable rows */
         .tx-filters {
             display: flex;
@@ -1378,6 +1432,14 @@
                         <input type="search" id="txFilterSearch" placeholder="Описание..." />
                     </div>
                     <button type="button" class="btn btn-outline" id="txFilterReset">Сброс</button>
+                    <!-- SFERA-PATCH:SPRINT3.2b:html — export dropdown -->
+                    <div class="tx-export-wrap" id="txExportWrap">
+                        <button type="button" class="tx-export-btn" id="txExportBtn">📥 Экспорт ▼</button>
+                        <div class="tx-export-menu" id="txExportMenu">
+                            <button type="button" data-format="pdf">📄 PDF</button>
+                            <button type="button" data-format="csv">📊 CSV</button>
+                        </div>
+                    </div>
                 </div>
                 <ul class="transactions-list" id="transactionsList"></ul>
                 <div class="tx-pagination" id="txPagination" style="display:none;">
@@ -1530,6 +1592,8 @@
             if (tab === 'history' && typeof loadTransactions === 'function') {
                 bindTxFilters();
                 bindTxPagination();
+                // SFERA-PATCH:SPRINT3.2b:activateTab
+                if (typeof bindTxExport === 'function') bindTxExport();
                 loadTransactions();
             }
             if (updateHash) history.replaceState(null,'',`#${tab}`);
@@ -1933,6 +1997,71 @@ $('logoutBtn')?.addEventListener('click',async()=>{
                 const tx = bankState.transactions.find(t => String(t._id || t.id) === id);
                 if (tx) openTxDetails(tx);
             });
+        }
+
+        // SFERA-PATCH:SPRINT3.2b:js — export button
+        function bindTxExport(){
+            const wrap = document.getElementById('txExportWrap');
+            const btn  = document.getElementById('txExportBtn');
+            const menu = document.getElementById('txExportMenu');
+            if (!wrap || !btn || !menu) return;
+            if (btn.dataset.bound === '1') return;
+            btn.dataset.bound = '1';
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('active');
+            });
+            document.addEventListener('click', (e) => {
+                if (!wrap.contains(e.target)) menu.classList.remove('active');
+            });
+
+            menu.querySelectorAll('button[data-format]').forEach(item => {
+                item.addEventListener('click', async () => {
+                    menu.classList.remove('active');
+                    const format = item.dataset.format || 'pdf';
+                    await downloadExport(format);
+                });
+            });
+        }
+
+        async function downloadExport(format){
+            try {
+                const f = bankState.txFilters || {};
+                const params = new URLSearchParams();
+                params.set('format', format);
+                if (f.type)   params.set('type', f.type);
+                if (f.from)   params.set('from', f.from);
+                if (f.to)     params.set('to', f.to);
+                if (f.search) params.set('search', f.search);
+
+                showMessage('Готовлю ' + format.toUpperCase() + '...', 'success');
+
+                const res = await fetch('/api/bank/transactions/export?' + params.toString(), {
+                    headers: { 'Authorization': 'Bearer ' + getAuthToken() }
+                });
+                if (!res.ok) {
+                    const body = await res.json().catch(() => ({}));
+                    return showMessage('Экспорт: ' + (body.message || ('HTTP ' + res.status)), 'error');
+                }
+
+                const blob = await res.blob();
+                const cd = res.headers.get('Content-Disposition') || '';
+                const m = /filename="([^"]+)"/.exec(cd);
+                const filename = m ? m[1] : ('sfera-bank.' + format);
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+
+                showMessage('Скачано: ' + filename, 'success');
+            } catch (e) {
+                showMessage('Ошибка экспорта: ' + e.message, 'error');
+            }
         }
 
         function bindTxFilters(){
