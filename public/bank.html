@@ -1106,6 +1106,13 @@
             88% { opacity: .7; }
             100% { transform: translate3d(calc(var(--particle-drift, 18px) * -1), -118vh, 0) scale(.7); opacity: 0; }
         }
+        /* SFERA-PATCH:SPRINT3.4c:css — align tabs + tab-content с balance-card (920px) */
+        .bank-tabs,
+        .tab-content.active {
+            max-width: 920px;
+            width: 100%;
+        }
+
         /* SFERA-PATCH:SPRINT3.4b:css — cards toolbar + card-item + modal */
         .cards-toolbar {
             display: flex;
