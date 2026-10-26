@@ -1705,11 +1705,26 @@
         }
     </style>
     <!-- SFERA-PATCH:SPRINT3.1b:script — Socket.IO client -->
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js" defer></script>
     <!-- SFERA-PATCH:SPRINT3.3:script — QR lib (UMD) -->
-    <script src="/js/qrcode.min.js"></script>
-    <script src="/js/api.js"></script>
-    <script src="/scripts/auto_translate_i18n.js"></script>
+    <script src="/js/qrcode.min.js" defer></script>
+    <script src="/js/api.js" defer></script>
+    <script src="/scripts/auto_translate_i18n.js" defer></script>
+    <style>
+        /* SFERA-PATCH:SPRINT3.4i:css — cascade override (побеждает 3.4b) */
+        .card-item .card-number {
+            font-size: 20px !important;
+            letter-spacing: 2px !important;
+            padding-right: 0 !important;
+            white-space: nowrap !important;
+        }
+        .card-item .card-logo {
+            top: 14px !important;
+            right: 20px !important;
+            font-size: 24px !important;
+            line-height: 1 !important;
+        }
+    </style>
 </head>
 <body>
     <!-- V19 BACKGROUND LAYERS — порядок не менять -->
@@ -1930,6 +1945,8 @@
     </section>
 
     <script>
+        // SFERA-PATCH:SPRINT3.4i:wrap — ждём defer-скрипты
+        document.addEventListener('DOMContentLoaded', function() {
         /* ============================================================
            SFERA BANK — approval candidate v22
            Visual DOM/CSS preserved; demo financial mutations removed.
@@ -2814,6 +2831,7 @@ $('logoutBtn')?.addEventListener('click',async()=>{
         populateUsername();
         // SFERA-PATCH:SPRINT3.4de:init
         bindBalanceQuickActions();
+        }); // SFERA-PATCH:SPRINT3.4i:wrap end
 
         // SFERA-PATCH:SPRINT3.1b:init — Socket.IO realtime
         (function initBankSocket(){
