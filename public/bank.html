@@ -1362,13 +1362,14 @@
         }
 
         // SFERA-PATCH:SPRINT2.2b2:helpers
+        // SFERA-PATCH:SPRINT2.2b2-fix:helpers
         function showSkeletons() {
-            ['totalBalance', 'mainAccount'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('skeleton');
-            });
+            // только #totalBalance — IBAN (#mainAccount) всегда виден
+            const el = document.getElementById('totalBalance');
+            if (el) el.classList.add('skeleton');
         }
         function hideSkeletons() {
+            // снимаем с обоих — страховка от залипания
             ['totalBalance', 'mainAccount'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.remove('skeleton');
@@ -1508,10 +1509,12 @@
                 // SFERA-PATCH:SPRINT1:html-load
         let _bankLoading = false;
         // SFERA-PATCH:SPRINT2.2b2:load — parallel notifications + skeleton
-        async function loadBankData(){
+        // SFERA-PATCH:SPRINT2.2b2-fix:load — skeleton только по opts.skeleton
+        async function loadBankData(opts){
             if (_bankLoading) return;
             _bankLoading = true;
-            showSkeletons();
+            const showSk = !!(opts && opts.skeleton === true);
+            if (showSk) showSkeletons();
             try {
                 if(!window.api || typeof window.api.request!=='function') {
                     showMessage(t('bank_api_unavailable','Bank API elýeterli däl'),'error'); return;
@@ -1557,7 +1560,8 @@
             });
         })();
 
-        $('refreshBtn')?.addEventListener('click',loadBankData);
+        // SFERA-PATCH:SPRINT2.2b2-fix:refresh — refreshBtn с skeleton
+        $('refreshBtn')?.addEventListener('click', () => loadBankData({ skeleton: true }));
                 // SFERA-PATCH:SPRINT1:html-submit
         function isValidIban(raw){
             if (!raw) return false;
@@ -1652,7 +1656,8 @@ $('logoutBtn')?.addEventListener('click',async()=>{
         initBackgroundCanvas();
         renderAccounts(); renderCards(); renderHistory(); renderNotifications(); populateFromAccounts(); updateTotalBalance();
              // SFERA-PATCH:SPRINT1.5:refresh
-        loadBankData();
+        // SFERA-PATCH:SPRINT2.2b2-fix:init — при первой загрузке skeleton
+        loadBankData({ skeleton: true });
         populateUsername();
 
         // Background refresh: получатель видит входящие без F5.
