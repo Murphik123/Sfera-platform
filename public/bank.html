@@ -1705,11 +1705,7 @@
         }
     </style>
     <!-- SFERA-PATCH:SPRINT3.1b:script — Socket.IO client -->
-    <script src="/socket.io/socket.io.js"></script>
     <!-- SFERA-PATCH:SPRINT3.3:script — QR lib (UMD) -->
-    <script src="/js/qrcode.min.js"></script>
-    <script src="/js/api.js"></script>
-    <script src="/scripts/auto_translate_i18n.js"></script>
 </head>
 <body>
     <!-- V19 BACKGROUND LAYERS — порядок не менять -->
@@ -1929,6 +1925,10 @@
         </div>
     </section>
 
+    <!-- SFERA-PATCH:SPRINT3.4k:body-scripts — external перед inline -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/scripts/auto_translate_i18n.js"></script>
     <script>
         /* ============================================================
            SFERA BANK — approval candidate v22
@@ -2146,8 +2146,16 @@
                 return;
             }
 
+            // SFERA-PATCH:SPRINT3.4k:lazy-qr — qrcode.min.js грузится при первом открытии Almak
             if (typeof qrcode !== 'function') {
-                box.textContent = 'QR-библиотека не загружена';
+                if (window._qrLoading) { box.textContent = 'Загрузка QR...'; return; }
+                window._qrLoading = true;
+                box.textContent = 'Загрузка QR...';
+                var script = document.createElement('script');
+                script.src = '/js/qrcode.min.js';
+                script.onload = function() { window._qrLoading = false; renderReceive(); };
+                script.onerror = function() { window._qrLoading = false; box.textContent = 'QR не загрузился'; };
+                document.head.appendChild(script);
                 return;
             }
 
