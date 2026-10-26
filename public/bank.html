@@ -1142,6 +1142,17 @@
             border-color: #00d4ff;
             box-shadow: 0 0 0 2px rgba(0,212,255,.15);
         }
+        /* SFERA-PATCH:SPRINT2.2b3-fix-select:options — dark dropdown (иначе белый текст на белом фоне) */
+        .tx-filter-group select option {
+            background-color: #08131d !important;
+            color: #ffffff !important;
+        }
+        .tx-filter-group select option:checked,
+        .tx-filter-group select option:hover,
+        .tx-filter-group select option:focus {
+            background-color: #0d2b3b !important;
+            color: #ffffff !important;
+        }
         .tx-filter-search {
             flex: 1;
             min-width: 180px;
