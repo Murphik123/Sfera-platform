@@ -1106,6 +1106,85 @@
             88% { opacity: .7; }
             100% { transform: translate3d(calc(var(--particle-drift, 18px) * -1), -118vh, 0) scale(.7); opacity: 0; }
         }
+        /* SFERA-PATCH:SPRINT3.4de:css — cards 360×227 + premium balance */
+        .cards-grid {
+            grid-template-columns: repeat(auto-fill, 360px);
+            justify-content: start;
+        }
+        .card-item {
+            width: 360px;
+            height: 227px;
+            box-sizing: border-box;
+        }
+        .balance-card {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 18px;
+        }
+        .balance-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .balance-quick-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0,212,255,.15);
+            width: 100%;
+        }
+        .balance-quick-actions .qa-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(0,212,255,.2);
+            border-radius: 12px;
+            color: #dbe9ff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform .25s, background .25s, border-color .25s, color .25s;
+            font-family: inherit;
+        }
+        .balance-quick-actions .qa-btn:hover {
+            background: rgba(0,212,255,.12);
+            border-color: rgba(0,212,255,.55);
+            color: #00d4ff;
+            transform: translateY(-2px);
+        }
+        .balance-quick-actions .qa-btn:active {
+            transform: translateY(0);
+        }
+        .balance-quick-actions .qa-icon {
+            font-size: 18px;
+            line-height: 1;
+        }
+        @media (max-width: 640px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .card-item {
+                width: 100%;
+                max-width: 360px;
+                height: auto;
+                min-height: 200px;
+            }
+            .balance-quick-actions {
+                flex-wrap: wrap;
+            }
+            .balance-quick-actions .qa-btn {
+                flex: 1 1 calc(50% - 5px);
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+        }
+
         /* SFERA-PATCH:SPRINT3.4c:css — align tabs + tab-content с balance-card (920px) */
         .bank-tabs,
         .tab-content.active {
@@ -1585,18 +1664,35 @@
             </div>
 
             <!-- Балансовая карта -->
+            <!-- SFERA-PATCH:SPRINT3.4de:html -->
             <div class="balance-card">
-                <div>
-                    <div class="balance-label" data-i18n="total_balance">Jemi balans</div>
+                <div class="balance-main">
                     <div>
-                        <span class="balance-amount" id="totalBalance">0.00</span>
-                        <span class="balance-currency">TMT</span>
+                        <div class="balance-label" data-i18n="total_balance">Jemi balans</div>
+                        <div>
+                            <span class="balance-amount" id="totalBalance">0.00</span>
+                            <span class="balance-currency">TMT</span>
+                        </div>
+                        <div class="account-number"><span data-i18n="account_label">Hasap:</span> <span id="mainAccount">1234 5678 9012 3456</span></div>
                     </div>
-                    <div class="account-number"><span data-i18n="account_label">Hasap:</span> <span id="mainAccount">1234 5678 9012 3456</span></div>
+                    <div style="text-align:right;">
+                        <div style="font-size:14px; color:#bdd0df;" data-i18n="premium_label">★ Premium hyzmat</div>
+                        <div style="font-size:12px; color:#9fb5c8;"><span data-i18n="active_since_label">Işjeň:</span> <span id="activeSince">2024</span></div>
+                    </div>
                 </div>
-                <div style="text-align:right;">
-                    <div style="font-size:14px; color:#bdd0df;" data-i18n="premium_label">★ Premium hyzmat</div>
-                    <div style="font-size:12px; color:#9fb5c8;"><span data-i18n="active_since_label">Işjeň:</span> <span id="activeSince">2024</span></div>
+                <div class="balance-quick-actions">
+                    <button type="button" class="qa-btn" data-qa-tab="transfer">
+                        <span class="qa-icon">→</span>
+                        <span data-i18n="tab_transfer">Geçiriş</span>
+                    </button>
+                    <button type="button" class="qa-btn" data-qa-tab="receive">
+                        <span class="qa-icon">↓</span>
+                        <span data-i18n="tab_receive">Almak</span>
+                    </button>
+                    <button type="button" class="qa-btn" data-qa-tab="history">
+                        <span class="qa-icon">📊</span>
+                        <span data-i18n="tab_history">Taryh</span>
+                    </button>
                 </div>
             </div>
 
@@ -1990,6 +2086,19 @@
                     showMessage('QR скачан', 'success');
                 });
             }
+        }
+
+        // SFERA-PATCH:SPRINT3.4de:js — quick actions
+        function bindBalanceQuickActions() {
+            const btns = document.querySelectorAll('.balance-quick-actions .qa-btn[data-qa-tab]');
+            btns.forEach(btn => {
+                if (btn.dataset.bound === '1') return;
+                btn.dataset.bound = '1';
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.qaTab;
+                    if (tab && typeof activateTab === 'function') activateTab(tab);
+                });
+            });
         }
 
         function activateTab(tab, updateHash=true) {
@@ -2571,6 +2680,8 @@ $('logoutBtn')?.addEventListener('click',async()=>{
         // SFERA-PATCH:SPRINT2.2b2-fix:init — при первой загрузке skeleton
         loadBankData({ skeleton: true });
         populateUsername();
+        // SFERA-PATCH:SPRINT3.4de:init
+        bindBalanceQuickActions();
 
         // SFERA-PATCH:SPRINT3.1b:init — Socket.IO realtime
         (function initBankSocket(){
