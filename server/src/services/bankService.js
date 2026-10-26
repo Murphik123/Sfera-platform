@@ -4,7 +4,8 @@ const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
 const Notification = require('../models/Notification');
 
-async function transfer(userId, { fromAccountId, toAccount, amount, description, idempotencyKey }) {
+// SFERA-PATCH:SPRINT3.1a:service
+async function transfer(userId, { fromAccountId, toAccount, amount, description, idempotencyKey, io }) {
   if (idempotencyKey) {
     const existing = await Transaction.findOne({ userId, idempotencyKey }).lean();
     if (existing) {
@@ -42,6 +43,31 @@ async function transfer(userId, { fromAccountId, toAccount, amount, description,
     }], { session });
     await session.commitTransaction();
 
+    // SFERA-PATCH:SPRINT3.1a:emit — realtime balance_updated (только при реальном переводе)
+    if (io) {
+      try {
+        const txId = String(tx._id);
+        io.to(String(userId)).emit('balance_updated', {
+          newBalance: sender.balance,
+          transactionId: txId,
+          direction: 'out',
+          amount,
+          counterparty: recipient.number || ''
+        });
+        if (recipient.userId) {
+          io.to(String(recipient.userId)).emit('balance_updated', {
+            newBalance: recipient.balance,
+            transactionId: txId,
+            direction: 'in',
+            amount,
+            counterparty: sender.number || ''
+          });
+        }
+      } catch (e) {
+        console.warn('[SFERA-PATCH:SPRINT3.1a] io emit failed:', e.message);
+      }
+    }
+
     // SFERA-PATCH:SPRINT2.2a:notify — sender out + recipient in (best-effort, after commit)
     try {
       const notes = [
@@ -61,6 +87,19 @@ async function transfer(userId, { fromAccountId, toAccount, amount, description,
         });
       }
       await Notification.insertMany(notes);
+
+      // SFERA-PATCH:SPRINT3.1a:notify-emit — realtime notification для получателя
+      if (io && recipient.userId) {
+        try {
+          io.to(String(recipient.userId)).emit('bank_notification', {
+            type: 'transfer_in',
+            message: 'Поступление ' + amount + ' ' + recipient.currency,
+            transactionId: String(tx._id)
+          });
+        } catch (e) {
+          console.warn('[SFERA-PATCH:SPRINT3.1a] notification emit failed:', e.message);
+        }
+      }
     } catch (e) {
       console.warn('[SFERA-PATCH:SPRINT2.2a] Notification insert failed:', e.message);
     }

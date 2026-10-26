@@ -11,12 +11,15 @@ router.use(authMiddleware);
 router.get('/balance', getBalance);
 router.post('/transfer', validateBankTransfer, async (req, res, next) => {
   try {
+    // SFERA-PATCH:SPRINT3.1a:routes — io из app для realtime
+    const io = req.app.get('io');
     const result = await transfer(req.userId, {
       fromAccountId: req.body.fromAccountId,
       toAccount: req.body.toAccount,
       amount: req.body.amount,
       description: req.body.description,
-      idempotencyKey: req.headers['idempotency-key'] || req.body.idempotencyKey
+      idempotencyKey: req.headers['idempotency-key'] || req.body.idempotencyKey,
+      io
     });
     return res.status(201).json({ success: true, data: result });
   } catch (err) { return next(mapTransferError(err)); }
