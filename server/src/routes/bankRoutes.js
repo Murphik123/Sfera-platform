@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const authMiddleware = require('../middleware/auth');
 // SFERA-PATCH:SPRINT1:routes
-const { getBalance, getTransactions, getNotifications, markNotificationRead, exportTransactions, getCards, createCard, freezeCard } = require('../controllers/bankController');
+const { getBalance, getTransactions, getNotifications, markNotificationRead, exportTransactions, getCards, createCard, freezeCard, revealCard } = require('../controllers/bankController');
 const { transfer } = require('../services/bankService');
 const validateBankTransfer = require('../middleware/validateBankTransfer');
 const { mapTransferError } = require('../utils/mapTransferError');
@@ -31,6 +31,8 @@ router.get('/transactions/export', exportTransactions);
 router.get('/cards', getCards);
 router.post('/cards', createCard);
 router.patch('/cards/:id', freezeCard);
+// SFERA-PATCH:SPRINT3.4m:routes
+router.post('/cards/:id/reveal', revealCard);
 
 // SFERA-PATCH:SPRINT2:routes
 router.get('/notifications', getNotifications);

@@ -31,4 +31,13 @@ function generateExpiry() {
   return mm + '/' + yy;
 }
 
-module.exports = { generateCardNumber, formatMasked, generateExpiry };
+// SFERA-PATCH:SPRINT3.4m:cvv — детерминированный CVV через HMAC(cardId + secret), НЕ хранится
+const cryptoMod = require('crypto');
+function generateCvv(cardId) {
+  const secret = process.env.CARD_CVV_SECRET || 'sfera-default-cvv-secret-change-me';
+  const h = cryptoMod.createHmac('sha256', secret).update(String(cardId)).digest();
+  const num = (h.readUInt32BE(0) % 900) + 100; // 100-999
+  return String(num);
+}
+
+module.exports = { generateCardNumber, formatMasked, generateExpiry, generateCvv };

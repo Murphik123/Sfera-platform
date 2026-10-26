@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
 const Card = require('../models/Card');
-const { generateCardNumber, formatMasked, generateExpiry } = require('../utils/cardNumber');
+const CardReveal = require('../models/CardReveal');
+const User = require('../models/User');
+const { generateCardNumber, formatMasked, generateExpiry, generateCvv } = require('../utils/cardNumber');
 const Notification = require('../models/Notification');
+const bcrypt = require('bcryptjs');
 const { toCsv } = require('../utils/exportCsv');
 const { buildPdf } = require('../utils/exportPdf');
 const { generateIban } = require('../utils/ibanGenerator');
@@ -189,6 +192,11 @@ exports.markNotificationRead = async (req, res, next) => {
 }
 
 // SFERA-PATCH:SPRINT3.4a:cards
+// SFERA-PATCH:SPRINT3.4m:rate-limit-map
+const _revealAttempts = new Map();
+const REVEAL_WINDOW_MS = 5 * 60 * 1000;
+const REVEAL_MAX = 3;
+
 exports.getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({ userId: req.userId }).sort({ createdAt: -1 }).lean();
@@ -241,7 +249,80 @@ exports.freezeCard = async (req, res, next) => {
     await card.save();
     return res.status(200).json({ success: true, data: { id: String(card._id), frozen: card.frozen } });
   } catch (error) { next(error); }
-};
+}
+
+// SFERA-PATCH:SPRINT3.4m:reveal
+exports.revealCard = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const password = String((req.body && req.body.password) || '');
+
+    if (!mongoose.Types.ObjectId.isValid(String(id))) {
+      return res.status(400).json({ success: false, code: 'INVALID_ID', message: 'Invalid card id' });
+    }
+    if (!password) {
+      return res.status(400).json({ success: false, code: 'PASSWORD_REQUIRED', message: 'Password required' });
+    }
+
+    // Rate limit: 3 attempts / 5 min per user
+    const now = Date.now();
+    const key = String(req.userId);
+    const attempts = (_revealAttempts.get(key) || []).filter(t => now - t < REVEAL_WINDOW_MS);
+    if (attempts.length >= REVEAL_MAX) {
+      return res.status(429).json({ success: false, code: 'RATE_LIMIT', message: 'Too many attempts' });
+    }
+    attempts.push(now);
+    _revealAttempts.set(key, attempts);
+
+    // Verify password
+    const user = await User.findById(req.userId).select('password');
+    if (!user || !user.password) {
+      return res.status(401).json({ success: false, code: 'AUTH', message: 'Authentication failed' });
+    }
+    const okPwd = await bcrypt.compare(password, user.password);
+    if (!okPwd) {
+      try {
+        await CardReveal.create({
+          userId: req.userId, cardId: id,
+          ip: req.ip || '', userAgent: req.get('user-agent') || '',
+          success: false
+        });
+      } catch (e) {}
+      return res.status(401).json({ success: false, code: 'INVALID_PASSWORD', message: 'Invalid password' });
+    }
+
+    // Load card
+    const card = await Card.findOne({ _id: id, userId: req.userId }).lean();
+    if (!card) {
+      return res.status(404).json({ success: false, code: 'NOT_FOUND', message: 'Card not found' });
+    }
+    if (card.frozen) {
+      return res.status(403).json({ success: false, code: 'CARD_FROZEN', message: 'Card is frozen' });
+    }
+
+    // Audit
+    try {
+      await CardReveal.create({
+        userId: req.userId, cardId: id,
+        ip: req.ip || '', userAgent: req.get('user-agent') || '',
+        success: true
+      });
+    } catch (e) { console.warn('[$TAG] audit fail:', e.message); }
+
+    // Deterministic CVV (не хранится)
+    const cvv = generateCvv(id);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        fullNumber: card.fullNumber,
+        cvv: cvv,
+        expiry: card.expiry,
+        type: card.type
+      }
+    });
+  } catch (error) { next(error); }
+};;
 
 
 // SFERA-PATCH:SPRINT3.2a:exports
