@@ -1107,6 +1107,17 @@
             88% { opacity: .7; }
             100% { transform: translate3d(calc(var(--particle-drift, 18px) * -1), -118vh, 0) scale(.7); opacity: 0; }
         }
+        /* SFERA-PATCH:SPRINT3.4g:css — fix card-logo overlap */
+        .card-item .card-logo {
+            top: 14px;
+            right: 20px;
+            font-size: 24px;
+            line-height: 1;
+        }
+        .card-item .card-number {
+            padding-right: 50px;
+        }
+
         /* SFERA-PATCH:SPRINT3.4f:css — modern toast (bottom-right, Revolut-style) */
         .sfera-toast-container {
             position: fixed;
