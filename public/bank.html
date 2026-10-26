@@ -1228,6 +1228,8 @@
             100% { background-position: -200% 0; }
         }
     </style>
+    <!-- SFERA-PATCH:SPRINT3.1b:script — Socket.IO client -->
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/js/api.js"></script>
     <script src="/scripts/auto_translate_i18n.js"></script>
 </head>
@@ -1982,10 +1984,79 @@ $('logoutBtn')?.addEventListener('click',async()=>{
         loadBankData({ skeleton: true });
         populateUsername();
 
+        // SFERA-PATCH:SPRINT3.1b:init — Socket.IO realtime
+        (function initBankSocket(){
+            if (typeof io !== 'function') {
+                console.warn('[SFERA-PATCH:SPRINT3.1b] io not loaded — polling only');
+                return;
+            }
+            const token = getAuthToken();
+            if (!token) {
+                console.warn('[SFERA-PATCH:SPRINT3.1b] no token — polling only');
+                return;
+            }
+
+            let socket;
+            try {
+                socket = io({ auth: { token: token }, transports: ['websocket', 'polling'] });
+            } catch (e) {
+                console.warn('[SFERA-PATCH:SPRINT3.1b] io init failed:', e.message);
+                return;
+            }
+
+            window._bankSocket = socket;
+
+            socket.on('connect', () => {
+                console.log('[SFERA-PATCH:SPRINT3.1b] connected', socket.id);
+            });
+
+            socket.on('balance_updated', (payload) => {
+                console.log('[SFERA-PATCH:SPRINT3.1b] balance_updated', payload);
+                // Тихое обновление без skeleton — WS уже принёс новый баланс
+                if (typeof loadBankData === 'function') {
+                    loadBankData({ skeleton: false });
+                }
+                if (payload && payload.direction === 'in' && payload.amount) {
+                    showMessage('Поступление: +' + Number(payload.amount).toFixed(2) + ' TMT', 'success');
+                }
+            });
+
+            socket.on('bank_notification', (payload) => {
+                console.log('[SFERA-PATCH:SPRINT3.1b] bank_notification', payload);
+                if (!payload) return;
+                const note = {
+                    _id: payload.transactionId || ('ws-' + Date.now()),
+                    type: payload.type || 'info',
+                    message: payload.message || '',
+                    read: false,
+                    createdAt: new Date().toISOString()
+                };
+                if (!Array.isArray(bankState.notifications)) bankState.notifications = [];
+                // Не дублируем
+                const exists = bankState.notifications.some(n => String(n._id) === String(note._id));
+                if (!exists) {
+                    bankState.notifications.unshift(note);
+                    renderNotifications();
+                }
+            });
+
+            socket.on('disconnect', (reason) => {
+                console.warn('[SFERA-PATCH:SPRINT3.1b] disconnected:', reason, '— polling continues');
+            });
+
+            socket.on('connect_error', (err) => {
+                console.warn('[SFERA-PATCH:SPRINT3.1b] connect_error:', err.message);
+            });
+        })();
+
         // Background refresh: получатель видит входящие без F5.
         // Sprint 3 заменит на Socket.IO (real push).
+        // SFERA-PATCH:SPRINT3.1b:polling — skip если WS жив (WS обновляет сам), иначе fallback
         setInterval(() => {
-            if (document.visibilityState === 'visible') loadBankData();
+            if (document.visibilityState !== 'visible') return;
+            const s = window._bankSocket;
+            if (s && s.connected) return; // WS активен — polling не нужен
+            loadBankData();
         }, 30000);
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') loadBankData();
