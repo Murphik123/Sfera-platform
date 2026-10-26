@@ -1107,6 +1107,14 @@
             88% { opacity: .7; }
             100% { transform: translate3d(calc(var(--particle-drift, 18px) * -1), -118vh, 0) scale(.7); opacity: 0; }
         }
+        /* SFERA-PATCH:SPRINT3.4h:css — fix card-number wrap (9680 в одну строку) */
+        .card-item .card-number {
+            font-size: 20px;
+            letter-spacing: 2px;
+            padding-right: 0;
+            white-space: nowrap;
+        }
+
         /* SFERA-PATCH:SPRINT3.4g:css — fix card-logo overlap */
         .card-item .card-logo {
             top: 14px;
