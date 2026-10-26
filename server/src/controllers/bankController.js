@@ -2,6 +2,8 @@
 const mongoose = require('mongoose');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
+const Card = require('../models/Card');
+const { generateCardNumber, formatMasked, generateExpiry } = require('../utils/cardNumber');
 const Notification = require('../models/Notification');
 const { toCsv } = require('../utils/exportCsv');
 const { buildPdf } = require('../utils/exportPdf');
@@ -29,6 +31,7 @@ exports.getBalance = async (req, res, next) => {
         }
       }
     }
+    const cards = await Card.find({ userId: req.userId }).sort({ createdAt: -1 }).lean();
     const ids = accounts.map(a => a._id);
     const transactions = await Transaction.find({
       $or: [
@@ -46,7 +49,7 @@ exports.getBalance = async (req, res, next) => {
           id: String(a._id), number: a.number || '', name: a.name || a.type || 'Account',
           type: a.type || 'main', balance: a.balance, currency: a.currency || 'TMT'
         })),
-        cards: [], transactions, notifications: [],
+        cards: cards.map(cd => ({ id: String(cd._id), _id: String(cd._id), type: cd.type, maskedNumber: cd.maskedNumber, expiry: cd.expiry, frozen: cd.frozen, limit: cd.limit })), transactions, notifications: [],
         balance: accounts.reduce((s, a) => s + ((a.currency || 'TMT') === 'TMT' ? Number(a.balance || 0) : 0), 0),
         currency: 'TMT'
       }
@@ -184,6 +187,62 @@ exports.markNotificationRead = async (req, res, next) => {
     return res.status(200).json({ success: true });
   } catch (error) { next(error); }
 }
+
+// SFERA-PATCH:SPRINT3.4a:cards
+exports.getCards = async (req, res, next) => {
+  try {
+    const cards = await Card.find({ userId: req.userId }).sort({ createdAt: -1 }).lean();
+    return res.status(200).json({
+      success: true,
+      data: cards.map(cd => ({
+        id: String(cd._id), _id: String(cd._id), type: cd.type,
+        maskedNumber: cd.maskedNumber, expiry: cd.expiry,
+        frozen: cd.frozen, limit: cd.limit, createdAt: cd.createdAt
+      }))
+    });
+  } catch (error) { next(error); }
+};
+
+exports.createCard = async (req, res, next) => {
+  try {
+    const { type = 'debit', limit = 1000 } = req.body || {};
+    const VALID_TYPES = ['debit','credit','virtual'];
+    if (!VALID_TYPES.includes(type)) {
+      return res.status(400).json({ success: false, code: 'INVALID_TYPE', message: 'type must be debit, credit or virtual' });
+    }
+    const fullNumber = generateCardNumber();
+    const maskedNumber = formatMasked(fullNumber);
+    const expiry = generateExpiry();
+    const card = await Card.create({
+      userId: req.userId, type, fullNumber, maskedNumber, expiry,
+      frozen: false, limit: Number(limit) || 1000
+    });
+    return res.status(201).json({
+      success: true,
+      data: {
+        id: String(card._id), _id: String(card._id), type: card.type,
+        maskedNumber: card.maskedNumber, expiry: card.expiry,
+        frozen: card.frozen, limit: card.limit
+      }
+    });
+  } catch (error) { next(error); }
+};
+
+exports.freezeCard = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(String(id))) {
+      return res.status(400).json({ success: false, code: 'INVALID_ID', message: 'Invalid card id' });
+    }
+    const card = await Card.findOne({ _id: id, userId: req.userId });
+    if (!card) return res.status(404).json({ success: false, code: 'NOT_FOUND', message: 'Card not found' });
+    const frozen = typeof req.body.frozen === 'boolean' ? req.body.frozen : true;
+    card.frozen = frozen;
+    await card.save();
+    return res.status(200).json({ success: true, data: { id: String(card._id), frozen: card.frozen } });
+  } catch (error) { next(error); }
+};
+
 
 // SFERA-PATCH:SPRINT3.2a:exports
 exports.exportTransactions = async (req, res, next) => {
