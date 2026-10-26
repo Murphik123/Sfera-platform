@@ -1105,6 +1105,17 @@
             88% { opacity: .7; }
             100% { transform: translate3d(calc(var(--particle-drift, 18px) * -1), -118vh, 0) scale(.7); opacity: 0; }
         }
+        /* SFERA-PATCH:SPRINT2.2b2-copy-acct:css — clickable IBAN в account-card */
+        .account-card .acct-number {
+            cursor: pointer;
+            color: #dbe9ff;
+            transition: color .2s ease, text-shadow .2s ease;
+        }
+        .account-card .acct-number:hover {
+            color: #00d4ff;
+            text-shadow: 0 0 8px rgba(0,212,255,.5);
+        }
+
         /* SFERA-PATCH:SPRINT2.2b2:css — skeleton loading */
         .skeleton {
             background: linear-gradient(90deg,
@@ -1560,7 +1571,26 @@
             });
         })();
 
-        // SFERA-PATCH:SPRINT2.2b2-fix:refresh — refreshBtn с skeleton
+                // SFERA-PATCH:SPRINT2.2b2-copy-acct:click — IBAN в account-card копируется (event delegation)
+        (function () {
+            const grid = document.getElementById('accountsGrid');
+            if (!grid || grid.dataset.copyBound === '1') return;
+            grid.dataset.copyBound = '1';
+            grid.addEventListener('click', async (e) => {
+                const num = e.target.closest('.acct-number');
+                if (!num) return;
+                const iban = (num.textContent || '').trim();
+                if (!iban || iban.length < 10) return;
+                try {
+                    await navigator.clipboard.writeText(iban);
+                    showMessage('IBAN скопирован: ' + iban, 'success');
+                } catch (err) {
+                    showMessage('Не удалось скопировать (браузер запретил)', 'error');
+                }
+            });
+        })();
+
+// SFERA-PATCH:SPRINT2.2b2-fix:refresh — refreshBtn с skeleton
         $('refreshBtn')?.addEventListener('click', () => loadBankData({ skeleton: true }));
                 // SFERA-PATCH:SPRINT1:html-submit
         function isValidIban(raw){
