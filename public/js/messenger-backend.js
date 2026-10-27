@@ -102,7 +102,8 @@
             time: formatTime(dialog?.lastMessage?.createdAt || dialog?.time || dialog?.updatedAt),
             unread: Number(dialog?.unread || dialog?.unreadCount || 0),
             online: Boolean(dialog?.online || user?.online),
-            isGroup: Boolean(dialog?.isGroup)
+            isGroup: Boolean(dialog?.isGroup || user?.isGroup),
+            creator: dialog?.creator || user?.creator || null
         };
     }
 
@@ -347,6 +348,23 @@
         if (chatAvatar) chatAvatar.textContent = dialog.isGroup ? '👥' : dialog.name.charAt(0);
         if (chatStatus) chatStatus.textContent = dialog.online ? tr('online', 'Online') : tr('offline', 'Offline');
 
+        // Кнопка удаления группы (только для создателя)
+        const chatActionsEl = document.querySelector('.chat-actions');
+        if (chatActionsEl) {
+            const existingDel = document.getElementById('deleteGroupBtn');
+            if (existingDel) existingDel.remove();
+            const isCreator = dialog.isGroup && dialog.creator && String(dialog.creator) === String(getUserId(currentUser));
+            if (isCreator) {
+                const delBtn = document.createElement('button');
+                delBtn.id = 'deleteGroupBtn';
+                delBtn.title = 'Удалить группу';
+                delBtn.style.cssText = 'background: rgba(255,77,77,0.15); border-color: rgba(255,77,77,0.4); color: #ff6b6b;';
+                delBtn.textContent = '🗑';
+                delBtn.addEventListener('click', deleteCurrentGroup);
+                chatActionsEl.appendChild(delBtn);
+            }
+        }
+
         chatMessages.innerHTML = '';
         const messages = messagesData[activeDialogId] || [];
 
@@ -378,6 +396,33 @@
         return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 
+    async function deleteCurrentGroup() {
+        const dialog = dialogsData.find(d => String(d.id) === String(activeDialogId));
+        if (!dialog || !dialog.isGroup) return;
+        if (!window.confirm('Удалить группу "' + dialog.name + '"? Все сообщения будут удалены.')) return;
+
+        try {
+            const token = (window.api && window.api.getToken) ? window.api.getToken() : localStorage.getItem('token');
+            const res = await fetch('/api/chat/groups/' + activeDialogId, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || 'Ошибка удаления');
+            }
+            dialogsData = dialogsData.filter(d => String(d.id) !== String(activeDialogId));
+            delete messagesData[activeDialogId];
+            activeDialogId = null;
+            renderDialogs();
+            const cm = document.getElementById('chatMessages');
+            if (cm) cm.innerHTML = '';
+            showToast('Группа удалена', 'success');
+        } catch (err) {
+            showToast(err.message || 'Не удалось удалить группу', 'error');
+        }
+    }
+
     function connectRealtime() {
         if (typeof window.io !== 'function') return;
         const token = window.api.getToken();
@@ -394,6 +439,19 @@
 
         socket.on('disconnect', () => {
             if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
+        });
+
+        socket.on('group_deleted', ({ groupId }) => {
+            if (!groupId) return;
+            dialogsData = dialogsData.filter(d => String(d.id) !== String(groupId));
+            delete messagesData[groupId];
+            if (String(activeDialogId) === String(groupId)) {
+                activeDialogId = null;
+                const cm = document.getElementById('chatMessages');
+                if (cm) cm.innerHTML = '';
+            }
+            renderDialogs();
+            showToast('Группа удалена', 'info');
         });
 
         socket.on('new_message', async message => {

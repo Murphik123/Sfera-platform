@@ -202,7 +202,7 @@ exports.getDialogs = async (req, res, next) => {
       if (partnerObj.type === 'user') {
         userPayload = formatUserOnlineStatus(partnerObj.doc);
       } else {
-        userPayload = { _id: partnerId, username: partnerObj.doc.name, avatar: '', online: false, isGroup: true };
+        userPayload = { _id: partnerId, username: partnerObj.doc.name, avatar: '', online: false, isGroup: true, creator: partnerObj.doc.creator };
       }
 
       if (!dialogsMap.has(partnerId)) {
@@ -235,7 +235,7 @@ exports.getDialogs = async (req, res, next) => {
       if (!dialogsMap.has(gid)) {
         dialogsMap.set(gid, {
           id: gid,
-          user: { _id: gid, username: g.name, avatar: '', online: false, isGroup: true },
+          user: { _id: gid, username: g.name, avatar: '', online: false, isGroup: true, creator: g.creator },
           lastMsg: '',
           time: g.createdAt,
           unread: 0
@@ -292,7 +292,9 @@ exports.createGroup = async (req, res, next) => {
   try {
     const { name } = req.body;
     if (!name || !name.trim()) throw createHttpError('Укажите название', 400);
-    const group = new Group({ name: name.trim(), creator: req.userId, members: [req.userId] });
+    const allUsers = await User.find({ _id: { $ne: req.userId } }).select('_id');
+    const memberIds = [req.userId, ...allUsers.map(u => u._id)];
+    const group = new Group({ name: name.trim(), creator: req.userId, members: memberIds });
     await group.save();
     return res.status(201).json(group);
   } catch (error) { next(error); }
@@ -306,4 +308,40 @@ exports.getGroups = async (req, res, next) => {
     const groups = await Group.find({ members: req.userId }).sort({ updatedAt: -1 });
     return res.json(groups);
   } catch (error) { next(error); }
+};
+
+// ============================================================
+// УДАЛЕНИЕ ГРУППЫ (только создатель)
+// ============================================================
+exports.deleteGroup = async (req, res, next) => {
+  try {
+    const { groupId } = req.params;
+    if (!groupId || !mongoose.Types.ObjectId.isValid(String(groupId))) {
+      throw createHttpError('Неверный идентификатор группы', 400);
+    }
+
+    const group = await Group.findById(groupId);
+    if (!group) throw createHttpError('Группа не найдена', 404);
+
+    if (String(group.creator) !== String(req.userId)) {
+      throw createHttpError('Только создатель может удалить группу', 403);
+    }
+
+    // Удаляем сообщения и группу
+    await Message.deleteMany({ to: groupId });
+    await Group.deleteOne({ _id: groupId });
+
+    // Уведомляем участников через Socket.IO
+    const io = req.app.get('io');
+    if (io) {
+      group.members.forEach((m) => {
+        io.to(String(m)).emit('group_deleted', { groupId: String(groupId) });
+      });
+    }
+
+    return res.json({ success: true, message: 'Группа удалена' });
+  } catch (error) {
+    logControllerError('deleteGroup', error, { groupId: req.params?.groupId, userId: req.userId });
+    next(error);
+  }
 };
