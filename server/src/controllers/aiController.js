@@ -1,6 +1,7 @@
 const Prediction = require('../models/Prediction');
 const AISession = require('../models/AISession');
 const { askOpenRouter } = require('../services/aiService');
+const { checkProfanity } = require('../utils/profanityFilter');
 
 const MAX_HISTORY = 20;
 
@@ -41,6 +42,10 @@ exports.aiChat = async (req, res, next) => {
     }
     if (message.length > 2000) {
       return res.status(400).json({ success: false, code: 'INVALID_INPUT', message: 'Message too long (max 2000)' });
+    }
+
+    if (checkProfanity(message)) {
+      return res.status(400).json({ success: false, code: 'PROFANITY', message: 'Нецензурная лексика не допускается' });
     }
 
     let session = await AISession.findOne({ userId });

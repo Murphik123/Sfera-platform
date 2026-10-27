@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Message = require('../models/Message');
+const { checkProfanity } = require('../utils/profanityFilter');
 const Group = require('../models/Group');
 
 const createHttpError = (message, status = 500, details) => {
@@ -55,6 +56,12 @@ exports.sendMessage = async (req, res, next) => {
 
     if (!text && attachments.length === 0) {
       throw createHttpError('Укажите получателя и текст/файлы сообщения', 400);
+    }
+
+    if (text && checkProfanity(text)) {
+      const err = createHttpError('Нецензурная лексика не допускается', 400);
+      err.code = 'PROFANITY';
+      throw err;
     }
 
     const messagePayload = {
