@@ -1,95 +1,72 @@
 /**
- * SFERA — матерный фильтр tm/ru/en
- * Токенизация + нормализация диакритиков. Покрывает типичные формы.
+ * SFERA — profanity filter TM / RU / EN
+ * Подход:
+ *  - normalize(): lower + снятие диакритики (tm) + ё→е
+ *  - длинные корни → regex substring (безопасно)
+ *  - короткие слова → regex с prefix-boundary / \b (латиница)
  */
 
-const PROFANITY_WORDS = new Set([
-  // --- RU (кириллица) ---
-  'хуй', 'хуя', 'хую', 'хуе', 'хуё', 'хуи', 'хуем', 'хуёв', 'хуёвый', 'хуёвая', 'хуёвое',
-  'хуйня', 'хуйню', 'хуйнёй', 'хуйни', 'хуйло', 'хуйла', 'хуйлом',
-  'нахуй', 'нахуя', 'нихуя', 'похуй', 'похуя', 'охуеть', 'охуел', 'охуела', 'охуели', 'охуенно', 'охуенный',
-  'пизда', 'пизды', 'пизде', 'пизду', 'пиздой', 'пиздец', 'пиздато', 'пиздатый', 'пиздеть', 'пиздит', 'пиздят',
-  'пиздюк', 'пиздюки', 'распиздяй', 'распиздяйство', 'спиздил', 'спиздила', 'спиздили', 'спиздить',
-  'бля', 'блядь', 'бляди', 'блядский', 'блядская', 'блядство', 'бляха', 'бляха-муха',
-  'ебал', 'ебу', 'ебёт', 'ебет', 'ебан', 'ебать', 'ебаться', 'ебало', 'ебло', 'еботня',
-  'еблан', 'ебланы', 'уебан', 'уебище', 'уёбок', 'уёбки',
-  'заебал', 'заебала', 'заебали', 'заебало', 'заебись', 'заебись-то', 'заебёшь',
-  'наебал', 'наебала', 'наебали', 'наебка', 'наебалово',
-  'отъебись', 'отъебитесь', 'въебал', 'въебала', 'въебали', 'разъебал', 'разъебала', 'разъебали',
-  'долбоёб', 'долбоеб', 'долбоёбы', 'долбоебы', 'остоебал', 'остоебенило',
-  'пидор', 'пидар', 'пидорас', 'пидораска', 'пидорасы', 'пидорасня', 'педик', 'педики',
-  'гандон', 'гондон', 'гандончик',
-  'мудак', 'мудаки', 'мудила', 'мудило', 'мудозвон',
-  'сука', 'сучка', 'сучки', 'сукин', 'сучонок',
-  'залупа', 'залупой', 'залупу', 'залупе',
-  'манда', 'мандавошка', 'мандавоха',
-  'херня', 'херни', 'хернёй', 'херовой', 'херово', 'херовый', 'хер',
-  'жопа', 'жопы', 'жопу', 'жопой', 'жопе',
-  'говно', 'говна', 'говну', 'говном', 'говноед', 'говнюк', 'говнюки',
-  'дерьмо', 'дерьма', 'дерьму', 'дерьмом',
-  'срать', 'срал', 'срала', 'срали', 'сру', 'срёт', 'срет', 'срут',
-  // --- EN ---
-  'fuck', 'fucks', 'fucked', 'fucker', 'fuckers', 'fucking', 'fuckin',
-  'motherfucker', 'motherfuckers', 'motherfucking', 'clusterfuck',
-  'shit', 'shits', 'shitty', 'bullshit', 'shithead', 'shitheads', 'dipshit', 'apeshit', 'horseshit',
-  'bitch', 'bitches', 'bitchy', 'sonofabitch',
-  'cunt', 'cunts',
-  'dick', 'dicks', 'dickhead', 'dickheads',
-  'cock', 'cocks', 'cocksucker', 'cocksuckers',
-  'asshole', 'assholes', 'arsehole',
-  'bastard', 'bastards',
-  'whore', 'whores',
-  'slut', 'sluts', 'slutty',
-  'piss', 'pissed', 'pissing', 'pisses',
-  'damn', 'goddamn',
-  'nigger', 'niggers', 'nigga',
-  'retard', 'retards', 'retarded',
-  // --- TM (туркменский / турецкие заимствования) ---
-  'sik', 'sikim', 'siker', 'sikerim', 'siktir', 'sikdir', 'sikiş', 'sikis', 'sikik',
-  'am', 'amı', 'amık', 'amcık', 'amcik', 'amına', 'amina', 'amını', 'amini',
-  'göt', 'götveren', 'gotveren', 'götüne', 'gotune', 'götünə',
-  'orospu', 'orospular', 'orospuçocuğu', 'orospuçocugu',
-  'piç', 'pic', 'piçler', 'picler', 'piçlik',
-  'pezevenk', 'pezevenkler',
-  'kahpe', 'kahpeler',
-  'yavşak', 'yavsak', 'yavşaklar',
-  'sıç', 'sıçtım', 'sic', 'sictim', 'sıçma',
-  'yarrak', 'yarak', 'yarraklar',
-  'taşak', 'tasak', 'taşşak', 'tassak',
-  'puşt', 'pust', 'puştlar',
-  'haramzada', 'haramzadalar',
-  'qancık', 'qancik',
-  'godoş', 'godos', 'godosh'
-]);
+const RULES = [
+  // ================= RU =================
+  /хуйн/i,
+  /пизд/i,
+  /бля[дт]/i,
+  /заеб|наеб|въеб|разъеб|отъеб|взъеб|выеб|проеб|долбо[её]б/i,
+  /оху|наху|поху/i,
+  /пидо|пидар|пидр/i,
+  /муда|мудил/i,
+  /залуп|манда/i,
+  /херн|херов/i,
+  /говн|дерьм/i,
+  /гандон|гондон|у[её]б/i,
+  /сук[аи]|суч[аеи]/i,
+  /жоп[аыуе]/i,
+  /сра[тл]|сру/i,
+  // хуй-формы (с префиксом, чтобы не задеть "хуюже")
+  /(?:^|[^а-яё])ху[йяюеё]/i,
+  // еб-формы (хлебал, колебал — не срабатывают)
+  /(?:^|[^а-яё])[её]б[аеиуё]/i,
+  /(?:^|[^а-яё])[её]бал|[её]бёт|[её]бет/i,
+
+  // ================= EN =================
+  /fuck|shit|bitch|cunt|dick|asshole|bastard|whore|slut|piss/i,
+  /retard|nigga|nigger|motherfuck/i,
+  /dickhead|cocksuck|bullshit|horseshit|dipshit|shithead/i,
+  /\bdamn\b/i,
+  /\bass\b/i,
+
+  // ================= TM =================
+  /siktir|sikdir|sikik|siker|sikiş|sikis/i,
+  /amcik|amin[ai]/i,
+  /gotveren|götveren/i,
+  /orospu|pezevenk|kahpe|yavsak|yavşak|yarrak|yarak/i,
+  /tasak|taşak|taşşak|pust|puşt|haramzada|qancik|qancık|godoş|godos/i,
+  /\bsik\b/i,
+  /\bpi[cç]\b/i,
+  /\bam[iı]\b/i
+];
 
 function normalize(text) {
   return String(text || '')
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/ё/g, 'е');
+    .replace(/[\u0300-\u036f]/g, '')  // убираем диакритику: ö→o, ü→u, ş→s, ç→c, ı→i
+    .replace(/ё/g, 'е')
+    .replace(/[ıİ]/g, 'i');
 }
 
 function checkProfanity(text) {
   const norm = normalize(text);
   if (!norm) return false;
-  const tokens = norm.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
-  for (const token of tokens) {
-    if (PROFANITY_WORDS.has(token)) return true;
-  }
-  return false;
+  return RULES.some(re => re.test(norm));
 }
 
 function maskProfanity(text) {
-  const norm = normalize(text);
-  const tokens = norm.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   let out = String(text || '');
-  tokens.forEach(t => {
-    if (PROFANITY_WORDS.has(t)) {
-      out = out.replace(new RegExp(t, 'gi'), '*'.repeat(t.length));
-    }
+  RULES.forEach(re => {
+    out = out.replace(re, (m) => '*'.repeat(m.length));
   });
   return out;
 }
 
-module.exports = { checkProfanity, maskProfanity, PROFANITY_WORDS };
+module.exports = { checkProfanity, maskProfanity, RULES };
