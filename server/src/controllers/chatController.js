@@ -107,10 +107,16 @@ exports.getMessages = async (req, res, next) => {
       throw createHttpError('Неверный идентификатор пользователя', 400);
     }
 
+    const currentUserId = req.userId;
+
+    // Ищем сообщения строго между двумя пользователями
     const messages = await Message.find({
-      $or: [{ from: currentUserId }, { to: currentUserId }]
+      $or: [
+        { from: currentUserId, to: userId },
+        { from: userId, to: currentUserId }
+      ]
     })
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 }) // 1 = старые сверху (для чата)
       .populate('from', 'username avatar online lastSeen')
       .populate('to', 'username avatar online lastSeen');
 
@@ -123,51 +129,18 @@ exports.getMessages = async (req, res, next) => {
       return userObj;
     };
 
-    const dialogsMap = new Map();
-
-    messages.forEach((msg) => {
-      const isFromMe = msg.from._id.toString() === currentUserId.toString();
-      const partner = isFromMe ? msg.to : msg.from;
-      const partnerId = partner._id.toString();
-
-      if (!dialogsMap.has(partnerId)) {
-        dialogsMap.set(partnerId, {
-          id: partnerId,
-          user: formatUserOnlineStatus(partner),
-          lastMessage: { text: msg.text, createdAt: msg.createdAt },
-          lastMsg: msg.text,
-          time: msg.createdAt,
-          unread: !isFromMe && !msg.read ? 1 : 0
-        });
-      } else if (!isFromMe && !msg.read) {
-        const dialog = dialogsMap.get(partnerId);
-        dialog.unread += 1;
-      }
+    const formattedMessages = messages.map((msg) => {
+      const msgObj = msg.toObject();
+      msgObj.from = formatUserOnlineStatus(msgObj.from);
+      msgObj.to = formatUserOnlineStatus(msgObj.to);
+      return msgObj;
     });
 
-    // Все зарегистрированные пользователи видны в чате, даже без переписки.
-    const others = await User.find({
-      _id: { $ne: currentUserId },
-      isBlocked: { $ne: true }
-    }).select('username avatar online lastSeen');
-
-    others.forEach((u) => {
-      const id = u._id.toString();
-      if (!dialogsMap.has(id)) {
-        dialogsMap.set(id, {
-          id,
-          user: formatUserOnlineStatus(u),
-          lastMsg: '',
-          time: u.createdAt,
-          unread: 0
-        });
-      }
-    });  
-
-    return res.json(Array.from(dialogsMap.values()));
+    return res.json(formattedMessages);
   } catch (error) {
-    logControllerError('getDialogs', error, {
-      currentUserId: req.userId
+    logControllerError('getMessages', error, {
+      currentUserId: req.userId,
+      targetUserId: req.params?.userId
     });
     next(error);
   }
