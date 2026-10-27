@@ -47,12 +47,18 @@
     const emojis = ['😀','😂','😍','😊','😎','👍','👏','🙏','❤️','🔥','🎉','😄','😁','🤣','😅','😉','🙂','🙃','😌','🤔','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😯','😪','😫','🥱','😴','😌','🤓','🧐','😕','😟','🙁','☹️','😲','🥳','🤩','😇','🤗','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😮‍💨','🤤','😋','😛','😜','🤪','🤨','🫡','🤠','🥰','😘','😗','😙','😚','😋','😎'];
 
     // SFERA-PATCH:MSG-SPRINT1 — единый источник fixed-диалогов
-    const FIXED_DIALOGS = [];
+    const FIXED_DIALOGS = [
+        { id: 'devs', name: 'Разработчики Sfera', lastMsg: 'Täzeleşdirme taýýar!', time: 'Duş', unread: 0, isGroup: true, avatarIcon: '💻', type: 'chats' },
+        { id: 'ai_assistant', name: 'Sfera AI Kömekçi', lastMsg: 'Salam! Size nähili kömek edip bilerin?', time: 'Häzir', unread: 0, isAI: true, type: 'assistant' }
+    ];
 
     // SFERA-PATCH:MSG-SPRINT1 — data-url'ы файлов вне DOM-атрибутов
     const fileStore = new Map();
 
-    function isLocalDialog(id) { return false; }
+    function isLocalDialog(id) {
+        const s = String(id || '');
+        return s === 'devs';
+    }
 
     function downloadFromStore(fileId) {
         const entry = fileStore.get(fileId);
@@ -168,7 +174,7 @@
     async function loadMessages(userId, markRead = true) {
         if (!userId) return;
         try {
-            if (false) {
+            if (userId === 'ai_assistant' || isLocalDialog(userId)) {
                 if (!messagesData[userId]) messagesData[userId] = [];
                 renderChat();
                 return;
@@ -208,7 +214,32 @@
             currentUser = await window.api.getCurrentUser();
         }
 
-        if (false) { return; }
+        if (activeDialogId === 'ai_assistant') {
+            const userMsg = normalizeMessage({
+                id: 'local_' + Date.now(),
+                text: value,
+                sender: currentUser,
+                createdAt: new Date().toISOString()
+            });
+
+            if (!messagesData[activeDialogId]) messagesData[activeDialogId] = [];
+            messagesData[activeDialogId].push(userMsg);
+
+            if (messageInput) messageInput.value = '';
+            renderChat();
+
+            setTimeout(() => {
+                const aiMsg = normalizeMessage({
+                    id: 'ai_' + Date.now(),
+                    text: 'Men Sfera AI Kömekçi. Soragyňyz kabul edildi: "' + value + '". Häzir bu demo jogap.',
+                    sender: { username: 'Sfera AI Kömekçi' },
+                    createdAt: new Date().toISOString()
+                });
+                messagesData[activeDialogId].push(aiMsg);
+                renderChat();
+            }, 700);
+            return;
+        }
 
         if (isLocalDialog(activeDialogId)) {
             const userMsg = normalizeMessage({
@@ -259,7 +290,13 @@
         if (!dialogsList) return;
 
         if (listToRender === null) {
-            listToRender = dialogsData.filter(d => !d.isAI);
+            if (activeTab === 'assistant') {
+                listToRender = dialogsData.filter(d => d.type === 'assistant' || d.isAI);
+            } else if (activeTab === 'news') {
+                listToRender = [];
+            } else {
+                listToRender = dialogsData.filter(d => d.type !== 'assistant' && !d.isAI);
+            }
         }
 
         dialogsList.innerHTML = ''; 
