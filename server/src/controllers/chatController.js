@@ -75,9 +75,21 @@ exports.sendMessage = async (req, res, next) => {
 
     const savedMessage = await message.save();
 
-    const populatedMessage = await Message.findById(savedMessage._id)
-      .populate('from', 'username avatar online')
-      .populate('to', 'username avatar online');
+    let populatedMessage;
+    const isGroup = await Group.exists({ _id: to });
+    
+    if (isGroup) {
+      const group = await Group.findById(to);
+      populatedMessage = await Message.findById(savedMessage._id)
+        .populate('from', 'username avatar online')
+        .lean();
+      populatedMessage.to = { _id: group._id, name: group.name, isGroup: true };
+    } else {
+      populatedMessage = await Message.findById(savedMessage._id)
+        .populate('from', 'username avatar online')
+        .populate('to', 'username avatar online')
+        .lean();
+    }
 
        const io = req.app.get('io');
     if (io) {

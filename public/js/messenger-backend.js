@@ -404,7 +404,8 @@
             const fromId = String(rawFrom?._id || rawFrom?.id || rawFrom || '');
             const toId = String(rawTo?._id || rawTo?.id || rawTo || '');
             const myId = String(getUserId(currentUser) || '');
-            const partnerId = (fromId === myId) ? toId : fromId;
+            const isGroupMsg = Boolean(rawTo && (rawTo.isGroup || rawTo.name));
+            const partnerId = isGroupMsg ? toId : ((fromId === myId) ? toId : fromId);
             if (!partnerId) return;
             const key = String(partnerId);
 
