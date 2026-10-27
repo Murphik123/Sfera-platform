@@ -174,7 +174,28 @@
     async function loadMessages(userId, markRead = true) {
         if (!userId) return;
         try {
-            if (userId === 'ai_assistant' || isLocalDialog(userId)) {
+            if (userId === 'ai_assistant') {
+                try {
+                    const hist = await window.api.get('/ai/history');
+                    const rawMsgs = (hist && hist.messages) || [];
+                    messagesData[userId] = rawMsgs.map(m => ({
+                        id: 'ai_' + (m.createdAt || Date.now()) + '_' + Math.random().toString(36).slice(2, 6),
+                        sender: m.role === 'user' ? (currentUser?.username || 'Me') : 'Sfera AI Kömekçi',
+                        senderId: null,
+                        text: m.content,
+                        time: formatTime(m.createdAt),
+                        type: m.role === 'user' ? 'sent' : 'received',
+                        read: true,
+                        isHtml: false
+                    }));
+                } catch (e) {
+                    console.error('AI history error:', e);
+                    messagesData[userId] = [];
+                }
+                renderChat();
+                return;
+            }
+            if (isLocalDialog(userId)) {
                 if (!messagesData[userId]) messagesData[userId] = [];
                 renderChat();
                 return;
@@ -228,16 +249,37 @@
             if (messageInput) messageInput.value = '';
             renderChat();
 
-            setTimeout(() => {
+            const typingEl = document.createElement('div');
+            typingEl.className = 'message received';
+            typingEl.id = 'aiTyping';
+            typingEl.innerHTML = '<div class="msg-username">Sfera AI Kömekçi</div><div style="opacity:0.7">▍печатает...</div>';
+            chatMessages.appendChild(typingEl);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const lang = (typeof currentLang !== 'undefined' && currentLang) || 'ru';
+                const resp = await window.api.post('/ai/chat', { message: value, lang });
+                const reply = resp && resp.reply ? resp.reply : 'Нет ответа';
                 const aiMsg = normalizeMessage({
                     id: 'ai_' + Date.now(),
-                    text: 'Men Sfera AI Kömekçi. Soragyňyz kabul edildi: "' + value + '". Häzir bu demo jogap.',
+                    text: reply,
                     sender: { username: 'Sfera AI Kömekçi' },
                     createdAt: new Date().toISOString()
                 });
                 messagesData[activeDialogId].push(aiMsg);
+            } catch (err) {
+                const errMsg = normalizeMessage({
+                    id: 'err_' + Date.now(),
+                    text: '⚠ Ошибка AI: ' + (err.message || 'попробуйте позже'),
+                    sender: { username: 'Sfera AI Kömekçi' },
+                    createdAt: new Date().toISOString()
+                });
+                messagesData[activeDialogId].push(errMsg);
+            } finally {
+                const t = document.getElementById('aiTyping');
+                if (t) t.remove();
                 renderChat();
-            }, 700);
+            }
             return;
         }
 
