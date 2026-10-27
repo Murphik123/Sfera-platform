@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Message = require('../models/Message');
+const Group = require('../models/Group');
 
 const createHttpError = (message, status = 500, details) => {
   const error = new Error(message);
@@ -109,13 +110,15 @@ exports.getMessages = async (req, res, next) => {
 
     const currentUserId = req.userId;
 
-    // Ищем сообщения строго между двумя пользователями
-    const messages = await Message.find({
-      $or: [
-        { from: currentUserId, to: userId },
-        { from: userId, to: currentUserId }
-      ]
-    })
+    // Проверяем, является ли получатель группой
+    const isGroup = await Group.exists({ _id: userId });
+
+    // Ищем сообщения: для группы ищем по to, для юзера - в обе стороны
+    let query = isGroup 
+      ? { to: userId }
+      : { $or: [ { from: currentUserId, to: userId }, { from: userId, to: currentUserId } ] };
+
+    const messages = await Message.find(query)
       .sort({ createdAt: 1 }) // 1 = старые сверху (для чата)
       .populate('from', 'username avatar online lastSeen')
       .populate('to', 'username avatar online lastSeen');
@@ -195,6 +198,18 @@ exports.getDialogs = async (req, res, next) => {
       }
     });
 
+    // Получаем группы юзера
+    const userGroups = await Group.find({ members: currentUserId });
+    userGroups.forEach((g) => {
+      dialogsMap.set(g._id.toString(), {
+        id: g._id.toString(),
+        user: { username: g.name, avatar: '', online: false, isGroup: true },
+        lastMsg: '',
+        time: g.createdAt,
+        unread: 0
+      });
+    });
+
     // Все зарегистрированные пользователи видны в чате, даже без переписки.
     const others = await User.find({
       _id: { $ne: currentUserId },
@@ -255,4 +270,28 @@ exports.markAsRead = async (req, res, next) => {
     });
     next(error);
   }
+};
+
+
+// ============================================================
+// СОЗДАНИЕ ГРУППЫ
+// ============================================================
+exports.createGroup = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    if (!name || !name.trim()) throw createHttpError('Укажите название', 400);
+    const group = new Group({ name: name.trim(), creator: req.userId, members: [req.userId] });
+    await group.save();
+    return res.status(201).json(group);
+  } catch (error) { next(error); }
+};
+
+// ============================================================
+// ПОЛУЧЕНИЕ СПИСКА ГРУПП
+// ============================================================
+exports.getGroups = async (req, res, next) => {
+  try {
+    const groups = await Group.find({ members: req.userId }).sort({ updatedAt: -1 });
+    return res.json(groups);
+  } catch (error) { next(error); }
 };

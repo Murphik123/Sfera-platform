@@ -2,6 +2,7 @@
 const { Server } = require('socket.io');
 const { verifyToken } = require('../utils/jwt');
 const Message = require('../models/Message');
+const Group = require('../models/Group');
 const User = require('../models/User');
 
 module.exports = (server) => {
@@ -67,7 +68,8 @@ module.exports = (server) => {
         if (!to || !text) return;
         if (String(to) === userId) return;
         const recipientExists = await User.exists({ _id: to });
-        if (!recipientExists) return;
+        const groupExists = await Group.exists({ _id: to });
+        if (!recipientExists && !groupExists) return;
 
         const message = new Message({
           from: userId,

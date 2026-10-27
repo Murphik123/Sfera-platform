@@ -5,11 +5,15 @@ const {
   sendMessage, 
   getMessages, 
   markAsRead, 
-  getDialogs 
+  getDialogs,
+  createGroup,
+  getGroups
 } = require('../controllers/chatController');
 router.use(authMiddleware);
 // 1. Статические роуты первыми!
 router.get('/dialogs', getDialogs);
+router.get('/groups', getGroups);
+router.post('/groups', createGroup);
 router.post('/send', sendMessage);
 router.put('/read/:messageId', markAsRead);
 
