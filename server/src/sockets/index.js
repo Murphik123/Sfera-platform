@@ -84,7 +84,14 @@ module.exports = (server) => {
           .populate('from', 'username avatar online')
           .populate('to', 'username avatar online');
 
-        io.to(String(to)).emit('new_message', populatedMessage);
+        const targetGroup = await Group.findById(to).lean();
+        if (targetGroup && Array.isArray(targetGroup.members)) {
+          targetGroup.members.forEach((memberId) => {
+            io.to(String(memberId)).emit('new_message', populatedMessage);
+          });
+        } else {
+          io.to(String(to)).emit('new_message', populatedMessage);
+        }
         io.to(userId).emit('new_message', populatedMessage);
       } catch (err) {
         console.error('❌ Socket send_message error:', err.message);

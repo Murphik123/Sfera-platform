@@ -91,13 +91,21 @@ exports.sendMessage = async (req, res, next) => {
         .lean();
     }
 
-       const io = req.app.get('io');
+    const io = req.app.get('io');
     if (io) {
-      console.log('[socket] emit new_message → to:', String(to), 'from:', String(from), 'room size:', io.sockets.adapter.rooms.get(String(to))?.size || 0);
-      io.to(String(to)).emit('new_message', populatedMessage);
+      const targetGroup = await Group.findById(to).lean();
+      if (targetGroup && Array.isArray(targetGroup.members)) {
+        targetGroup.members.forEach((memberId) => {
+          io.to(String(memberId)).emit('new_message', populatedMessage);
+        });
+        console.log('[socket] group new_message → group:', String(to), 'members:', targetGroup.members.length);
+      } else {
+        io.to(String(to)).emit('new_message', populatedMessage);
+        console.log('[socket] dm new_message → to:', String(to), 'from:', String(from));
+      }
       io.to(String(from)).emit('new_message', populatedMessage);
     } else {
-      console.warn('[socket] io not available in req.app — сообщение не доставлено realtime');
+      console.warn('[socket] io not available');
     }
     return res.status(201).json(populatedMessage);
   } catch (error) {

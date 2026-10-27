@@ -458,7 +458,7 @@
         if (!token) return;
 
         socket = window.io(window.location.origin, {
-            auth: { token }, transports: ['polling', 'websocket'], upgrade: true, rememberUpgrade: false, withCredentials: true, reconnection: true, reconnectionAttempts: 20, reconnectionDelay: 1500, reconnectionDelayMax: 8000, timeout: 30000, pingTimeout: 60000, pingInterval: 25000
+            auth: { token }, transports: ['websocket', 'polling'], upgrade: false, rememberUpgrade: true, withCredentials: true, reconnection: true, reconnectionAttempts: 20, reconnectionDelay: 1500, reconnectionDelayMax: 8000, timeout: 30000, pingTimeout: 60000, pingInterval: 25000
         });
 
         socket.on('connect', () => {
