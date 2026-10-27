@@ -178,8 +178,9 @@
                 try {
                     const hist = await window.api.get('/ai/history');
                     const rawMsgs = (hist && hist.messages) || [];
-                    messagesData[userId] = rawMsgs.map(m => ({
-                        id: 'ai_' + (m.createdAt || Date.now()) + '_' + Math.random().toString(36).slice(2, 6),
+                    messagesData[userId] = rawMsgs.map((m, i) => ({
+                        id: 'ai_' + i + '_' + (m.createdAt || Date.now()),
+                        aiIndex: i,
                         sender: m.role === 'user' ? (currentUser?.username || 'Me') : 'Sfera AI Kömekçi',
                         senderId: null,
                         text: m.content,
@@ -278,8 +279,8 @@
             } finally {
                 const t = document.getElementById('aiTyping');
                 if (t) t.remove();
-                renderChat();
             }
+            try { await loadMessages('ai_assistant', false); } catch (_) { renderChat(); }
             return;
         }
 
@@ -407,6 +408,17 @@
         if (chatActionsEl) {
             const existingDel = document.getElementById('deleteGroupBtn');
             if (existingDel) existingDel.remove();
+            const existingClear = document.getElementById('clearChatBtn');
+            if (existingClear) existingClear.remove();
+            if (activeDialogId) {
+                const clearBtn = document.createElement('button');
+                clearBtn.id = 'clearChatBtn';
+                clearBtn.title = 'Очистить чат';
+                clearBtn.style.cssText = 'background: rgba(255,165,0,0.15); border-color: rgba(255,165,0,0.4); color: #ffa500;';
+                clearBtn.textContent = '🧹';
+                clearBtn.addEventListener('click', clearCurrentChat);
+                chatActionsEl.appendChild(clearBtn);
+            }
             const isCreator = dialog.isGroup && dialog.creator && String(dialog.creator) === String(getUserId(currentUser));
             if (isCreator) {
                 const delBtn = document.createElement('button');
@@ -440,6 +452,13 @@
                     <div class="msg-time">${escapeHtml(message.time)}</div>
                 `;
             }
+            const delBtn = document.createElement('span');
+            delBtn.className = 'msg-del-btn';
+            delBtn.title = 'Удалить';
+            delBtn.textContent = '🗑';
+            delBtn.addEventListener('click', (e) => { e.stopPropagation(); handleDeleteMessage(message); });
+            msgEl.appendChild(delBtn);
+
             chatMessages.appendChild(msgEl);
         });
 
@@ -524,6 +543,20 @@
             }
             renderDialogs();
             showToast('Группа удалена', 'info');
+        });
+
+        socket.on('message_deleted', ({ messageId }) => {
+            if (!messageId) return;
+            Object.keys(messagesData).forEach(key => {
+                messagesData[key] = (messagesData[key] || []).filter(m => String(m.id) !== String(messageId));
+            });
+            renderChat();
+        });
+
+        socket.on('dialog_cleared', ({ userId, byUser }) => {
+            const target = String(userId) === String(getUserId(currentUser)) ? String(byUser) : String(userId);
+            if (messagesData[target]) messagesData[target] = [];
+            if (String(activeDialogId) === target) renderChat();
         });
 
         socket.on('new_message', async message => {
@@ -819,6 +852,46 @@
         renderDialogs();
         renderChat();
     });
+
+    async function handleDeleteMessage(message) {
+        if (!activeDialogId) return;
+        const isAi = activeDialogId === 'ai_assistant' || (message.id && String(message.id).startsWith('ai_'));
+        if (isAi) {
+            if (message.aiIndex === undefined || message.aiIndex === null) {
+                return showToast('Невозможно удалить это сообщение', 'error');
+            }
+            if (!window.confirm('Удалить это сообщение из истории AI?')) return;
+            try {
+                await window.api.delete('/ai/message/' + message.aiIndex);
+                await loadMessages('ai_assistant', false);
+            } catch (e) { showToast('Ошибка удаления: ' + (e.message || ''), 'error'); }
+        } else {
+            if (!window.confirm('Удалить это сообщение у всех?')) return;
+            try {
+                await window.api.delete('/chat/message/' + message.id);
+                messagesData[activeDialogId] = (messagesData[activeDialogId] || []).filter(m => String(m.id) !== String(message.id));
+                renderChat();
+            } catch (e) { showToast('Ошибка удаления: ' + (e.message || ''), 'error'); }
+        }
+    }
+
+    async function clearCurrentChat() {
+        if (!activeDialogId) return;
+        const dialog = dialogsData.find(d => d.id === activeDialogId);
+        const isAi = activeDialogId === 'ai_assistant';
+        const label = isAi ? 'всю историю с AI' : 'всю переписку с ' + (dialog ? dialog.name : 'пользователем');
+        if (!window.confirm('Удалить ' + label + ' у обоих?')) return;
+        try {
+            if (isAi) {
+                await window.api.post('/ai/clear', {});
+            } else {
+                await window.api.delete('/chat/dialog/' + activeDialogId);
+            }
+            messagesData[activeDialogId] = [];
+            renderChat();
+            showToast('Чат очищен', 'success');
+        } catch (e) { showToast('Ошибка: ' + (e.message || ''), 'error'); }
+    }
 
     window.sferaMessenger = {
         reload: loadDialogs,
