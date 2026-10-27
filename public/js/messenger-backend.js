@@ -189,7 +189,11 @@
             if (markRead) {
                 const unread = messagesData[userId].filter(m => m.type === 'received' && !m.read && m.id);
                 for (const message of unread) {
-                    await window.api.put(`/chat/read/${encodeURIComponent(message.id)}`, {});
+                    try {
+                        await window.api.put(`/chat/read/${encodeURIComponent(message.id)}`, {});
+                    } catch (e) {
+                        console.warn('Не удалось пометить прочитанным:', e.message);
+                    }
                 }
                 const dialog = dialogsData.find(d => d.id === userId);
                 if (dialog) { dialog.unread = 0; renderDialogs(); }
@@ -301,6 +305,12 @@
             dialogsList.innerHTML = `<div class="empty-state"><div class="icon">💬</div><p>${tr('no_chats', 'No conversations yet')}</p></div>`;
             return;
         }
+
+        listToRender.sort((a, b) => {
+            if (a.isGroup && !b.isGroup) return -1;
+            if (!a.isGroup && b.isGroup) return 1;
+            return 0;
+        });
 
         listToRender.forEach(dialog => {
             const item = document.createElement('div');

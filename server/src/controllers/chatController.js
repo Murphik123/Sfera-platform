@@ -267,7 +267,17 @@ exports.markAsRead = async (req, res, next) => {
       throw createHttpError('Сообщение не найдено', 404);
     }
 
-    if (message.to.toString() !== req.userId.toString()) {
+    const isGroupMsg = await Group.exists({ _id: message.to });
+    let hasPermission = false;
+
+    if (isGroupMsg) {
+      const group = await Group.findById(message.to);
+      hasPermission = group && group.members.some(m => String(m) === String(req.userId));
+    } else {
+      hasPermission = String(message.to) === String(req.userId);
+    }
+
+    if (!hasPermission) {
       throw createHttpError('Нет прав для выполнения операции', 403);
     }
 
