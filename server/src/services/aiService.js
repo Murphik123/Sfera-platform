@@ -1,5 +1,5 @@
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const DEFAULT_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+const DEFAULT_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 
 const SYSTEM_PROMPTS = {
   tm: 'Sen Sfera milli platformasynyň AI kömekçisi. Türkmen dilinde gysga we takyk jogap ber.',
