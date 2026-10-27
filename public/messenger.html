@@ -489,7 +489,19 @@
         </div>
     </footer>
 
+    
     <!-- Модальные окна -->
+    <div class="group-modal" id="deleteGroupModal">
+        <div class="modal-box" style="border-color: rgba(255, 77, 77, 0.4);">
+            <h2 style="color: #ff6b6b; margin-bottom: 8px;">Удалить группу?</h2>
+            <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 15px;">Все сообщения в этой группе будут безвозвратно удалены.</p>
+            <div class="form-actions" style="display: flex; gap: 12px; justify-content: center;">
+                <button type="button" class="btn-glass" id="cancelDeleteGroupBtn">Отмена</button>
+                <button type="button" class="btn-neon-danger" id="confirmDeleteGroupBtn">Удалить</button>
+            </div>
+        </div>
+    </div>
+
     <div class="group-modal" id="groupModal">
         <div class="modal-box">
             <h2 id="lblCreateGroupTitle" data-i18n="messenger_create_group_title">Täze topar döret</h2>

@@ -292,8 +292,8 @@ exports.createGroup = async (req, res, next) => {
   try {
     const { name } = req.body;
     if (!name || !name.trim()) throw createHttpError('Укажите название', 400);
-    const allUsers = await User.find({ _id: { $ne: req.userId } }).select('_id');
-    const memberIds = [req.userId, ...allUsers.map(u => u._id)];
+    const allUsers = await User.find({}).select('_id');
+    const memberIds = Array.from(new Set([String(req.userId), ...allUsers.map(u => String(u._id))]));
     const group = new Group({ name: name.trim(), creator: req.userId, members: memberIds });
     await group.save();
     return res.status(201).json(group);

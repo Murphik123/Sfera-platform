@@ -103,6 +103,7 @@
             unread: Number(dialog?.unread || dialog?.unreadCount || 0),
             online: Boolean(dialog?.online || user?.online),
             isGroup: Boolean(dialog?.isGroup || user?.isGroup),
+            creator: String(dialog?.creator || user?.creator || ''),
             creator: dialog?.creator || user?.creator || null
         };
     }
@@ -399,28 +400,46 @@
     async function deleteCurrentGroup() {
         const dialog = dialogsData.find(d => String(d.id) === String(activeDialogId));
         if (!dialog || !dialog.isGroup) return;
-        if (!window.confirm('Удалить группу "' + dialog.name + '"? Все сообщения будут удалены.')) return;
 
-        try {
-            const token = (window.api && window.api.getToken) ? window.api.getToken() : localStorage.getItem('token');
-            const res = await fetch('/api/chat/groups/' + activeDialogId, {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
-            });
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                throw new Error(err.message || 'Ошибка удаления');
+        const modal = document.getElementById('deleteGroupModal');
+        const cancelBtn = document.getElementById('cancelDeleteGroupBtn');
+        const confirmBtn = document.getElementById('confirmDeleteGroupBtn');
+        if (!modal) return;
+
+        modal.classList.add('active');
+        
+        const closeModal = () => {
+            modal.classList.remove('active');
+            cancelBtn.removeEventListener('click', closeModal);
+            confirmBtn.removeEventListener('click', executeDelete);
+        };
+
+        const executeDelete = async () => {
+            closeModal();
+            try {
+                const token = (window.api && window.api.getToken) ? window.api.getToken() : localStorage.getItem('token');
+                const res = await fetch('/api/chat/groups/' + activeDialogId, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.message || 'Ошибка удаления');
+                }
+                dialogsData = dialogsData.filter(d => String(d.id) !== String(activeDialogId));
+                delete messagesData[activeDialogId];
+                activeDialogId = null;
+                renderDialogs();
+                const cm = document.getElementById('chatMessages');
+                if (cm) cm.innerHTML = '';
+                showToast('Группа удалена', 'success');
+            } catch (err) {
+                showToast(err.message || 'Не удалось удалить группу', 'error');
             }
-            dialogsData = dialogsData.filter(d => String(d.id) !== String(activeDialogId));
-            delete messagesData[activeDialogId];
-            activeDialogId = null;
-            renderDialogs();
-            const cm = document.getElementById('chatMessages');
-            if (cm) cm.innerHTML = '';
-            showToast('Группа удалена', 'success');
-        } catch (err) {
-            showToast(err.message || 'Не удалось удалить группу', 'error');
-        }
+        };
+
+        cancelBtn.addEventListener('click', closeModal);
+        confirmBtn.addEventListener('click', executeDelete);
     }
 
     function connectRealtime() {
