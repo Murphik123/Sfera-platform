@@ -180,7 +180,7 @@ exports.getDialogs = async (req, res, next) => {
       partnerIds.add(partnerId);
     });
 
-    const users = await User.find({ _id: { $in: Array.from(partnerIds) } }).select('username avatar online lastSeen');
+    const users = await User.find({ _id: { $in: Array.from(partnerIds) } }).select('username avatar online lastSeen role');
     const groups = await Group.find({ _id: { $in: Array.from(partnerIds) } });
     const userGroups = await Group.find({ members: currentUserId });
 
@@ -227,7 +227,7 @@ exports.getDialogs = async (req, res, next) => {
       }
     });
 
-    const others = await User.find({ _id: { $ne: currentUserId, $nin: Array.from(dialogsMap.keys()) } }).select('username avatar online lastSeen');
+    const others = await User.find({ _id: { $ne: currentUserId, $nin: Array.from(dialogsMap.keys()) } }).select('username avatar online lastSeen role');
     others.forEach((u) => {
       dialogsMap.set(u._id.toString(), {
         id: u._id.toString(),

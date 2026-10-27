@@ -48,7 +48,6 @@
 
     // SFERA-PATCH:MSG-SPRINT1 — единый источник fixed-диалогов
     const FIXED_DIALOGS = [
-        { id: 'devs', name: 'Разработчики Sfera', lastMsg: 'Täzeleşdirme taýýar!', time: 'Duş', unread: 0, isGroup: true, avatarIcon: '💻', type: 'chats' },
         { id: 'ai_assistant', name: 'Sfera AI Kömekçi', lastMsg: 'Salam! Size nähili kömek edip bilerin?', time: 'Häzir', unread: 0, isAI: true, type: 'assistant' }
     ];
 
@@ -57,7 +56,7 @@
 
     function isLocalDialog(id) {
         const s = String(id || '');
-        return s === 'devs';
+        return false;
     }
 
     function downloadFromStore(fileId) {
@@ -103,6 +102,7 @@
             unread: Number(dialog?.unread || dialog?.unreadCount || 0),
             online: Boolean(dialog?.online || user?.online),
             isGroup: Boolean(dialog?.isGroup || user?.isGroup),
+            role: String(dialog?.role || user?.role || 'user'),
             creator: String(dialog?.creator || user?.creator || ''),
             creator: dialog?.creator || user?.creator || null
         };
@@ -318,6 +318,7 @@
             item.dataset.id = dialog.id;
             
             const avatar = dialog.avatar ? `<img src="${escapeHtml(dialog.avatar)}" alt="">` : escapeHtml(dialog.name.charAt(0));
+            const adminBadge = dialog.role === 'admin' ? '<span class="admin-badge" title="Administrator">🛡</span>' : '';
 
             item.innerHTML = `
                 <div class="dialog-avatar ${dialog.isGroup ? 'group' : ''}">
@@ -325,7 +326,7 @@
                     ${dialog.online ? '<div class="online-dot"></div>' : ''}
                 </div>
                 <div class="dialog-info">
-                    <div class="name">${escapeHtml(dialog.name)}</div>
+                    <div class="name">${escapeHtml(dialog.name)}${adminBadge}</div>
                     <div class="last-msg">${escapeHtml(dialog.lastMsg)}</div>
                 </div>
                 <div class="dialog-time">${escapeHtml(dialog.time)}</div>
