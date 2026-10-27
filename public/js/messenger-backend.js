@@ -46,6 +46,31 @@
 
     const emojis = ['😀','😂','😍','😊','😎','👍','👏','🙏','❤️','🔥','🎉','😄','😁','🤣','😅','😉','🙂','🙃','😌','🤔','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😯','😪','😫','🥱','😴','😌','🤓','🧐','😕','😟','🙁','☹️','😲','🥳','🤩','😇','🤗','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😮‍💨','🤤','😋','😛','😜','🤪','🤨','🫡','🤠','🥰','😘','😗','😙','😚','😋','😎'];
 
+    // SFERA-PATCH:MSG-SPRINT1 — единый источник fixed-диалогов
+    const FIXED_DIALOGS = [
+        { id: 'devs', name: 'Разработчики Sfera', lastMsg: 'Täzeleşdirme taýýar!', time: 'Duş', unread: 0, isGroup: true, avatarIcon: '💻', type: 'chats' },
+        { id: 'ai_assistant', name: 'Sfera AI Kömekçi', lastMsg: 'Salam! Size nähili kömek edip bilerin?', time: 'Häzir', unread: 0, isAI: true, type: 'assistant' }
+    ];
+
+    // SFERA-PATCH:MSG-SPRINT1 — data-url'ы файлов вне DOM-атрибутов
+    const fileStore = new Map();
+
+    function isLocalDialog(id) {
+        const s = String(id || '');
+        return s === 'devs' || s.startsWith('group_');
+    }
+
+    function downloadFromStore(fileId) {
+        const entry = fileStore.get(fileId);
+        if (!entry) return;
+        const a = document.createElement('a');
+        a.href = entry.url;
+        a.download = entry.name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
+
     function getDict() {
         return (window.translations && window.translations[currentLang]) ? window.translations[currentLang] : {};
     }
@@ -122,13 +147,8 @@
 
             dialogsData = raw.map(normalizeDialog).filter(Boolean);
 
-            const fixedDialogs = [
-                { id: 'devs', name: 'Разработчики Sfera', lastMsg: 'Täzeleşdirme taýýar!', time: 'Duş', unread: 0, isGroup: true, avatarIcon: '💻', type: 'chats' },
-                { id: 'ai_assistant', name: 'Sfera AI Kömekçi', lastMsg: 'Salam! Size nähili kömek edip bilerin?', time: 'Häzir', unread: 0, isAI: true, type: 'assistant' }
-            ];
-
-            const fixedIds = new Set(fixedDialogs.map(d => d.id));
-            dialogsData = [...fixedDialogs, ...dialogsData.filter(d => !fixedIds.has(d.id))];
+            const fixedIds = new Set(FIXED_DIALOGS.map(d => d.id));
+            dialogsData = [...FIXED_DIALOGS, ...dialogsData.filter(d => !fixedIds.has(d.id))];
 
             renderDialogs();
 
@@ -137,7 +157,7 @@
             }
         } catch (error) {
             console.error('SFERA Messenger dialogs:', error);
-            dialogsData = [];
+            dialogsData = [...FIXED_DIALOGS];
             renderDialogs();
             showToast(error.message || tr('connection_error', 'Messenger connection error'), 'error');
         }
@@ -206,6 +226,23 @@
                 messagesData[activeDialogId].push(aiMsg);
                 renderChat();
             }, 700);
+            return;
+        }
+
+        if (isLocalDialog(activeDialogId)) {
+            const userMsg = normalizeMessage({
+                id: 'local_' + Date.now(),
+                text: value,
+                sender: currentUser,
+                createdAt: new Date().toISOString()
+            });
+            if (!messagesData[activeDialogId]) messagesData[activeDialogId] = [];
+            messagesData[activeDialogId].push(userMsg);
+            const dialog = dialogsData.find(d => d.id === activeDialogId);
+            if (dialog) { dialog.lastMsg = value; dialog.time = userMsg.time; }
+            if (messageInput) messageInput.value = '';
+            renderChat();
+            renderDialogs();
             return;
         }
 
@@ -499,26 +536,29 @@
         if (fileBtn && fileInput) {
             fileBtn.addEventListener('click', () => fileInput.click());
         }
-        
+
         if (fileInput) {
             fileInput.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
 
                 const time = formatTime(new Date().toISOString());
+                const fileId = 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    const fileDataUrl = e.target.result;
+                reader.onload = function (e) {
+                    fileStore.set(fileId, { url: e.target.result, name: file.name });
+                    const safeName = escapeHtml(file.name);
+                    const safeSize = (file.size / 1024).toFixed(1);
                     const htmlContent = `
                         <div class="file-card">
-                            <span>📄 <strong>${escapeHtml(file.name)}</strong> (${(file.size / 1024).toFixed(1)} KB)</span>
-                            <button class="btn-download-file" onclick="downloadFileFromPC('${fileDataUrl}', '${escapeHtml(file.name)}')">Ýükle 💾</button>
+                            <span>📄 <strong>${safeName}</strong> (${safeSize} KB)</span>
+                            <button type="button" class="btn-download-file" data-file-id="${fileId}">Ýükle 💾</button>
                         </div>
                         <div class="msg-time">${time}</div>
                     `;
                     if (!messagesData[activeDialogId]) messagesData[activeDialogId] = [];
                     messagesData[activeDialogId].push({
-                        id: 'file_' + Date.now(),
+                        id: 'msg_' + Date.now(),
                         sender: currentUser?.username || 'Me',
                         text: htmlContent,
                         time: time,
@@ -529,6 +569,15 @@
                 };
                 reader.readAsDataURL(file);
                 event.target.value = '';
+            });
+        }
+
+        if (chatMessages) {
+            chatMessages.addEventListener('click', function (evt) {
+                const btn = evt.target.closest('.btn-download-file');
+                if (!btn) return;
+                const fid = btn.getAttribute('data-file-id');
+                if (fid) downloadFromStore(fid);
             });
         }
     }
@@ -578,7 +627,15 @@
     }
 
     async function init() {
-        if (!window.api || !window.api.isAuthenticated()) return;
+        if (!window.api) {
+            showToast('API-клиент не загружен', 'error');
+            return;
+        }
+        if (!window.api.isAuthenticated()) {
+            showToast('Требуется авторизация…', 'error');
+            setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+            return;
+        }
 
         try {
             currentUser = await window.api.getCurrentUser();
