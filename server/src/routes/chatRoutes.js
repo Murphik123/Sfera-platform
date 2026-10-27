@@ -8,7 +8,9 @@ const {
   getDialogs,
   createGroup,
   getGroups,
-  deleteGroup
+  deleteGroup,
+  deleteMessage,
+  deleteDialog
 } = require('../controllers/chatController');
 router.use(authMiddleware);
 // 1. Статические роуты первыми!
@@ -18,6 +20,8 @@ router.post('/groups', createGroup);
 router.delete('/groups/:groupId', deleteGroup);
 router.post('/send', sendMessage);
 router.put('/read/:messageId', markAsRead);
+router.delete('/message/:messageId', deleteMessage);
+router.delete('/dialog/:userId', deleteDialog);
 
 // 2. Динамические роуты с параметрами в конце!
 router.get('/:userId', getMessages);

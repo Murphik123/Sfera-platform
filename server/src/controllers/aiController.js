@@ -88,3 +88,20 @@ exports.clearAIHistory = async (req, res, next) => {
     return res.json({ success: true });
   } catch (error) { next(error); }
 };
+
+// ============================================================
+// УДАЛЕНИЕ ОДНОГО AI-СООБЩЕНИЯ (по индексу в массиве)
+// ============================================================
+exports.deleteAIMessage = async (req, res, next) => {
+  try {
+    const idx = parseInt(req.params.index, 10);
+    if (isNaN(idx) || idx < 0) return res.status(400).json({ success: false, code: 'INVALID_INPUT' });
+    const session = await AISession.findOne({ userId: req.userId });
+    if (!session || !session.messages || idx >= session.messages.length) {
+      return res.status(404).json({ success: false, code: 'NOT_FOUND' });
+    }
+    session.messages.splice(idx, 1);
+    await session.save();
+    return res.json({ success: true });
+  } catch (e) { next(e); }
+};

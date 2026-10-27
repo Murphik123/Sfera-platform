@@ -370,3 +370,64 @@ exports.deleteGroup = async (req, res, next) => {
     next(error);
   }
 };
+
+// ============================================================
+// УДАЛЕНИЕ ОДНОГО СООБЩЕНИЯ (для всех)
+// ============================================================
+exports.deleteMessage = async (req, res, next) => {
+  try {
+    const { messageId } = req.params;
+    if (!messageId || !mongoose.Types.ObjectId.isValid(String(messageId))) {
+      throw createHttpError('Неверный идентификатор сообщения', 400);
+    }
+    const message = await Message.findById(messageId);
+    if (!message) throw createHttpError('Сообщение не найдено', 404);
+
+    const me = await User.findById(req.userId).select('role').lean();
+    const isAuthor = String(message.from) === String(req.userId);
+    const isAdmin = me && me.role === 'admin';
+    if (!isAuthor && !isAdmin) {
+      throw createHttpError('Можно удалять только свои сообщения', 403);
+    }
+
+    const fromId = String(message.from);
+    const toId = String(message.to);
+    await Message.deleteOne({ _id: messageId });
+
+    const io = req.app.get('io');
+    if (io) {
+      const payload = { messageId: String(messageId), from: fromId, to: toId };
+      io.to(fromId).emit('message_deleted', payload);
+      io.to(toId).emit('message_deleted', payload);
+    }
+    return res.json({ success: true });
+  } catch (e) { next(e); }
+};
+
+// ============================================================
+// ОЧИСТКА ЧАТА С ЮЗЕРОМ (все сообщения, у обоих)
+// ============================================================
+exports.deleteDialog = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    if (!userId || !mongoose.Types.ObjectId.isValid(String(userId))) {
+      throw createHttpError('Неверный идентификатор', 400);
+    }
+    const currentUserId = req.userId;
+
+    const result = await Message.deleteMany({
+      $or: [
+        { from: currentUserId, to: userId },
+        { from: userId, to: currentUserId }
+      ]
+    });
+
+    const io = req.app.get('io');
+    if (io) {
+      const payload = { userId: String(userId), byUser: String(currentUserId) };
+      io.to(String(userId)).emit('dialog_cleared', payload);
+      io.to(String(currentUserId)).emit('dialog_cleared', payload);
+    }
+    return res.json({ success: true, deleted: result.deletedCount || 0 });
+  } catch (e) { next(e); }
+};
