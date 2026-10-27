@@ -605,6 +605,15 @@
                     if (dialogsList) dialogsList.style.display = 'block';
                     if (newsFeed) newsFeed.style.display = 'none';
                     renderDialogs();
+                    if (activeDialogId === 'ai_assistant') {
+                        const firstChat = dialogsData.find(d => !d.isAI);
+                        if (firstChat) {
+                            selectDialog(firstChat.id);
+                        } else {
+                            activeDialogId = null;
+                            if (chatMessages) chatMessages.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>Выберите чат</p></div>';
+                        }
+                    }
                 } else if (activeTab === 'news') {
                     if (dialogsList) dialogsList.style.display = 'none';
                     if (newsFeed) newsFeed.style.display = 'block';
