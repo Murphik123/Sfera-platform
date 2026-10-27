@@ -145,10 +145,16 @@
             const response = await window.api.get('/chat/dialogs');
             const raw = Array.isArray(response) ? response : (response?.dialogs || response?.data || []);
 
-            dialogsData = raw.map(normalizeDialog).filter(Boolean);
-
+            // Сохраняем локальные группы (group_*) при обновлении списка
+            const localGroups = dialogsData.filter(d => String(d.id).startsWith('group_'));
+            const serverDialogs = raw.map(normalizeDialog).filter(Boolean);
             const fixedIds = new Set(FIXED_DIALOGS.map(d => d.id));
-            dialogsData = [...FIXED_DIALOGS, ...dialogsData.filter(d => !fixedIds.has(d.id))];
+            
+            dialogsData = [
+                ...FIXED_DIALOGS,
+                ...localGroups,
+                ...serverDialogs.filter(d => !fixedIds.has(d.id) && !localGroups.some(g => g.id === d.id))
+            ];
 
             renderDialogs();
 
@@ -166,7 +172,7 @@
     async function loadMessages(userId, markRead = true) {
         if (!userId) return;
         try {
-            if (userId === 'ai_assistant' || userId === 'devs') {
+            if (userId === 'ai_assistant' || isLocalDialog(userId)) {
                 if (!messagesData[userId]) messagesData[userId] = [];
                 renderChat();
                 return;
