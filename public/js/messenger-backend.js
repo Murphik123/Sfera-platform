@@ -57,7 +57,7 @@
 
     function isLocalDialog(id) {
         const s = String(id || '');
-        return s === 'devs' || s.startsWith('group_');
+        return s === 'devs';
     }
 
     function downloadFromStore(fileId) {
@@ -327,6 +327,7 @@
 
     async function selectDialog(id) {
         activeDialogId = String(id);
+        if (socket && socket.connected) socket.emit('join_room', activeDialogId);
         renderDialogs();
         const dialog = dialogsData.find(d => d.id === activeDialogId);
         if (dialog) dialog.unread = 0;
@@ -509,16 +510,19 @@
             cancelGroupBtn.addEventListener('click', () => groupModal.classList.remove('active'));
         }
         if (groupForm) {
-            groupForm.addEventListener('submit', event => {
+            groupForm.addEventListener('submit', async event => {
                 event.preventDefault();
                 const name = document.getElementById('groupName').value.trim();
                 if (name) {
-                    const newId = 'group_' + Date.now();
-                    dialogsData.unshift({ id: newId, name: name, lastMsg: '', time: 'Indi', unread: 0, isGroup: true, type: 'group' });
-                    if (groupModal) groupModal.classList.remove('active');
-                    document.getElementById('groupName').value = '';
-                    renderDialogs();
-                    selectDialog(newId);
+                    try {
+                        const res = await window.api.post('/chat/groups', { name });
+                        if (groupModal) groupModal.classList.remove('active');
+                        document.getElementById('groupName').value = '';
+                        await loadDialogs();
+                        selectDialog(res._id || res.id);
+                    } catch (err) {
+                        showToast(err.message || 'Ошибка создания группы', 'error');
+                    }
                 }
             });
         }
