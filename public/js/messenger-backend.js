@@ -853,6 +853,32 @@
         renderChat();
     });
 
+    function sferaConfirm(title, message) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'group-modal active';
+            overlay.style.zIndex = '9999';
+            overlay.innerHTML = `
+                <div class="modal-box" style="border-color: rgba(255, 77, 77, 0.4); max-width: 400px;">
+                    <h2 style="color: #ff6b6b; margin-bottom: 8px;">${escapeHtml(title)}</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 15px;">${escapeHtml(message)}</p>
+                    <div class="form-actions" style="display: flex; gap: 12px; justify-content: center;">
+                        <button type="button" class="btn-glass cancel-btn">Отмена</button>
+                        <button type="button" class="btn-neon-danger confirm-btn">Удалить</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            const close = (val) => { overlay.remove(); resolve(val); };
+            overlay.querySelector('.cancel-btn').addEventListener('click', () => close(false));
+            overlay.querySelector('.confirm-btn').addEventListener('click', () => close(true));
+            
+            // Закрытие по клику на фон
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) close(false); });
+        });
+    }
+
     async function handleDeleteMessage(message) {
         if (!activeDialogId) return;
         const isAi = activeDialogId === 'ai_assistant' || (message.id && String(message.id).startsWith('ai_'));
@@ -860,13 +886,13 @@
             if (message.aiIndex === undefined || message.aiIndex === null) {
                 return showToast('Невозможно удалить это сообщение', 'error');
             }
-            if (!window.confirm('Удалить это сообщение из истории AI?')) return;
+            if (!(await sferaConfirm('Удалить сообщение?', 'Оно исчезнет из вашей истории с AI.'))) return;
             try {
                 await window.api.delete('/ai/message/' + message.aiIndex);
                 await loadMessages('ai_assistant', false);
             } catch (e) { showToast('Ошибка удаления: ' + (e.message || ''), 'error'); }
         } else {
-            if (!window.confirm('Удалить это сообщение у всех?')) return;
+            if (!(await sferaConfirm('Удалить сообщение у всех?', 'Оно исчезнет у вас и у вашего собеседника.'))) return;
             try {
                 await window.api.delete('/chat/message/' + message.id);
                 messagesData[activeDialogId] = (messagesData[activeDialogId] || []).filter(m => String(m.id) !== String(message.id));
@@ -880,7 +906,7 @@
         const dialog = dialogsData.find(d => d.id === activeDialogId);
         const isAi = activeDialogId === 'ai_assistant';
         const label = isAi ? 'всю историю с AI' : 'всю переписку с ' + (dialog ? dialog.name : 'пользователем');
-        if (!window.confirm('Удалить ' + label + ' у обоих?')) return;
+        if (!(await sferaConfirm('Очистить чат?', 'Вся переписка (' + label + ') будет удалена безвозвратно.'))) return;
         try {
             if (isAi) {
                 await window.api.post('/ai/clear', {});
