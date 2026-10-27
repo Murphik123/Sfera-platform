@@ -105,3 +105,48 @@ exports.deleteAIMessage = async (req, res, next) => {
     return res.json({ success: true });
   } catch (e) { next(e); }
 };
+
+// ============================================================
+// ЭСКАЛАЦИЯ AI → admin (Позвать админа)
+// ============================================================
+exports.escalateToAdmin = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const User = require('../models/User');
+    const Message = require('../models/Message');
+
+    const admin = await User.findOne({ role: 'admin' }).select('_id username').lean();
+    if (!admin) {
+      return res.status(404).json({ success: false, code: 'NO_ADMIN', message: 'Администратор не найден' });
+    }
+    if (String(admin._id) === String(userId)) {
+      return res.status(400).json({ success: false, code: 'IS_ADMIN', message: 'Вы уже админ' });
+    }
+
+    const user = await User.findById(userId).select('username').lean();
+    const session = await AISession.findOne({ userId });
+    const last = (session && session.messages ? session.messages.slice(-6) : [])
+      .map(m => (m.role === 'user' ? '👤 ' : '🤖 ') + m.content.slice(0, 300))
+      .join('\n');
+
+    const text = '🆘 Эскалация из AI-помощника\n\nПользователь: ' + (user?.username || userId) + '\n\nПоследние сообщения:\n' + (last || '(нет)');
+
+    const msg = new Message({ from: userId, to: admin._id, text });
+    await msg.save();
+
+    if (session) { session.escalated = true; await session.save(); }
+
+    const populated = await Message.findById(msg._id)
+      .populate('from', 'username avatar online')
+      .populate('to', 'username avatar online')
+      .lean();
+
+    const io = req.app.get('io');
+    if (io) {
+      io.to(String(admin._id)).emit('new_message', populated);
+      io.to(String(userId)).emit('new_message', populated);
+    }
+
+    return res.json({ success: true, adminId: String(admin._id), adminUsername: admin.username });
+  } catch (e) { next(e); }
+};
