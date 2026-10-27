@@ -109,19 +109,15 @@ exports.getMessages = async (req, res, next) => {
     }
 
     const currentUserId = req.userId;
-
-    // Проверяем, является ли получатель группой
     const isGroup = await Group.exists({ _id: userId });
 
-    // Ищем сообщения: для группы ищем по to, для юзера - в обе стороны
     let query = isGroup 
       ? { to: userId }
       : { $or: [ { from: currentUserId, to: userId }, { from: userId, to: currentUserId } ] };
 
     const messages = await Message.find(query)
-      .sort({ createdAt: 1 }) // 1 = старые сверху (для чата)
-      .populate('from', 'username avatar online lastSeen')
-      .populate('to', 'username avatar online lastSeen');
+      .sort({ createdAt: 1 }) 
+      .populate('from', 'username avatar online lastSeen');
 
     const TWO_MINUTES_MS = 2 * 60 * 1000;
     const formatUserOnlineStatus = (u) => {
@@ -135,16 +131,12 @@ exports.getMessages = async (req, res, next) => {
     const formattedMessages = messages.map((msg) => {
       const msgObj = msg.toObject();
       msgObj.from = formatUserOnlineStatus(msgObj.from);
-      msgObj.to = formatUserOnlineStatus(msgObj.to);
       return msgObj;
     });
 
     return res.json(formattedMessages);
   } catch (error) {
-    logControllerError('getMessages', error, {
-      currentUserId: req.userId,
-      targetUserId: req.params?.userId
-    });
+    logControllerError('getMessages', error, { currentUserId: req.userId, targetUserId: req.params?.userId });
     next(error);
   }
 };
@@ -155,17 +147,29 @@ exports.getMessages = async (req, res, next) => {
 exports.getDialogs = async (req, res, next) => {
   try {
     const currentUserId = req.userId;
-
-    if (!currentUserId) {
-      throw createHttpError('Пользователь не авторизован', 401);
-    }
+    if (!currentUserId) throw createHttpError('Пользователь не авторизован', 401);
 
     const messages = await Message.find({
       $or: [{ from: currentUserId }, { to: currentUserId }]
-    })
-      .sort({ createdAt: -1 })
-      .populate('from', 'username avatar online lastSeen')
-      .populate('to', 'username avatar online lastSeen');
+    }).sort({ createdAt: -1 });
+
+    const partnerIds = new Set();
+    messages.forEach(msg => {
+      const isFromMe = msg.from.toString() === currentUserId.toString();
+      const partnerId = isFromMe ? msg.to.toString() : msg.from.toString();
+      partnerIds.add(partnerId);
+    });
+
+    const users = await User.find({ _id: { $in: Array.from(partnerIds) } }).select('username avatar online lastSeen');
+    const groups = await Group.find({ _id: { $in: Array.from(partnerIds) } });
+    const userGroups = await Group.find({ members: currentUserId });
+
+    const map = new Map();
+    users.forEach(u => map.set(u._id.toString(), { type: 'user', doc: u }));
+    groups.forEach(g => map.set(g._id.toString(), { type: 'group', doc: g }));
+    userGroups.forEach(g => { if (!map.has(g._id.toString())) map.set(g._id.toString(), { type: 'group', doc: g }); });
+
+    const dialogsMap = new Map();
 
     const TWO_MINUTES_MS = 2 * 60 * 1000;
     const formatUserOnlineStatus = (u) => {
@@ -176,54 +180,52 @@ exports.getDialogs = async (req, res, next) => {
       return userObj;
     };
 
-    const dialogsMap = new Map();
-
     messages.forEach((msg) => {
-      const isFromMe = msg.from._id.toString() === currentUserId.toString();
-      const partner = isFromMe ? msg.to : msg.from;
-      const partnerId = partner._id.toString();
+      const isFromMe = msg.from.toString() === currentUserId.toString();
+      const partnerId = isFromMe ? msg.to.toString() : msg.from.toString();
+      const partnerObj = map.get(partnerId);
+      if (!partnerObj) return;
+
+      let userPayload;
+      if (partnerObj.type === 'user') {
+        userPayload = formatUserOnlineStatus(partnerObj.doc);
+      } else {
+        userPayload = { _id: partnerId, username: partnerObj.doc.name, avatar: '', online: false, isGroup: true };
+      }
 
       if (!dialogsMap.has(partnerId)) {
         dialogsMap.set(partnerId, {
           id: partnerId,
-          user: formatUserOnlineStatus(partner),
+          user: userPayload,
           lastMessage: { text: msg.text, createdAt: msg.createdAt },
           lastMsg: msg.text,
           time: msg.createdAt,
           unread: !isFromMe && !msg.read ? 1 : 0
         });
       } else if (!isFromMe && !msg.read) {
-        const dialog = dialogsMap.get(partnerId);
-        dialog.unread += 1;
+        dialogsMap.get(partnerId).unread += 1;
       }
     });
 
-    // Получаем группы юзера
-    const userGroups = await Group.find({ members: currentUserId });
-    userGroups.forEach((g) => {
-      dialogsMap.set(g._id.toString(), {
-        id: g._id.toString(),
-        user: { username: g.name, avatar: '', online: false, isGroup: true },
+    const others = await User.find({ _id: { $ne: currentUserId, $nin: Array.from(dialogsMap.keys()) } }).select('username avatar online lastSeen');
+    others.forEach((u) => {
+      dialogsMap.set(u._id.toString(), {
+        id: u._id.toString(),
+        user: formatUserOnlineStatus(u),
         lastMsg: '',
-        time: g.createdAt,
+        time: u.createdAt,
         unread: 0
       });
     });
 
-    // Все зарегистрированные пользователи видны в чате, даже без переписки.
-    const others = await User.find({
-      _id: { $ne: currentUserId },
-      isBlocked: { $ne: true }
-    }).select('username avatar online lastSeen');
-
-    others.forEach((u) => {
-      const id = u._id.toString();
-      if (!dialogsMap.has(id)) {
-        dialogsMap.set(id, {
-          id,
-          user: formatUserOnlineStatus(u),
+    userGroups.forEach((g) => {
+      const gid = g._id.toString();
+      if (!dialogsMap.has(gid)) {
+        dialogsMap.set(gid, {
+          id: gid,
+          user: { _id: gid, username: g.name, avatar: '', online: false, isGroup: true },
           lastMsg: '',
-          time: u.createdAt,
+          time: g.createdAt,
           unread: 0
         });
       }
@@ -231,9 +233,7 @@ exports.getDialogs = async (req, res, next) => {
 
     return res.json(Array.from(dialogsMap.values()));
   } catch (error) {
-    logControllerError('getDialogs', error, {
-      currentUserId: req.userId
-    });
+    logControllerError('getDialogs', error, { currentUserId: req.userId });
     next(error);
   }
 };
