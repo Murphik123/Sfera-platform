@@ -249,17 +249,26 @@
         if (e.target.closest('#audioCallBtn') || e.target.closest('#videoCallBtn')) {
             e.preventDefault();
             e.stopPropagation();
-            const isVideo = e.target.closest('#videoCallBtn') !== null;
+            
+            const activeItem = document.querySelector('.dialog-item.active');
+            const isAI = activeItem && (
+                activeItem.textContent.includes('AI Kömekçi') || 
+                activeItem.textContent.includes('Sfera AI')
+            );
+            
             let targetId = window.activeDialogId;
-            if (!targetId) {
-                const activeItem = document.querySelector('.dialog-item.active');
-                if (activeItem) targetId = activeItem.dataset.id || activeItem.id.replace('dialog-', '');
+            if (!targetId && activeItem) {
+                targetId = activeItem.dataset.id || activeItem.id.replace('dialog-', '');
             }
-            if (targetId && targetId !== 'ai_assistant') {
-                startCall(targetId, isVideo);
-            } else {
-                alert('Выберите диалог с пользователем для звонка');
+
+            // Если это ИИ или нет ID — просто выходим без всяких alert
+            if (isAI || !targetId || targetId === 'ai_assistant') {
+                console.warn('⚠️ [WebRTC] Звонки недоступны для ИИ-помощника');
+                return;
             }
+
+            const isVideo = e.target.closest('#videoCallBtn') !== null;
+            startCall(targetId, isVideo);
         }
     }, true);
 
@@ -274,3 +283,21 @@ const socketInterval = setInterval(() => {
         console.log('✅ [WebRTC] Listeners attached to socket');
     }
 }, 500);
+
+    // Принудительно прячем кнопки звонка для ИИ каждые 300мс
+    setInterval(() => {
+        const activeItem = document.querySelector('.dialog-item.active');
+        const isAI = activeItem && (
+            activeItem.textContent.includes('AI Kömekçi') || 
+            activeItem.textContent.includes('Sfera AI')
+        );
+        const callButtons = document.querySelector('.call-buttons');
+        
+        if (callButtons) {
+            if (isAI) {
+                callButtons.style.display = 'none';
+            } else {
+                callButtons.style.display = 'flex';
+            }
+        }
+    }, 300);
