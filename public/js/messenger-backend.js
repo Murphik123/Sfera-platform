@@ -379,7 +379,7 @@
                 </div>
                 <div class="dialog-info">
                     <div class="name">${escapeHtml(dialog.name)}${adminBadge}</div>
-                    <div class="last-msg">${escapeHtml(dialog.lastMsg)}</div>
+                    <div class="last-msg">${sanitizePreview(dialog.lastMsg)}</div>
                 </div>
                 <div class="dialog-time">${escapeHtml(dialog.time)}</div>
                 ${dialog.unread > 0 ? `<div class="unread-badge">${dialog.unread}</div>` : ''}
@@ -501,6 +501,12 @@
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
+
+    function sanitizePreview(msg) {
+            if (!msg) return '';
+            if (msg.includes('file-card') || msg.includes('<img')) return '📄 Файл';
+            return String(msg).replace(/<[^>]*>?/gm, '');
+        }
 
     function escapeHtml(value) {
         return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
