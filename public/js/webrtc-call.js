@@ -50,6 +50,7 @@
 
         callTargetName.textContent = 'Звонок...';
         callStatusText.textContent = 'Соединение...';
+        callStatusText.style.color = 'var(--accent)';
         callModal.classList.add('active');
         if (video) callVideos.style.display = 'flex';
 
@@ -81,8 +82,9 @@
             }
         } catch (err) {
             console.error('Error startCall:', err);
-            alert('Ошибка звонка: ' + err.message);
-            cleanup();
+            callStatusText.textContent = '❌ Микрофон/Камера заблокированы';
+            callStatusText.style.color = '#ff4d4d';
+            setTimeout(cleanup, 3000);
         }
     }
 
@@ -120,7 +122,9 @@
             }
         } catch (err) {
             console.error('Error acceptCall:', err);
-            cleanup();
+            callStatusText.textContent = '❌ Ошибка подключения';
+            callStatusText.style.color = '#ff4d4d';
+            setTimeout(cleanup, 3000);
         }
     }
 
