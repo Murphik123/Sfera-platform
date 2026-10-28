@@ -135,7 +135,11 @@
             }
         } catch (err) {
             console.error('Error startCall:', err);
-            callStatusText.textContent = '❌ Микрофон/Камера заблокированы';
+            if (err.name === 'NotReadableError') {
+                callStatusText.textContent = '❌ Камера/Микрофон заняты';
+            } else {
+                callStatusText.textContent = '❌ Микрофон/Камера заблокированы';
+            }
             callStatusText.style.color = '#ff4d4d';
             setTimeout(cleanup, 3000);
         }
@@ -179,7 +183,11 @@
             }
         } catch (err) {
             console.error('Error acceptCall:', err);
-            callStatusText.textContent = '❌ Ошибка подключения';
+            if (err.name === 'NotReadableError') {
+                callStatusText.textContent = '❌ Камера/Микрофон заняты';
+            } else {
+                callStatusText.textContent = '❌ Ошибка подключения';
+            }
             callStatusText.style.color = '#ff4d4d';
             setTimeout(cleanup, 3000);
         }
