@@ -743,37 +743,87 @@
         }
 
         if (fileInput) {
-            fileInput.addEventListener('change', (event) => {
+            fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
 
                 const time = formatTime(new Date().toISOString());
-                const fileId = 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    fileStore.set(fileId, { url: e.target.result, name: file.name });
-                    const safeName = escapeHtml(file.name);
-                    const safeSize = (file.size / 1024).toFixed(1);
+                const safeName = escapeHtml(file.name);
+                const safeSize = (file.size / 1024).toFixed(1);
+                const tempId = 'temp_' + Date.now();
+
+                // Показываем локальный статус загрузки
+                if (!messagesData[activeDialogId]) messagesData[activeDialogId] = [];
+                messagesData[activeDialogId].push({
+                    id: tempId,
+                    sender: currentUser?.username || 'Me',
+                    text: `<div class="file-card"><span>⏳ Загрузка ${safeName}...</span></div><div class="msg-time">${time}</div>`,
+                    time: time,
+                    type: 'sent',
+                    isHtml: true
+                });
+                renderChat();
+
+                const formData = new FormData();
+                formData.append('file', file);
+                const token = localStorage.getItem('token') || localStorage.getItem('sfera_token');
+
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token },
+                        body: formData
+                    });
+
+                    if (!response.ok) throw new Error('Upload failed');
+                    const data = await response.json();
+                    
+                    // Удаляем статус загрузки
+                    messagesData[activeDialogId] = messagesData[activeDialogId].filter(m => m.id !== tempId);
+
+                    // Формируем HTML для файла (ссылка на сервер)
                     const htmlContent = `
                         <div class="file-card">
                             <span>📄 <strong>${safeName}</strong> (${safeSize} KB)</span>
-                            <button type="button" class="btn-download-file" data-file-id="${fileId}">Ýükle 💾</button>
+                            <a href="${data.url}" target="_blank" class="btn-download-file" style="text-decoration:none;">Открыть 💾</a>
                         </div>
                         <div class="msg-time">${time}</div>
                     `;
-                    if (!messagesData[activeDialogId]) messagesData[activeDialogId] = [];
+
+                    // Отправляем через сокет, чтобы получатель увидел
+                    if (window.SferaSocket && activeDialogId) {
+                        window.SferaSocket.emit('send_message', {
+                            to: activeDialogId,
+                            text: htmlContent,
+                            attachments: [data.url]
+                        });
+                    } else {
+                        // Фолбэк, если сокет не подключен
+                        messagesData[activeDialogId].push({
+                            id: 'msg_' + Date.now(),
+                            sender: currentUser?.username || 'Me',
+                            text: htmlContent,
+                            time: time,
+                            type: 'sent',
+                            isHtml: true
+                        });
+                        renderChat();
+                    }
+                } catch (err) {
+                    console.error('File upload error:', err);
+                    messagesData[activeDialogId] = messagesData[activeDialogId].filter(m => m.id !== tempId);
                     messagesData[activeDialogId].push({
                         id: 'msg_' + Date.now(),
                         sender: currentUser?.username || 'Me',
-                        text: htmlContent,
+                        text: `<div style="color:#ff4d4d;">❌ Ошибка загрузки файла</div>`,
                         time: time,
                         type: 'sent',
                         isHtml: true
                     });
                     renderChat();
-                };
-                reader.readAsDataURL(file);
-                event.target.value = '';
+                } finally {
+                    event.target.value = '';
+                }
             });
         }
 
