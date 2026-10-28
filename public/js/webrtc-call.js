@@ -104,6 +104,10 @@
             pc = new RTCPeerConnection({ iceServers });
             localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
+            pc.oniceconnectionstatechange = () => {
+                console.log('🌐 [WebRTC] ICE Connection State:', pc.iceConnectionState);
+            };
+
             pc.onicecandidate = (event) => {
                 if (event.candidate && window.SferaSocket) {
                     window.SferaSocket.emit('ice_candidate', { to: peerId, candidate: event.candidate });
@@ -111,11 +115,14 @@
             };
 
             pc.ontrack = (event) => {
-                if (remoteVideo) remoteVideo.srcObject = event.streams[0];
+                console.log('🎥 [WebRTC] Получен удаленный трек:', event.track.kind);
+                if (remoteVideo) {
+                    remoteVideo.srcObject = event.streams[0];
+                    remoteVideo.play().catch(e => console.warn('Autoplay blocked:', e));
+                }
                 callStatusText.textContent = 'Соединено';
                 callStatusText.style.color = 'var(--accent)';
                 callTargetName.textContent = remoteUserName || getTargetName(peerId);
-                callState = 'connected';
                 startTimer();
                 if (muteBtn) muteBtn.style.display = 'block';
             };
