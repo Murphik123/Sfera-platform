@@ -786,7 +786,7 @@
                     const htmlContent = `
                         <div class="file-card">
                             <span>📄 <strong>${safeName}</strong> (${safeSize} KB)</span>
-                            <a href="${data.url}" target="_blank" class="btn-download-file" style="text-decoration:none;">Открыть 💾</a>
+                            <a href="/api/upload/${data.filename}" target="_blank" class="btn-download-file" style="text-decoration:none;">Открыть 💾</a>
                         </div>
                         <div class="msg-time">${time}</div>
                     `;
