@@ -245,7 +245,7 @@
             currentUser = await window.api.getCurrentUser();
         }
 
-        if (activeDialogId === 'ai_assistant' && !isAdmin()) {
+        if (activeDialogId === 'ai_assistant') {
             const userMsg = normalizeMessage({
                 id: 'local_' + Date.now(),
                 text: value,
@@ -430,7 +430,7 @@
             }
             const existingEsc = document.getElementById('escalateAiBtn');
             if (existingEsc) existingEsc.remove();
-            if (activeDialogId === 'ai_assistant') {
+            if (activeDialogId === 'ai_assistant' && !isAdmin()) {
                 const escBtn = document.createElement('button');
                 escBtn.id = 'escalateAiBtn';
                 escBtn.title = 'Позвать администратора';
