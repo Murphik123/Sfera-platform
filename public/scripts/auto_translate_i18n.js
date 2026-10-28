@@ -95,6 +95,46 @@
 
     document.addEventListener('DOMContentLoaded', initI18n);
 
+    // SFERA-PATCH: MutationObserver для динамических элементов
+    function translateNode(node, t) {
+        if (node.nodeType === 1) {
+            if (node.hasAttribute('data-i18n')) {
+                const key = node.getAttribute('data-i18n');
+                if (t[key]) node.textContent = t[key];
+            }
+            if (node.hasAttribute('data-i18n-placeholder')) {
+                const key = node.getAttribute('data-i18n-placeholder');
+                if (t[key]) node.placeholder = t[key];
+            }
+            if (node.hasAttribute('data-i18n-title')) {
+                const key = node.getAttribute('data-i18n-title');
+                if (t[key]) node.title = t[key];
+            }
+            node.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+            node.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (t[key]) el.placeholder = t[key];
+            });
+        }
+    }
+
+    const observer = new MutationObserver((mutations) => {
+        const t = window.translations[window.currentLang] || {};
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                translateNode(node, t);
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+
+
     // Экспорт для ручного использования
     window.SFERA_I18N = {
         setLanguage: applyTranslations,

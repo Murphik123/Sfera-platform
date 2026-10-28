@@ -984,7 +984,7 @@
         chatHeader.innerHTML = '<div class="chat-avatar" style="background:var(--primary); color:#000;">📰</div><div><div class="chat-name">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_title || 'Новости') + '</div><div class="chat-status">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_subtitle || 'Мировые и Туркменские') + '</div></div>';
         
         
-        chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_loading || 'Загрузка новостей...') + '</div>';
+        chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_loading || '<span data-i18n="news_loading">Загрузка новостей...</span>') + '</div>';
         
         try {
             const currentLang = localStorage.getItem('lang') || 'tm';

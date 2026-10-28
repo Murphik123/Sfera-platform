@@ -101,7 +101,7 @@
         isVideoCall = video;
 
         callTargetName.textContent = getTargetName(targetId) + '...';
-        callStatusText.textContent = 'Соединение...';
+        callStatusText.textContent = window.SFERA_I18N?.t('call_connecting') || 'Соединение...';
         callStatusText.style.color = 'var(--accent)';
         callModal.classList.add('active');
         if (video) callVideos.style.display = 'flex';
@@ -130,7 +130,7 @@
                     remoteVideo.srcObject = event.streams[0];
                     remoteVideo.play().catch(e => console.warn('Autoplay blocked:', e));
                 }
-                callStatusText.textContent = getTrans('call_connected', 'Соединено');
+                callStatusText.textContent = getTrans('call_connected', window.SFERA_I18N?.t('call_connected') || 'Соединено');
                 callStatusText.style.color = 'var(--accent)';
                 callTargetName.textContent = remoteUserName || getTargetName(peerId);
                 startTimer();
@@ -146,9 +146,9 @@
         } catch (err) {
             console.error('Error startCall:', err);
             if (err.name === 'NotReadableError') {
-                callStatusText.textContent = getTrans('call_error_busy', '❌ Камера/Микрофон заняты');
+                callStatusText.textContent = getTrans('call_error_busy', window.SFERA_I18N?.t('call_error_busy') || '❌ Камера/Микрофон заняты');
             } else {
-                callStatusText.textContent = getTrans('call_error_mic', '❌ Микрофон/Камера заблокированы');
+                callStatusText.textContent = getTrans('call_error_mic', window.SFERA_I18N?.t('call_error_mic') || '❌ Микрофон/Камера заблокированы');
             }
             callStatusText.style.color = '#ff4d4d';
             setTimeout(cleanup, 3000);
@@ -159,7 +159,7 @@
         if (callState !== 'ringing') return;
         callState = 'connected';
         acceptCallBtn.style.display = 'none';
-        callStatusText.textContent = 'Соединение...';
+        callStatusText.textContent = window.SFERA_I18N?.t('call_connecting') || 'Соединение...';
 
         try {
             const iceServers = await getIceServers();
@@ -177,7 +177,7 @@
 
             pc.ontrack = (event) => {
                 if (remoteVideo) remoteVideo.srcObject = event.streams[0];
-                callStatusText.textContent = getTrans('call_connected', 'Соединено');
+                callStatusText.textContent = getTrans('call_connected', window.SFERA_I18N?.t('call_connected') || 'Соединено');
                 callStatusText.style.color = 'var(--accent)';
                 callTargetName.textContent = remoteUserName;
                 startTimer();
@@ -194,9 +194,9 @@
         } catch (err) {
             console.error('Error acceptCall:', err);
             if (err.name === 'NotReadableError') {
-                callStatusText.textContent = getTrans('call_error_busy', '❌ Камера/Микрофон заняты');
+                callStatusText.textContent = getTrans('call_error_busy', window.SFERA_I18N?.t('call_error_busy') || '❌ Камера/Микрофон заняты');
             } else {
-                callStatusText.textContent = getTrans('call_error_mic', '❌ Ошибка подключения');
+                callStatusText.textContent = getTrans('call_error_mic', window.SFERA_I18N?.t('call_error_conn') || '❌ Ошибка подключения');
             }
             callStatusText.style.color = '#ff4d4d';
             setTimeout(cleanup, 3000);
@@ -217,7 +217,7 @@
             const dialogItem = document.querySelector(`.dialog-item[data-id="${data.from}"]`);
             remoteUserName = dialogItem ? (dialogItem.querySelector('.name')?.textContent || 'Собеседник') : 'Собеседник';
             callTargetName.textContent = remoteUserName;
-            callStatusText.textContent = isVideoCall ? '📹 Видеозвонок' : '📞 Аудиозвонок';
+            callStatusText.textContent = isVideoCall ? '📹 ' + (window.SFERA_I18N?.t('call_video') || 'Видеозвонок') : '📞 ' + (window.SFERA_I18N?.t('call_audio') || 'Аудиозвонок');
             callModal.classList.add('active');
             acceptCallBtn.style.display = 'block';
             if (isVideoCall) callVideos.style.display = 'flex';
@@ -226,7 +226,7 @@
         socket.on('call_accepted', async (signal) => {
             if (pc) {
                 await pc.setRemoteDescription(new RTCSessionDescription(signal));
-                callStatusText.textContent = getTrans('call_connected', 'Соединено');
+                callStatusText.textContent = getTrans('call_connected', window.SFERA_I18N?.t('call_connected') || 'Соединено');
                 callStatusText.style.color = 'var(--accent)';
                 callState = 'connected';
                 startTimer();
@@ -260,7 +260,7 @@
             const audioTrack = localStream.getAudioTracks()[0];
             if (audioTrack) {
                 audioTrack.enabled = !audioTrack.enabled;
-                muteBtn.textContent = audioTrack.enabled ? '🔇 Mute' : '🔊 Unmute';
+                muteBtn.textContent = audioTrack.enabled ? window.SFERA_I18N?.t('call_mute') || '🔇 Mute' : window.SFERA_I18N?.t('call_unmute') || '🔊 Unmute';
                 muteBtn.style.background = audioTrack.enabled ? 'rgba(255,255,255,0.05)' : 'rgba(255, 77, 77, 0.3)';
             }
         });

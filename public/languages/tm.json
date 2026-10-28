@@ -403,5 +403,9 @@
   "auto_c7a54fbe": "Guruhy öçürmek?",
   "auto_58f1911b": "Все сообщения в этой группе будут безвозвратно удалены.",
   "auto_ed2bbfbc": "Удалить",
-  "auto_cfd33d06": "✅ Принять"
+  "auto_cfd33d06": "✅ Принять",
+  "call_audio": "📞 Sesli jaň",
+  "call_video": "📹 Wideojaň",
+  "call_connecting": "Birikdirilýär...",
+  "call_error_conn": "❌ Birikdirmek säwlik"
 }

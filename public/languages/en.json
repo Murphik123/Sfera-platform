@@ -403,5 +403,9 @@
   "auto_c7a54fbe": "Удалить группу?",
   "auto_58f1911b": "Все сообщения в этой группе будут безвозвратно удалены.",
   "auto_ed2bbfbc": "Удалить",
-  "auto_cfd33d06": "✅ Принять"
+  "auto_cfd33d06": "✅ Принять",
+  "call_audio": "📞 Audio call",
+  "call_video": "📹 Video call",
+  "call_connecting": "Connecting...",
+  "call_error_conn": "❌ Connection error"
 }
