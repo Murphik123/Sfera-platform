@@ -463,7 +463,7 @@
             const msgEl = document.createElement('div');
             msgEl.className = `message ${message.type}`;
             
-            const isFileCard = message.text && String(message.text).includes('<div class="file-card">');
+            const isFileCard = message.text && (String(message.text).includes('file-card') || String(message.text).includes('<img src="/api/upload/'));
             if (message.isHtml || isFileCard) {
                 msgEl.innerHTML = message.text;
                 
