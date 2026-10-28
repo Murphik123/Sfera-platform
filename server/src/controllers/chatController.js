@@ -431,3 +431,98 @@ exports.deleteDialog = async (req, res, next) => {
     return res.json({ success: true, deleted: result.deletedCount || 0 });
   } catch (e) { next(e); }
 };
+
+
+// ============================================================
+// OVERSIGHT L1: Список пользователей
+// ============================================================
+exports.adminOversightUsers = async (req, res, next) => {
+  try {
+    const me = await User.findById(req.userId).select('role').lean();
+    if (!me || me.role !== 'admin') return res.status(403).json({ success: false, code: 'FORBIDDEN' });
+
+    const users = await User.find({ _id: { $ne: req.userId } }).select('_id username email role online lastSeen').lean();
+
+    const result = await Promise.all(users.map(async (u) => {
+      const lastMsg = await Message.findOne({ $or: [{ from: u._id }, { to: u._id }] }).sort({ createdAt: -1 }).lean();
+      return {
+        userId: String(u._id),
+        username: u.username || u.email || 'user',
+        email: u.email,
+        role: u.role,
+        online: u.online,
+        lastActivity: lastMsg ? lastMsg.createdAt : null,
+        lastText: lastMsg ? (lastMsg.text || '').slice(0, 60) : ''
+      };
+    }));
+    result.sort((a, b) => {
+      const ta = a.lastActivity ? new Date(a.lastActivity).getTime() : 0;
+      const tb = b.lastActivity ? new Date(b.lastActivity).getTime() : 0;
+      return tb - ta;
+    });
+    return res.json(result);
+  } catch (e) { next(e); }
+};
+
+// ============================================================
+// OVERSIGHT L2: Диалоги пользователя
+// ============================================================
+exports.adminOversightDialogs = async (req, res, next) => {
+  try {
+    const me = await User.findById(req.userId).select('role').lean();
+    if (!me || me.role !== 'admin') return res.status(403).json({ success: false, code: 'FORBIDDEN' });
+
+    const { userId } = req.params;
+    const messages = await Message.find({ $or: [{ from: userId }, { to: userId }] }).sort({ createdAt: -1 }).lean();
+
+    const dialogsMap = new Map();
+    for (const msg of messages) {
+      const isFromMe = String(msg.from) === String(userId);
+      const partnerId = String(isFromMe ? msg.to : msg.from);
+      if (!dialogsMap.has(partnerId)) {
+        dialogsMap.set(partnerId, { partnerId, lastMsg: msg.text, lastTime: msg.createdAt, unread: !isFromMe && !msg.read ? 1 : 0 });
+      } else if (!isFromMe && !msg.read) dialogsMap.get(partnerId).unread += 1;
+    }
+
+    const partnerIds = Array.from(dialogsMap.keys());
+    const partners = await User.find({ _id: { $in: partnerIds } }).select('username email role online').lean();
+    const partnersMap = new Map(partners.map(p => [String(p._id), p]));
+
+    const result = Array.from(dialogsMap.values()).map(d => {
+      const p = partnersMap.get(d.partnerId) || {};
+      return {
+        partnerId: d.partnerId,
+        partnerName: p.username || p.email || 'user',
+        partnerRole: p.role || 'user',
+        partnerOnline: Boolean(p.online),
+        lastMsg: (d.lastMsg || '').slice(0, 80),
+        lastTime: d.lastTime,
+        unread: d.unread
+      };
+    });
+    result.sort((a, b) => new Date(b.lastTime).getTime() - new Date(a.lastTime).getTime());
+    return res.json(result);
+  } catch (e) { next(e); }
+};
+
+// ============================================================
+// OVERSIGHT L3: Сообщения диалога
+// ============================================================
+exports.adminOversightMessages = async (req, res, next) => {
+  try {
+    const me = await User.findById(req.userId).select('role').lean();
+    if (!me || me.role !== 'admin') return res.status(403).json({ success: false, code: 'FORBIDDEN' });
+
+    const { userA, userB } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = Math.min(parseInt(req.query.limit) || 50, 100);
+    const skip = (page - 1) * limit;
+
+    const total = await Message.countDocuments({ $or: [{ from: userA, to: userB }, { from: userB, to: userA }] });
+    const messages = await Message.find({ $or: [{ from: userA, to: userB }, { from: userB, to: userA }] })
+      .sort({ createdAt: 1 }).skip(skip).limit(limit)
+      .populate('from', 'username role').populate('to', 'username role').lean();
+
+    return res.json({ success: true, messages, total, page, pages: Math.ceil(total / limit) });
+  } catch (e) { next(e); }
+};
