@@ -864,7 +864,7 @@
         renderChat();
     });
 
-    function sferaConfirm(title, message) {
+    function sferaConfirm(title, message, confirmText) {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'group-modal active';
@@ -875,7 +875,7 @@
                     <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 15px;">${escapeHtml(message)}</p>
                     <div class="form-actions" style="display: flex; gap: 12px; justify-content: center;">
                         <button type="button" class="btn-glass cancel-btn">Отмена</button>
-                        <button type="button" class="btn-neon-danger confirm-btn">Удалить</button>
+                        <button type="button" class="btn-neon-danger confirm-btn">${confirmText || "Удалить"}</button>
                     </div>
                 </div>
             `;
@@ -931,7 +931,7 @@
     }
 
     async function escalateToAdmin() {
-        if (!(await sferaConfirm('Передать администратору?', 'Ваш диалог с AI будет отправлен администратору для помощи.'))) return;
+        if (!(await sferaConfirm('Передать администратору?', 'Ваш диалог с AI будет отправлен администратору для помощи.', 'Вызвать'))) return;
         try {
             showToast('Вызов администратора...', 'info');
             const res = await window.api.post('/ai/escalate', {});
