@@ -62,7 +62,7 @@ exports.getWorldNews = async (req, res) => {
         
         const [turkmenFeed, worldFeed] = await Promise.allSettled([
             parser.parseURL('https://turkmenportal.com/rss'),
-            parser.parseURL('https://lenta.ru/rss/news')
+            parser.parseURL('https://tass.ru/rss/v2.xml')
         ]);
 
         let news = [];
@@ -84,7 +84,7 @@ exports.getWorldNews = async (req, res) => {
                 link: item.link,
                 content: item.contentSnippet || 'Текст недоступен',
                 date: item.pubDate,
-                source: 'Мировые новости 🌍'
+                source: 'ТАСС 🌍'
             })));
         }
 
