@@ -10,84 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Проверка авторизации и Глобальный переводчик -->
-    <script src="/js/auth-check.js">
-        // ==========================================
-        // OVERSIGHT JS
-        // ==========================================
-        async function ovFetch(url) {
-            const token = localStorage.getItem('token');
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
-            if (!res.ok) throw new Error('API error: ' + res.status);
-            return res.json();
-        }
-        function ovEscape(str) {
-            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-        function ovFormatTime(iso) {
-            if (!iso) return '';
-            const d = new Date(iso);
-            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        async function loadOversightUsers() {
-            const list = document.getElementById('ovUsersList');
-            list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
-            try {
-                const users = await ovFetch('/api/chat/admin/oversight/users');
-                if (!users.length) { list.innerHTML = '<div style="padding: 16px;">Нет пользователей</div>'; return; }
-                list.innerHTML = users.map(u => `
-                    <div class="oversight-item" onclick="loadOversightDialogs('${u.userId}', '${ovEscape(u.username)}')">
-                        <div style="font-weight: 700;">${ovEscape(u.username)} ${u.role === 'admin' ? '🛡' : ''} ${u.online ? '🟢' : ''}</div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${ovEscape(u.lastText || 'Нет сообщений')}</div>
-                    </div>
-                `).join('');
-            } catch (e) { list.innerHTML = '<div style="padding: 16px; color: #ff4d4d;">' + e.message + '</div>'; }
-        }
-
-        async function loadOversightDialogs(userId, username) {
-            document.querySelectorAll('#ovUsersList .oversight-item').forEach(el => {
-                el.classList.toggle('active', el.textContent.includes(username));
-            });
-            const list = document.getElementById('ovDialogsList');
-            list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
-            document.getElementById('ovMessagesList').innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Выберите диалог</div>';
-            
-            try {
-                const dialogs = await ovFetch('/api/chat/admin/oversight/users/' + userId + '/dialogs');
-                if (!dialogs.length) { list.innerHTML = '<div style="padding: 16px;">Нет диалогов</div>'; return; }
-                list.innerHTML = dialogs.map(d => `
-                    <div class="oversight-item" onclick="loadOversightMessages('${userId}', '${d.partnerId}', '${ovEscape(username)}', '${ovEscape(d.partnerName)}')">
-                        <div style="font-weight: 700;">${ovEscape(d.partnerName)} ${d.partnerRole === 'admin' ? '🛡' : ''}</div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${ovEscape(d.lastMsg)}</div>
-                    </div>
-                `).join('');
-            } catch (e) { list.innerHTML = '<div style="padding: 16px; color: #ff4d4d;">' + e.message + '</div>'; }
-        }
-
-        async function loadOversightMessages(userA, userB, nameA, nameB) {
-            const header = document.getElementById('ovMessagesHeader');
-            const list = document.getElementById('ovMessagesList');
-            header.textContent = nameA + ' ↔ ' + nameB;
-            list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
-            
-            try {
-                const res = await ovFetch('/api/chat/admin/oversight/dialogs/' + userA + '/' + userB + '/messages');
-                const msgs = res.messages || [];
-                if (!msgs.length) { list.innerHTML = '<div style="padding: 16px;">Нет сообщений</div>'; return; }
-                list.innerHTML = msgs.map(m => {
-                    const isFromA = String(m.from._id || m.from) === userA;
-                    return `
-                        <div class="oversight-msg ${isFromA ? 'from-a' : 'from-b'}">
-                            <div class="oversight-msg-meta">${ovEscape(m.from.username || 'user')}</div>
-                            <div>${ovEscape(m.text)}</div>
-                            <div class="oversight-msg-time">${ovFormatTime(m.createdAt)}</div>
-                        </div>
-                    `;
-                }).join('');
-                list.scrollTop = list.scrollHeight;
-            } catch (e) { list.innerHTML = '<div style="padding: 16px; color: #ff4d4d;">' + e.message + '</div>'; }
-        }
-</script>
+    <script src="/js/auth-check.js"></script></script>
     <script src="/scripts/auto_translate_i18n.js"></script>
 
     <style>
@@ -811,6 +734,82 @@
             currentLang = e.detail.lang;
             setLanguage(currentLang);
         });
-    </script>
+            // ==========================================
+        // OVERSIGHT JS
+        // ==========================================
+        async function ovFetch(url) {
+            const token = localStorage.getItem('token');
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+            if (!res.ok) throw new Error('API error: ' + res.status);
+            return res.json();
+        }
+        function ovEscape(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function ovFormatTime(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        async function loadOversightUsers() {
+            const list = document.getElementById('ovUsersList');
+            list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
+            try {
+                const users = await ovFetch('/api/chat/admin/oversight/users');
+                if (!users.length) { list.innerHTML = '<div style="padding: 16px;">Нет пользователей</div>'; return; }
+                list.innerHTML = users.map(u => `
+                    <div class="oversight-item" onclick="loadOversightDialogs('${u.userId}', '${ovEscape(u.username)}')">
+                        <div style="font-weight: 700;">${ovEscape(u.username)} ${u.role === 'admin' ? '🛡' : ''} ${u.online ? '🟢' : ''}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${ovEscape(u.lastText || 'Нет сообщений')}</div>
+                    </div>
+                `).join('');
+            } catch (e) { list.innerHTML = '<div style="padding: 16px; color: #ff4d4d;">' + e.message + '</div>'; }
+        }
+
+        async function loadOversightDialogs(userId, username) {
+            document.querySelectorAll('#ovUsersList .oversight-item').forEach(el => {
+                el.classList.toggle('active', el.textContent.includes(username));
+            });
+            const list = document.getElementById('ovDialogsList');
+            list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
+            document.getElementById('ovMessagesList').innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Выберите диалог</div>';
+            
+            try {
+                const dialogs = await ovFetch('/api/chat/admin/oversight/users/' + userId + '/dialogs');
+                if (!dialogs.length) { list.innerHTML = '<div style="padding: 16px;">Нет диалогов</div>'; return; }
+                list.innerHTML = dialogs.map(d => `
+                    <div class="oversight-item" onclick="loadOversightMessages('${userId}', '${d.partnerId}', '${ovEscape(username)}', '${ovEscape(d.partnerName)}')">
+                        <div style="font-weight: 700;">${ovEscape(d.partnerName)} ${d.partnerRole === 'admin' ? '🛡' : ''}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${ovEscape(d.lastMsg)}</div>
+                    </div>
+                `).join('');
+            } catch (e) { list.innerHTML = '<div style="padding: 16px; color: #ff4d4d;">' + e.message + '</div>'; }
+        }
+
+        async function loadOversightMessages(userA, userB, nameA, nameB) {
+            const header = document.getElementById('ovMessagesHeader');
+            const list = document.getElementById('ovMessagesList');
+            header.textContent = nameA + ' ↔ ' + nameB;
+            list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
+            
+            try {
+                const res = await ovFetch('/api/chat/admin/oversight/dialogs/' + userA + '/' + userB + '/messages');
+                const msgs = res.messages || [];
+                if (!msgs.length) { list.innerHTML = '<div style="padding: 16px;">Нет сообщений</div>'; return; }
+                list.innerHTML = msgs.map(m => {
+                    const isFromA = String(m.from._id || m.from) === userA;
+                    return `
+                        <div class="oversight-msg ${isFromA ? 'from-a' : 'from-b'}">
+                            <div class="oversight-msg-meta">${ovEscape(m.from.username || 'user')}</div>
+                            <div>${ovEscape(m.text)}</div>
+                            <div class="oversight-msg-time">${ovFormatTime(m.createdAt)}</div>
+                        </div>
+                    `;
+                }).join('');
+                list.scrollTop = list.scrollHeight;
+            } catch (e) { list.innerHTML = '<div style="padding: 16px; color: #ff4d4d;">' + e.message + '</div>'; }
+        }
+</script>
 </body>
 </html>
