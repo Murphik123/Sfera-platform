@@ -967,7 +967,13 @@
     document.addEventListener('DOMContentLoaded', init);
 
 
-    // === SFERA-PATCH: NEWS ROOM LOGIC (FORCED INJECTION) ===
+    
+    
+
+    
+
+
+    // === SFERA-PATCH: CLEAN NEWS LOGIC ===
     async function loadNewsRoom() {
         const chatMessages = document.getElementById('chatMessages');
         const chatInput = document.getElementById('chatInputArea');
@@ -987,71 +993,36 @@
             });
             const news = await res.json();
             
-            if (!news.length) {
+            if (!news || !news.length) {
                 chatMessages.innerHTML = '<div style="padding:20px; color:#fff;">Новости не найдены.</div>';
                 return;
             }
 
-            let html = '<div class="news-room">';
-            html += '<div class="news-list-pane" id="newsList">';
-            
-            news.forEach((item, index) => {
+            let html = '';
+            news.forEach((item) => {
                 const date = new Date(item.date).toLocaleString(currentLang === 'ru' ? 'ru-RU' : (currentLang === 'tm' ? 'tk-TM' : 'en-US'), { hour: '2-digit', minute:'2-digit', day:'numeric', month:'short' });
+                const textContent = item.content || 'Текст новости доступен по ссылке.';
+                
                 html += `
-                    <div class="news-item" data-index="${index}" onclick="window.selectNews(${index})">
-                        <div class="news-item-title">${item.title}</div>
-                        <div class="news-item-meta"><span>${item.source}</span><span>${date}</span></div>
+                    <div class="message received" style="max-width: 90%; margin-bottom: 16px; padding: 16px 20px;">
+                        <div style="font-size: 11px; color: var(--primary); font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">${item.source}</div>
+                        <div style="font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; line-height: 1.3;">${item.title}</div>
+                        <div style="font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 12px;">${textContent}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; font-size: 12px;">
+                            <span style="color: var(--text-muted);">${date}</span>
+                            <a href="${item.link}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">🔗 Читать оригинал</a>
+                        </div>
                     </div>
                 `;
             });
-            html += '</div>';
-            html += '<div class="news-content-pane" id="newsContent"><div class="news-content-empty">👈 Выберите новость слева</div></div>';
-            html += '</div>';
             
             chatMessages.innerHTML = html;
-            window._newsData = news;
+            chatMessages.scrollTop = 0;
 
         } catch (e) {
             chatMessages.innerHTML = '<div style="padding:20px; color:#ff4d4d;">Ошибка загрузки: ' + e.message + '</div>';
         }
     }
-
-    window.selectNews = async function(index) {
-        const item = window._newsData[index];
-        if (!item) return;
-
-        document.querySelectorAll('.news-item').forEach(el => el.classList.remove('active'));
-        const activeEl = document.querySelector(`.news-item[data-index="${index}"]`);
-        if (activeEl) activeEl.classList.add('active');
-
-        const currentLang = localStorage.getItem('lang') || 'tm';
-        const contentPane = document.getElementById('newsContent');
-        
-        contentPane.innerHTML = '<div class="news-content-empty">Перевод текста... ⏳</div>';
-
-        let displayText = item.content;
-
-        if (currentLang !== 'ru') {
-            try {
-                const res = await fetch(`/api/news/translate?text=${encodeURIComponent(item.content)}&lang=${currentLang}`, {
-                    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || localStorage.getItem('sfera_token')) }
-                });
-                const data = await res.json();
-                displayText = data.text;
-            } catch (e) {
-                console.error('Translation failed:', e);
-            }
-        }
-
-        const date = new Date(item.date).toLocaleString(currentLang === 'ru' ? 'ru-RU' : (currentLang === 'tm' ? 'tk-TM' : 'en-US'));
-        contentPane.innerHTML = `
-            <div class="news-content-title">${item.title}</div>
-            <div class="news-content-meta">${item.source} • ${date}</div>
-            <div class="news-content-text">${displayText}</div>
-            <br>
-            <a href="${item.link}" target="_blank" style="color:var(--primary); text-decoration:none;">🔗 Читать оригинал</a>
-        `;
-    };
 
     async function loadPlatformNewsToAI() {
         const chatMessages = document.getElementById('chatMessages');
@@ -1064,13 +1035,13 @@
             });
             const news = await res.json();
             
-            let html = '<div style="padding: 20px;">';
+            let html = '<div style="padding: 20px; max-width: 800px;">';
             html += '<h3 style="color:var(--accent); margin-bottom:15px; font-size:18px;">📢 Новости платформы</h3>';
             news.forEach(item => {
                 html += `
-                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:12px; border-left:3px solid var(--accent);">
-                        <div style="font-weight:700; color:#fff; margin-bottom:5px;">${item.title}</div>
-                        <div style="color:var(--text-muted); font-size:14px; line-height:1.4;">${item.content}</div>
+                    <div class="message received" style="max-width: 100%; margin-bottom: 16px; border-left: 3px solid var(--accent);">
+                        <div style="font-weight:700; color:#fff; margin-bottom:5px; font-size: 15px;">${item.title}</div>
+                        <div style="color:var(--text); font-size:14px; line-height:1.5;">${item.content}</div>
                     </div>
                 `;
             });
@@ -1082,17 +1053,17 @@
         }
     }
 
-    const tabNews = document.getElementById('lblTabNews');
-    if (tabNews) {
-        tabNews.addEventListener('click', () => setTimeout(loadNewsRoom, 50));
+    const tabNewsBtn = document.getElementById('lblTabNews');
+    if (tabNewsBtn) {
+        tabNewsBtn.addEventListener('click', () => setTimeout(loadNewsRoom, 50));
     }
     
-    const tabAssistant = document.getElementById('lblTabAssistant');
-    if (tabAssistant) {
-        tabAssistant.addEventListener('click', () => setTimeout(loadPlatformNewsToAI, 100));
+    const tabAssistantBtn = document.getElementById('lblTabAssistant');
+    if (tabAssistantBtn) {
+        tabAssistantBtn.addEventListener('click', () => setTimeout(loadPlatformNewsToAI, 100));
     }
-    // === END SFERA-PATCH: NEWS ROOM LOGIC ===
-    
+    // === END SFERA-PATCH ===
+
 })();
 
 
