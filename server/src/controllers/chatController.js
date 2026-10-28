@@ -5,6 +5,12 @@ const Message = require('../models/Message');
 const { checkProfanity } = require('../utils/profanityFilter');
 const Group = require('../models/Group');
 
+const sanitizePreview = (text) => {
+            if (!text) return '';
+            if (text.includes('file-card') || text.includes('<img')) return '📄 Файл';
+            return text.replace(/<[^>]*>?/gm, '');
+        };
+
 const createHttpError = (message, status = 500, details) => {
   const error = new Error(message);
   error.status = status;
@@ -225,7 +231,7 @@ exports.getDialogs = async (req, res, next) => {
           id: partnerId,
           user: userPayload,
           lastMessage: { text: msg.text, createdAt: msg.createdAt },
-          lastMsg: msg.text,
+          lastMsg: sanitizePreview(msg.text),
           time: msg.createdAt,
           unread: !isFromMe && !msg.read ? 1 : 0
         });
@@ -480,7 +486,7 @@ exports.adminOversightDialogs = async (req, res, next) => {
       const isFromMe = String(msg.from) === String(userId);
       const partnerId = String(isFromMe ? msg.to : msg.from);
       if (!dialogsMap.has(partnerId)) {
-        dialogsMap.set(partnerId, { partnerId, lastMsg: msg.text, lastTime: msg.createdAt, unread: !isFromMe && !msg.read ? 1 : 0 });
+        dialogsMap.set(partnerId, { partnerId, lastMsg: sanitizePreview(msg.text), lastTime: msg.createdAt, unread: !isFromMe && !msg.read ? 1 : 0 });
       } else if (!isFromMe && !msg.read) dialogsMap.get(partnerId).unread += 1;
     }
 
