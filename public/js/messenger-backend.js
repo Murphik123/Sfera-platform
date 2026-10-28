@@ -788,8 +788,9 @@
                     if (!response.ok) throw new Error('Upload failed');
                     const data = await response.json();
                     
-                    // Удаляем статус загрузки
+                    // Удаляем статус загрузки и обновляем экран
                     messagesData[activeDialogId] = messagesData[activeDialogId].filter(m => m.id !== tempId);
+                    renderChat();
 
                     // Формируем HTML для файла (ссылка на сервер)
                     const isImage = file.type.startsWith('image/');
