@@ -419,6 +419,17 @@
                 clearBtn.addEventListener('click', clearCurrentChat);
                 chatActionsEl.appendChild(clearBtn);
             }
+            const existingEsc = document.getElementById('escalateAiBtn');
+            if (existingEsc) existingEsc.remove();
+            if (activeDialogId === 'ai_assistant') {
+                const escBtn = document.createElement('button');
+                escBtn.id = 'escalateAiBtn';
+                escBtn.title = 'Позвать администратора';
+                escBtn.style.cssText = 'background: rgba(255,77,77,0.15); border-color: rgba(255,77,77,0.4); color: #ff6b6b;';
+                escBtn.textContent = '🆘';
+                escBtn.addEventListener('click', escalateToAdmin);
+                chatActionsEl.appendChild(escBtn);
+            }
             const isCreator = dialog.isGroup && dialog.creator && String(dialog.creator) === String(getUserId(currentUser));
             if (isCreator) {
                 const delBtn = document.createElement('button');
@@ -917,6 +928,23 @@
             renderChat();
             showToast('Чат очищен', 'success');
         } catch (e) { showToast('Ошибка: ' + (e.message || ''), 'error'); }
+    }
+
+    async function escalateToAdmin() {
+        if (!window.confirm('Передать текущий диалог администратору?')) return;
+        try {
+            showToast('Вызов администратора...', 'info');
+            const res = await window.api.post('/ai/escalate', {});
+            if (res && res.success && res.adminId) {
+                showToast('Админ уведомлён', 'success');
+                await loadDialogs();
+                selectDialog(res.adminId);
+            } else {
+                throw new Error('Не удалось вызвать админа');
+            }
+        } catch (e) {
+            showToast('Ошибка: ' + (e.message || 'Связь с админом недоступна'), 'error');
+        }
     }
 
     window.sferaMessenger = {
