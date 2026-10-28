@@ -8,6 +8,7 @@ const errorHandler = require('./middleware/errorHandler');
 
 const authRoutes = require('./routes/authRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const configRoutes = require('./routes/configRoutes');
 const marketplaceRoutes = require('./routes/marketplaceRoutes');
 const mailRoutes = require('./routes/mailRoutes');
 const bankRoutes = require('./routes/bankRoutes');
@@ -55,6 +56,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chat', authMiddleware, chatRoutes);
+app.use('/api/config', authMiddleware, configRoutes);
 app.use('/api/marketplace', authMiddleware, marketplaceRoutes);
 app.use('/api/mail', authMiddleware, mailRoutes);
 app.use('/api/bank', authMiddleware, bankRoutes);
