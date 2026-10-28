@@ -544,8 +544,6 @@
         });
         window.SferaSocket = socket;
         console.log('✅ SferaSocket exposed to window');
-        window.SferaSocket = socket;
-        console.log('✅ SferaSocket exposed to window');
 
         socket.on('connect', () => {
             if (heartbeatInterval) clearInterval(heartbeatInterval);
