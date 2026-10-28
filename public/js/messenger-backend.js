@@ -982,7 +982,7 @@
         if (!chatMessages || !chatInput) return;
         
         chatHeader.innerHTML = '<div class="chat-avatar" style="background:var(--primary); color:#000;">📰</div><div><div class="chat-name">Новости</div><div class="chat-status">Мировые и Туркменские</div></div>';
-        chatInput.style.display = 'none';
+        
         
         chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;">Загрузка новостей...</div>';
         
@@ -1024,44 +1024,14 @@
         }
     }
 
-    async function loadPlatformNewsToAI() {
-        const chatMessages = document.getElementById('chatMessages');
-        if (!chatMessages) return;
-        
-        try {
-            const currentLang = localStorage.getItem('lang') || 'tm';
-            const res = await fetch('/api/news/platform?lang=' + currentLang, {
-                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || localStorage.getItem('sfera_token')) }
-            });
-            const news = await res.json();
-            
-            let html = '<div style="padding: 20px; max-width: 800px;">';
-            html += '<h3 style="color:var(--accent); margin-bottom:15px; font-size:18px;">📢 Новости платформы</h3>';
-            news.forEach(item => {
-                html += `
-                    <div class="message received" style="max-width: 100%; margin-bottom: 16px; border-left: 3px solid var(--accent);">
-                        <div style="font-weight:700; color:#fff; margin-bottom:5px; font-size: 15px;">${item.title}</div>
-                        <div style="color:var(--text); font-size:14px; line-height:1.5;">${item.content}</div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            
-            chatMessages.innerHTML = html;
-        } catch (e) {
-            console.error('Ошибка загрузки новостей платформы:', e);
-        }
-    }
+    
 
     const tabNewsBtn = document.getElementById('lblTabNews');
     if (tabNewsBtn) {
         tabNewsBtn.addEventListener('click', () => setTimeout(loadNewsRoom, 50));
     }
     
-    const tabAssistantBtn = document.getElementById('lblTabAssistant');
-    if (tabAssistantBtn) {
-        tabAssistantBtn.addEventListener('click', () => setTimeout(loadPlatformNewsToAI, 100));
-    }
+    
     // === END SFERA-PATCH ===
 
 })();
