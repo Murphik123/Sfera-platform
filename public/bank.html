@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html lang="tk" translate="no">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html><html lang="tk" translate="no"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="bank_page_title">Sfera — TM Bank</title>
 
     <!-- SFERA V19 visual foundation: backdrop, grid, canvas, particles, glass layers -->
@@ -604,7 +602,7 @@
     </style>
 
     <!-- Общий CSS -->
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/style.css">
 
     <style>
         /* ===== СПЕЦРФРЧНЫЕ СТРЛР ДЛЯ БАНКА ===== */
@@ -1848,20 +1846,20 @@
                     <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#00ffa3"/>
-                                <stop offset="50%" stop-color="#00d4ff"/>
-                                <stop offset="100%" stop-color="#1f6bff"/>
+                                <stop offset="0%" stop-color="#00ffa3"></stop>
+                                <stop offset="50%" stop-color="#00d4ff"></stop>
+                                <stop offset="100%" stop-color="#1f6bff"></stop>
                             </linearGradient>
                             <filter id="logoGlow" x="-30%" y="-30%" width="160%" height="160%">
-                                <feGaussianBlur stdDeviation="4" result="blur"/>
-                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                                <feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"></feComposite>
                             </filter>
                         </defs>
-                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15" filter="url(#logoGlow)"/>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15" filter="url(#logoGlow)"></circle>
                         <g filter="url(#logoGlow)">
-                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
-                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
-                            <circle cx="48" cy="48" r="3.5" fill="#ffffff" filter="url(#logoGlow)"/>
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"></circle>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"></path>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff" filter="url(#logoGlow)"></circle>
                         </g>
                     </svg>
                 </div>
@@ -1953,15 +1951,15 @@
                     <form id="transferForm">
                         <div class="form-group">
                             <label for="fromAccount" data-i18n="from_account">Nireden</label>
-                            <select id="fromAccount" required></select>
+                            <select id="fromAccount" required=""></select>
                         </div>
                         <div class="form-group">
                             <label for="toAccount" data-i18n="to_account">Nirä (hasap belgisi ýa-da ulanyjy)</label>
-                            <input type="text" id="toAccount" placeholder="Mysal: 1234 5678 9012 3456 ýa-da ulanyjy ady" required />
+                            <input type="text" id="toAccount" placeholder="Mysal: 1234 5678 9012 3456 ýa-da ulanyjy ady" required="">
                         </div>
                         <div class="form-group">
                             <label for="transferAmount" data-i18n="amount">Mukdar (TMT)</label>
-                            <input type="number" id="transferAmount" step="0.01" min="0.01" required placeholder="100.00" />
+                            <input type="number" id="transferAmount" step="0.01" min="0.01" required="" placeholder="100.00">
                         </div>
                         <div class="form-group">
                             <label for="transferDesc" data-i18n="description">Düşündiriş</label>
@@ -1978,31 +1976,31 @@
                 <!-- SFERA-PATCH:SPRINT2.2b3:html -->
                 <div class="tx-filters" id="txFilters">
                     <div class="tx-filter-group">
-                        <label for="txFilterType">Тип</label>
+                        <label for="txFilterType" data-i18n="auto_345805b8">Тип</label>
                         <select id="txFilterType">
-                            <option value="">Все</option>
-                            <option value="transfer">Перевод</option>
-                            <option value="deposit">Пополнение</option>
-                            <option value="withdrawal">Списание</option>
-                            <option value="payment">Оплата</option>
+                            <option value="" data-i18n="auto_984bf149">Все</option>
+                            <option value="transfer" data-i18n="auto_b93e8b66">Перевод</option>
+                            <option value="deposit" data-i18n="auto_9edfcfc6">Пополнение</option>
+                            <option value="withdrawal" data-i18n="auto_174f77c4">Списание</option>
+                            <option value="payment" data-i18n="auto_e3c1f39b">Оплата</option>
                         </select>
                     </div>
                     <div class="tx-filter-group">
-                        <label for="txFilterFrom">С</label>
-                        <input type="date" id="txFilterFrom" />
+                        <label for="txFilterFrom" data-i18n="auto_b3f907c0">С</label>
+                        <input type="date" id="txFilterFrom">
                     </div>
                     <div class="tx-filter-group">
-                        <label for="txFilterTo">По</label>
-                        <input type="date" id="txFilterTo" />
+                        <label for="txFilterTo" data-i18n="auto_7a1a1690">По</label>
+                        <input type="date" id="txFilterTo">
                     </div>
                     <div class="tx-filter-group tx-filter-search">
-                        <label for="txFilterSearch">Поиск</label>
-                        <input type="search" id="txFilterSearch" placeholder="Описание..." />
+                        <label for="txFilterSearch" data-i18n="auto_bfc95980">Поиск</label>
+                        <input type="search" id="txFilterSearch" placeholder="Описание...">
                     </div>
-                    <button type="button" class="btn btn-outline" id="txFilterReset">Сброс</button>
+                    <button type="button" class="btn btn-outline" id="txFilterReset" data-i18n="auto_1b421ddb">Сброс</button>
                     <!-- SFERA-PATCH:SPRINT3.2b:html — export dropdown -->
                     <div class="tx-export-wrap" id="txExportWrap">
-                        <button type="button" class="tx-export-btn" id="txExportBtn">📥 Экспорт ▼</button>
+                        <button type="button" class="tx-export-btn" id="txExportBtn" data-i18n="auto_42873629">📥 Экспорт ▼</button>
                         <div class="tx-export-menu" id="txExportMenu">
                             <button type="button" data-format="pdf">📄 PDF</button>
                             <button type="button" data-format="csv">📊 CSV</button>
@@ -2011,9 +2009,9 @@
                 </div>
                 <ul class="transactions-list" id="transactionsList"></ul>
                 <div class="tx-pagination" id="txPagination" style="display:none;">
-                    <button type="button" id="txPrevBtn">← Назад</button>
+                    <button type="button" id="txPrevBtn" data-i18n="auto_2cb1ba4e">← Назад</button>
                     <span class="tx-page-info" id="txPageInfo">1 / 1</span>
-                    <button type="button" id="txNextBtn">Вперёд →</button>
+                    <button type="button" id="txNextBtn" data-i18n="auto_c7b4400a">Вперёд →</button>
                 </div>
                 <div class="empty-state" id="emptyTx" style="display:none;">
                     <div class="icon">📭</div>
@@ -2035,7 +2033,7 @@
                     <h3 class="qr-title" data-i18n="receive_title">Получить перевод</h3>
                     <p class="qr-hint" data-i18n="receive_hint">Отсканируйте QR в мобильном банке или скопируйте IBAN</p>
                     <div class="qr-container">
-                        <div id="qrCodeBox" class="qr-code">Загрузка...</div>
+                        <div id="qrCodeBox" class="qr-code" data-i18n="auto_43e40d49">Загрузка...</div>
                     </div>
                     <div class="qr-iban-block">
                         <label class="qr-label" data-i18n="your_iban">Ваш IBAN</label>
@@ -3177,23 +3175,23 @@ $('logoutBtn')?.addEventListener('click',async()=>{
     <!-- SFERA-PATCH:SPRINT3.4b:modal -->
     <div class="modal-overlay" id="newCardModal" style="display:none;">
         <div class="modal-box">
-            <h3 class="modal-title">Новая карта</h3>
+            <h3 class="modal-title" data-i18n="auto_51584165">Новая карта</h3>
             <form id="newCardForm">
                 <div class="form-group">
-                    <label for="newCardType">Тип карты</label>
-                    <select id="newCardType" required>
-                        <option value="debit">Дебетовая</option>
-                        <option value="credit">Кредитная</option>
-                        <option value="virtual">Виртуальная</option>
+                    <label for="newCardType" data-i18n="auto_dd39b588">Тип карты</label>
+                    <select id="newCardType" required="">
+                        <option value="debit" data-i18n="auto_daeab95b">Дебетовая</option>
+                        <option value="credit" data-i18n="auto_0855ef1c">Кредитная</option>
+                        <option value="virtual" data-i18n="auto_6d76dd4a">Виртуальная</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="newCardLimit">Лимит (TMT)</label>
-                    <input type="number" id="newCardLimit" min="100" max="100000" value="5000" required />
+                    <label for="newCardLimit" data-i18n="auto_4a4f2da9">Лимит (TMT)</label>
+                    <input type="number" id="newCardLimit" min="100" max="100000" value="5000" required="">
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-outline" id="newCardCancel">Отмена</button>
-                    <button type="submit" class="btn btn-primary" id="newCardSubmit">Создать</button>
+                    <button type="button" class="btn btn-outline" id="newCardCancel" data-i18n="auto_987b33c6">Отмена</button>
+                    <button type="submit" class="btn btn-primary" id="newCardSubmit" data-i18n="auto_b059f7e1">Создать</button>
                 </div>
             </form>
         </div>
@@ -3201,5 +3199,6 @@ $('logoutBtn')?.addEventListener('click',async()=>{
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/global-calls.js"></script>
-</body>
-</html>
+
+
+</body></html>

@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="tm">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html><html lang="tm"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="mail_page_title">СФЕРА — TM Poçta</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
 
     <!-- Проверка авторизации и Глобальный переводчик -->
     <script src="/js/auth-check.js"></script>
@@ -479,17 +477,16 @@
                     <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#00ffa3"/>
-                                <stop offset="50%" stop-color="#00d4ff"/>
-                                <stop offset="100%" stop-color="#1f6bff"/>
+                                <stop offset="0%" stop-color="#00ffa3"></stop>
+                                <stop offset="50%" stop-color="#00d4ff"></stop>
+                                <stop offset="100%" stop-color="#1f6bff"></stop>
                             </linearGradient>
                         </defs>
-                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15"/>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15"></circle>
                         <g>
-                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
-                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" 
-                                  stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
-                            <circle cx="48" cy="48" r="3.5" fill="#ffffff"/>
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"></circle>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"></path>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff"></circle>
                         </g>
                     </svg>
                 </div>
@@ -533,7 +530,7 @@
                     <div class="mail-list-header">
                         <div class="folder-title" id="folderTitle" data-i18n="folder_inbox">Gelen</div>
                         <div class="search-box">
-                            <input type="text" id="searchInput" placeholder="Gözlemek..." data-i18n-placeholder="search_placeholder" />
+                            <input type="text" id="searchInput" placeholder="Gözlemek..." data-i18n-placeholder="search_placeholder">
                             <button id="clearSearchBtn" title="Arassala">✕</button>
                         </div>
                         <div class="actions">
@@ -561,13 +558,13 @@
                         <button class="print-btn" id="printMailBtn" data-i18n="print">🖨️ Çap et</button>
                     </div>
                     <div class="mail-header-view">
-                        <div class="subject" id="viewSubject">Тема</div>
+                        <div class="subject" id="viewSubject" data-i18n="auto_9e26d3c0">Тема</div>
                         <div class="meta">
                             <span id="viewFrom" data-i18n="from_label">От: </span>
                             <span id="viewDate" data-i18n="date_label">Дата: </span>
                         </div>
                     </div>
-                    <div class="mail-body-view" id="viewBody">Текст письма</div>
+                    <div class="mail-body-view" id="viewBody" data-i18n="auto_dd250300">Текст письма</div>
                     <div class="attachments" id="viewAttachments"></div>
                 </div>
             </div>
@@ -593,11 +590,11 @@
             <form id="composeForm">
                 <div class="form-group">
                     <label for="composeTo" data-i18n="to_label">Kime</label>
-                    <input type="text" id="composeTo" placeholder="alýan@example.com" required />
+                    <input type="text" id="composeTo" placeholder="alýan@example.com" required="">
                 </div>
                 <div class="form-group">
                     <label for="composeSubject" data-i18n="subject_label">Tema</label>
-                    <input type="text" id="composeSubject" placeholder="Hatyň temasy" required />
+                    <input type="text" id="composeSubject" placeholder="Hatyň temasy" required="">
                 </div>
                 <div class="form-group">
                     <label for="composeBody" data-i18n="body_label">Hatyň teksti</label>
@@ -605,7 +602,7 @@
                 </div>
                 <div class="form-group">
                     <div class="file-upload-wrapper">
-                        <input type="file" id="composeFile" multiple />
+                        <input type="file" id="composeFile" multiple="">
                         <span>📎 Faýl goşmak (islege görä)</span>
                     </div>
                 </div>
@@ -1303,5 +1300,6 @@
     </script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/global-calls.js"></script>
-</body>
-</html>
+
+
+</body></html>

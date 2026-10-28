@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="tm">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html><html lang="tm"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="messenger_page_title">Sfera — Habarlaşyk</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
@@ -373,17 +371,16 @@
                     <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#00ffa3"/>
-                                <stop offset="50%" stop-color="#00d4ff"/>
-                                <stop offset="100%" stop-color="#1f6bff"/>
+                                <stop offset="0%" stop-color="#00ffa3"></stop>
+                                <stop offset="50%" stop-color="#00d4ff"></stop>
+                                <stop offset="100%" stop-color="#1f6bff"></stop>
                             </linearGradient>
                         </defs>
-                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15"/>
+                        <circle cx="50" cy="50" r="28" fill="url(#logoGrad)" opacity="0.15"></circle>
                         <g>
-                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"/>
-                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" 
-                                  stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
-                            <circle cx="48" cy="48" r="3.5" fill="#ffffff"/>
+                            <circle cx="50" cy="50" r="40" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.4"></circle>
+                            <path d="M50 12 C72 12, 88 28, 88 50 C88 72, 68 88, 46 86 C26 84, 14 66, 16 46 C18 28, 34 16, 52 18 C68 20, 78 34, 76 50 C74 64, 62 74, 48 72 C36 70, 28 58, 30 46 C32 36, 42 28, 52 30 C60 32, 66 40, 64 50 C62 58, 54 62, 46 60" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"></path>
+                            <circle cx="48" cy="48" r="3.5" fill="#ffffff"></circle>
                         </g>
                     </svg>
                 </div>
@@ -421,7 +418,7 @@
                         </div>
                     </div>
                     <div class="sidebar-search">
-                        <input type="text" id="searchInput" placeholder="Gözleg..." data-i18n-placeholder="search_placeholder" />
+                        <input type="text" id="searchInput" placeholder="Gözleg..." data-i18n-placeholder="search_placeholder">
                         <button class="create-group-btn" id="createGroupBtn" data-i18n="messenger_create_group">➕ Topar</button>
                     </div>
                     
@@ -459,8 +456,8 @@
                         <div class="input-group">
                             <button class="emoji-btn" id="emojiBtn" title="Smileýler">😊</button>
                             <button class="file-btn" id="fileBtn" title="Faýl ýüklemek">📎</button>
-                            <input type="file" id="fileInput" style="display:none;" />
-                            <input type="text" id="messageInput" placeholder="Habaryňyzy ýazyň..." data-i18n-placeholder="messenger_type_message" />
+                            <input type="file" id="fileInput" style="display:none;">
+                            <input type="text" id="messageInput" placeholder="Habaryňyzy ýazyň..." data-i18n-placeholder="messenger_type_message">
                         </div>
                         <div class="call-buttons" style="display: flex; gap: 6px;">
                             <button id="audioCallBtn" title="Sesli jaň" style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 14px; width: 42px; height: 42px; color: #fff; cursor: pointer; transition: .3s;">📞</button>
@@ -494,11 +491,11 @@
     <!-- Модальные окна -->
     <div class="group-modal" id="deleteGroupModal">
         <div class="modal-box" style="border-color: rgba(255, 77, 77, 0.4);">
-            <h2 style="color: #ff6b6b; margin-bottom: 8px;">Удалить группу?</h2>
-            <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 15px;">Все сообщения в этой группе будут безвозвратно удалены.</p>
+            <h2 style="color: #ff6b6b; margin-bottom: 8px;" data-i18n="auto_c7a54fbe">Удалить группу?</h2>
+            <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 15px;" data-i18n="auto_58f1911b">Все сообщения в этой группе будут безвозвратно удалены.</p>
             <div class="form-actions" style="display: flex; gap: 12px; justify-content: center;">
-                <button type="button" class="btn-glass" id="cancelDeleteGroupBtn">Отмена</button>
-                <button type="button" class="btn-neon-danger" id="confirmDeleteGroupBtn">Удалить</button>
+                <button type="button" class="btn-glass" id="cancelDeleteGroupBtn" data-i18n="auto_987b33c6">Отмена</button>
+                <button type="button" class="btn-neon-danger" id="confirmDeleteGroupBtn" data-i18n="auto_ed2bbfbc">Удалить</button>
             </div>
         </div>
     </div>
@@ -509,7 +506,7 @@
             <form id="groupForm" style="margin-top: 10px;">
                 <div class="form-group" style="margin-bottom: 24px; text-align: left;">
                     <label for="groupName" id="lblGroupName" style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 8px;" data-i18n="messenger_group_name">Toparyň ady</label>
-                    <input type="text" id="groupName" placeholder="Mysal: Taslama topary" required style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid rgba(0, 212, 255, 0.3); background: rgba(0,0,0,0.4); color: #fff; outline: none; font-size: 15px; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(0, 212, 255, 0.3)'" />
+                    <input type="text" id="groupName" placeholder="Mysal: Taslama topary" required="" style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid rgba(0, 212, 255, 0.3); background: rgba(0,0,0,0.4); color: #fff; outline: none; font-size: 15px; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(0, 212, 255, 0.3)'">
                 </div>
                 <div class="form-actions" style="display: flex; gap: 12px; justify-content: center;">
                     <button type="button" class="btn-glass" id="cancelGroupBtn" data-i18n="messenger_cancel">Ýatyr</button>
@@ -526,12 +523,12 @@
                 <div class="call-status" id="callStatusText" style="color: var(--accent); font-size: 15px; font-weight: 500; margin-bottom: 10px; letter-spacing: 0.5px;">Birikdirilýär...</div>
                 <div id="callTimer" style="font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 20px; display: none; text-shadow: 0 0 10px rgba(0,212,255,0.5);">00:00</div>
                 <div class="call-videos" id="callVideos" style="display:none; gap:10px; justify-content:center; margin-bottom:20px;">
-                    <video id="localVideo" autoplay muted playsinline style="width:120px; height:160px; border-radius:12px; background:#000; border:1px solid var(--primary); object-fit:cover;"></video>
-                    <video id="remoteVideo" autoplay playsinline style="width:240px; height:160px; border-radius:12px; background:#000; border:1px solid var(--primary); object-fit:cover;"></video>
+                    <video id="localVideo" autoplay="" muted="" playsinline="" style="width:120px; height:160px; border-radius:12px; background:#000; border:1px solid var(--primary); object-fit:cover;"></video>
+                    <video id="remoteVideo" autoplay="" playsinline="" style="width:240px; height:160px; border-radius:12px; background:#000; border:1px solid var(--primary); object-fit:cover;"></video>
                 </div>
                 <div class="call-actions" style="display:flex; justify-content:center; gap:10px;">
                     <button class="btn-glass" id="muteBtn" style="display:none;">🔇 Mute</button>
-                    <button class="btn-neon-primary" id="acceptCallBtn" style="display:none;">✅ Принять</button>
+                    <button class="btn-neon-primary" id="acceptCallBtn" style="display:none;" data-i18n="auto_cfd33d06">✅ Принять</button>
                     <button class="btn-neon-danger" id="endCallBtn" data-i18n="messenger_end_call">❌ Jaňy bes et</button>
                 </div>
             </div>
@@ -624,5 +621,6 @@
             }
         });
     </script>
-</body>
-</html>
+
+
+</body></html>
