@@ -1,191 +1,172 @@
 (function() {
     'use strict';
 
-    (key, fallback) => {
-    const lang = localStorage.getItem('lang') || 'tm';
-    // Пытаемся взять из глобального объекта, который создает auto_translate_i18n.js
-    if (window.translations && window.translations[lang] && window.translations[lang][key]) {
-        return window.translations[lang][key];
-    }
-    return fallback;
-}
-
-
     let pc = null;
     let localStream = null;
     let peerId = null;
     let isVideoCall = false;
-    let callState = 'idle';
+    let callState = 'idle'; // idle, calling, ringing, connecting, connected, error
+    let timerInterval = null;
+    let timerSeconds = 0;
 
-    const callModal = document.getElementById('callModal');
-    const callTargetName = document.getElementById('callTargetName');
-    const callStatusText = document.getElementById('callStatusText');
-    const localVideo = document.getElementById('localVideo');
-    const remoteVideo = document.getElementById('remoteVideo');
-    const callVideos = document.getElementById('callVideos');
-    const endCallBtn = document.getElementById('endCallBtn');
-    const acceptCallBtn = document.getElementById('acceptCallBtn');
-    
-    const muteBtn = document.getElementById('muteBtn');
-    
-    
-    let remoteUserName = 'Собеседник';
+    const $ = (id) => document.getElementById(id);
+    const modal = $('callModal');
+    const targetName = $('callTargetName');
+    const statusText = $('callStatusText');
+    const timerEl = $('callTimer');
+    const videosBox = $('callVideos');
+    const localVideo = $('localVideo');
+    const remoteVideo = $('remoteVideo');
+    const endBtn = $('endCallBtn');
+    const acceptBtn = $('acceptCallBtn');
+    const muteBtn = $('muteBtn');
 
-    async function getIceServers() {
-        try {
-            const token = localStorage.getItem('token') || localStorage.getItem('sfera_token');
-            const response = await fetch('/api/config/webrtc', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!response.ok) throw new Error('HTTP error ' + response.status);
-            const data = await response.json();
-            return data.iceServers;
-        } catch (error) {
-            console.error('❌ [WebRTC] Error loading ICE:', error);
-            return [{ urls: 'stun:stun.l.google.com:19302' }];
+    function tr(key, fallback) {
+        return window.SFERA_I18N?.t(key) || fallback;
+    }
+
+    function updateUI(state, text = '') {
+        callState = state;
+        if (!modal) return;
+
+        // Сброс базовых стилей
+        statusText.style.color = 'var(--accent)';
+        if (acceptBtn) acceptBtn.style.display = 'none';
+        if (muteBtn) muteBtn.style.display = 'none';
+        
+        if (state === 'idle') {
+            modal.classList.remove('active');
+            if (timerEl) timerEl.style.display = 'none';
+            if (videosBox) videosBox.style.display = 'none';
+            return;
+        }
+
+        modal.classList.add('active');
+
+        if (state === 'calling') {
+            targetName.textContent = text || tr('call_calling', 'Звонок...');
+            statusText.textContent = tr('call_connecting', 'Соединение...');
+        } 
+        else if (state === 'ringing') {
+            targetName.textContent = text || tr('call_incoming', 'Входящий звонок...');
+            statusText.textContent = isVideoCall ? '📹 ' + tr('call_video', 'Видеозвонок') : '📞 ' + tr('call_audio', 'Аудиозвонок');
+            if (acceptBtn) acceptBtn.style.display = 'block';
+        } 
+        else if (state === 'connecting') {
+            statusText.textContent = tr('call_connecting', 'Соединение...');
+        } 
+        else if (state === 'connected') {
+            statusText.textContent = tr('call_connected', 'Соединено');
+            if (timerEl) timerEl.style.display = 'block';
+            if (muteBtn) muteBtn.style.display = 'block';
+            startTimer();
+        } 
+        else if (state === 'error') {
+            statusText.textContent = text || tr('call_error_conn', '❌ Ошибка подключения');
+            statusText.style.color = '#ff4d4d';
+            setTimeout(cleanup, 3000);
         }
     }
 
     function startTimer() {
-        if (window._timerInterval) return;
-        window._timerSeconds = 0;
-        const timerEl = document.getElementById('callTimer');
-        if (timerEl) { timerEl.style.display = 'block'; timerEl.textContent = '00:00'; }
-        
-        window._timerInterval = setInterval(() => {
-            window._timerSeconds++;
-            const m = String(Math.floor(window._timerSeconds / 60)).padStart(2, '0');
-            const s = String(window._timerSeconds % 60).padStart(2, '0');
-            const el = document.getElementById('callTimer');
-            if (el) el.textContent = m + ':' + s;
+        if (timerInterval) return;
+        timerSeconds = 0;
+        if (timerEl) timerEl.textContent = '00:00';
+        timerInterval = setInterval(() => {
+            timerSeconds++;
+            const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+            const s = String(timerSeconds % 60).padStart(2, '0');
+            if (timerEl) timerEl.textContent = m + ':' + s;
         }, 1000);
     }
 
-    function stopTimer() {
-        clearInterval(window._timerInterval);
-        window._timerInterval = null;
-        window._timerSeconds = 0;
-        const el = document.getElementById('callTimer');
-        if (el) { el.style.display = 'none'; el.textContent = '00:00'; }
-    }
-
     function cleanup() {
-        callState = 'idle';
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
         if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
         if (pc) { pc.close(); pc = null; }
-        if (callModal) callModal.classList.remove('active');
         if (localVideo) localVideo.srcObject = null;
         if (remoteVideo) remoteVideo.srcObject = null;
-        if (acceptCallBtn) acceptCallBtn.style.display = 'none';
-        if (callVideos) callVideos.style.display = 'none';
-        if (muteBtn) muteBtn.style.display = 'none';
-        if (callTimer) stopTimer();
-        remoteUserName = 'Собеседник';
+        updateUI('idle');
     }
 
-    
-    function getTargetName(targetId) {
-        const activeItem = document.querySelector('.dialog-item.active');
-        if (activeItem) {
-            let name = activeItem.querySelector('.name')?.textContent || 'Собеседник';
-            // Если в диалоге есть значок админа 🛡, добавляем его к имени
-            if (activeItem.innerHTML.includes('admin-badge') || name.includes('🛡')) {
-                name = name.replace('🛡', '').trim() + ' 🛡';
-            }
-            return name;
+    async function getIceServers() {
+        try {
+            const token = localStorage.getItem('token') || localStorage.getItem('sfera_token');
+            const res = await fetch('/api/config/webrtc', { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
+            return data.iceServers;
+        } catch (e) {
+            return [{ urls: 'stun:stun.l.google.com:19302' }];
         }
-        return 'Собеседник';
     }
 
-    async function startCall(targetId, video) {
-        if (callState !== 'idle') return alert('Вы уже в звонке');
-        callState = 'calling';
-        peerId = targetId;
+    function setupPC() {
+        pc = new RTCPeerConnection({ iceServers: [] }); // Заполним чуть позже
+
+        pc.onicecandidate = (e) => {
+            if (e.candidate && window.SferaSocket) {
+                window.SferaSocket.emit('ice_candidate', { to: peerId, candidate: e.candidate });
+            }
+        };
+
+        pc.ontrack = (e) => {
+            if (remoteVideo) {
+                remoteVideo.srcObject = e.streams[0];
+                remoteVideo.play().catch(() => {});
+            }
+            updateUI('connected');
+        };
+
+        pc.oniceconnectionstatechange = () => {
+            if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') {
+                updateUI('error', '❌ Связь потеряна');
+            }
+        };
+    }
+
+    async function startCall(target, video) {
+        if (callState !== 'idle') return;
+        peerId = target;
         isVideoCall = video;
 
-        callTargetName.textContent = getTargetName(targetId) + '...';
-        callStatusText.textContent = window.SFERA_I18N?.t('call_connecting') || 'Соединение...';
-        callStatusText.style.color = 'var(--accent)';
-        callModal.classList.add('active');
-        if (video) callVideos.style.display = 'flex';
+        updateUI('calling');
+        if (video && videosBox) videosBox.style.display = 'flex';
 
         try {
-            const iceServers = await getIceServers();
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideoCall });
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video });
             if (localVideo) localVideo.srcObject = localStream;
 
-            pc = new RTCPeerConnection({ iceServers });
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+            setupPC();
+            const ice = await getIceServers();
+            pc.setConfiguration({ iceServers: ice });
 
-            pc.oniceconnectionstatechange = () => {
-                console.log('🌐 [WebRTC] ICE Connection State:', pc.iceConnectionState);
-            };
-
-            pc.onicecandidate = (event) => {
-                if (event.candidate && window.SferaSocket) {
-                    window.SferaSocket.emit('ice_candidate', { to: peerId, candidate: event.candidate });
-                }
-            };
-
-            pc.ontrack = (event) => {
-                console.log('🎥 [WebRTC] Получен удаленный трек:', event.track.kind);
-                if (remoteVideo) {
-                    remoteVideo.srcObject = event.streams[0];
-                    remoteVideo.play().catch(e => console.warn('Autoplay blocked:', e));
-                }
-                callStatusText.textContent = getTrans('call_connected', window.SFERA_I18N?.t('call_connected') || 'Соединено');
-                callStatusText.style.color = 'var(--accent)';
-                callTargetName.textContent = remoteUserName || getTargetName(peerId);
-                startTimer();
-                if (muteBtn) muteBtn.style.display = 'block';
-            };
+            localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
-            
+
             if (window.SferaSocket) {
-                window.SferaSocket.emit('call_user', { userToCall: peerId, signalData: offer, isVideo: isVideoCall });
+                window.SferaSocket.emit('call_user', { userToCall: peerId, signalData: offer, isVideo });
             }
-        } catch (err) {
-            console.error('Error startCall:', err);
-            if (err.name === 'NotReadableError') {
-                callStatusText.textContent = getTrans('call_error_busy', window.SFERA_I18N?.t('call_error_busy') || '❌ Камера/Микрофон заняты');
-            } else {
-                callStatusText.textContent = getTrans('call_error_mic', window.SFERA_I18N?.t('call_error_mic') || '❌ Микрофон/Камера заблокированы');
-            }
-            callStatusText.style.color = '#ff4d4d';
-            setTimeout(cleanup, 3000);
+            updateUI('connecting');
+        } catch (e) {
+            updateUI('error', e.name === 'NotAllowedError' ? '❌ Нет доступа к микрофону' : '❌ Ошибка');
         }
     }
 
     async function acceptCall() {
         if (callState !== 'ringing') return;
-        callState = 'connected';
-        acceptCallBtn.style.display = 'none';
-        callStatusText.textContent = window.SFERA_I18N?.t('call_connecting') || 'Соединение...';
+        updateUI('connecting');
 
         try {
-            const iceServers = await getIceServers();
             localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideoCall });
             if (localVideo) localVideo.srcObject = localStream;
 
-            pc = new RTCPeerConnection({ iceServers });
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+            setupPC();
+            const ice = await getIceServers();
+            pc.setConfiguration({ iceServers: ice });
 
-            pc.onicecandidate = (event) => {
-                if (event.candidate && window.SferaSocket) {
-                    window.SferaSocket.emit('ice_candidate', { to: peerId, candidate: event.candidate });
-                }
-            };
-
-            pc.ontrack = (event) => {
-                if (remoteVideo) remoteVideo.srcObject = event.streams[0];
-                callStatusText.textContent = getTrans('call_connected', window.SFERA_I18N?.t('call_connected') || 'Соединено');
-                callStatusText.style.color = 'var(--accent)';
-                callTargetName.textContent = remoteUserName;
-                startTimer();
-                if (muteBtn) muteBtn.style.display = 'block';
-            };
+            localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
             await pc.setRemoteDescription(new RTCSessionDescription(window._incomingSignal));
             const answer = await pc.createAnswer();
@@ -194,15 +175,8 @@
             if (window.SferaSocket) {
                 window.SferaSocket.emit('answer_call', { to: peerId, signal: answer });
             }
-        } catch (err) {
-            console.error('Error acceptCall:', err);
-            if (err.name === 'NotReadableError') {
-                callStatusText.textContent = getTrans('call_error_busy', window.SFERA_I18N?.t('call_error_busy') || '❌ Камера/Микрофон заняты');
-            } else {
-                callStatusText.textContent = getTrans('call_error_mic', window.SFERA_I18N?.t('call_error_conn') || '❌ Ошибка подключения');
-            }
-            callStatusText.style.color = '#ff4d4d';
-            setTimeout(cleanup, 3000);
+        } catch (e) {
+            updateUI('error', e.name === 'NotAllowedError' ? '❌ Нет доступа к камере' : '❌ Ошибка');
         }
     }
 
@@ -212,34 +186,21 @@
                 socket.emit('end_call', { to: data.from });
                 return;
             }
-            callState = 'ringing';
             peerId = data.from;
             isVideoCall = data.isVideo;
             window._incomingSignal = data.signal;
-
-            const dialogItem = document.querySelector(`.dialog-item[data-id="${data.from}"]`);
-            remoteUserName = dialogItem ? (dialogItem.querySelector('.name')?.textContent || 'Собеседник') : 'Собеседник';
-            callTargetName.textContent = remoteUserName;
-            callStatusText.textContent = isVideoCall ? '📹 ' + (window.SFERA_I18N?.t('call_video') || 'Видеозвонок') : '📞 ' + (window.SFERA_I18N?.t('call_audio') || 'Аудиозвонок');
-            callModal.classList.add('active');
-            acceptCallBtn.style.display = 'block';
-            if (isVideoCall) callVideos.style.display = 'flex';
+            updateUI('ringing', 'Собеседник');
         });
 
         socket.on('call_accepted', async (signal) => {
-            if (pc) {
+            if (pc && callState === 'connecting') {
                 await pc.setRemoteDescription(new RTCSessionDescription(signal));
-                callStatusText.textContent = getTrans('call_connected', window.SFERA_I18N?.t('call_connected') || 'Соединено');
-                callStatusText.style.color = 'var(--accent)';
-                callState = 'connected';
-                startTimer();
-                if (muteBtn) muteBtn.style.display = 'block';
             }
         });
 
         socket.on('ice_candidate', async (data) => {
             if (pc) {
-                await pc.addIceCandidate(new RTCIceCandidate(data.candidate)).catch(e => console.warn('ICE error:', e));
+                await pc.addIceCandidate(new RTCIceCandidate(data.candidate)).catch(() => {});
             }
         });
 
@@ -248,84 +209,32 @@
         });
     };
 
-    if (endCallBtn) {
-        endCallBtn.addEventListener('click', () => {
-            if (window.SferaSocket && peerId) {
-                window.SferaSocket.emit('end_call', { to: peerId });
-            }
-            cleanup();
-        });
-    }
+    if (endBtn) endBtn.addEventListener('click', () => {
+        if (window.SferaSocket && peerId) window.SferaSocket.emit('end_call', { to: peerId });
+        cleanup();
+    });
+
+    if (acceptBtn) acceptBtn.addEventListener('click', acceptCall);
 
     if (muteBtn) {
         muteBtn.addEventListener('click', () => {
             if (!localStream) return;
-            const audioTrack = localStream.getAudioTracks()[0];
-            if (audioTrack) {
-                audioTrack.enabled = !audioTrack.enabled;
-                muteBtn.textContent = audioTrack.enabled ? window.SFERA_I18N?.t('call_mute') || '🔇 Mute' : window.SFERA_I18N?.t('call_unmute') || '🔊 Unmute';
-                muteBtn.style.background = audioTrack.enabled ? 'rgba(255,255,255,0.05)' : 'rgba(255, 77, 77, 0.3)';
+            const audio = localStream.getAudioTracks()[0];
+            if (audio) {
+                audio.enabled = !audio.enabled;
+                muteBtn.textContent = audio.enabled ? '🔇 Mute' : '🔊 Unmute';
             }
         });
     }
 
-    if (acceptCallBtn) {
-        acceptCallBtn.addEventListener('click', acceptCall);
-    }
-
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('#audioCallBtn') || e.target.closest('#videoCallBtn')) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const activeItem = document.querySelector('.dialog-item.active');
-            const isAI = activeItem && (
-                activeItem.textContent.includes('AI Kömekçi') || 
-                activeItem.textContent.includes('Sfera AI')
-            );
-            
-            let targetId = window.activeDialogId;
-            if (!targetId && activeItem) {
-                targetId = activeItem.dataset.id || activeItem.id.replace('dialog-', '');
-            }
-
-            // Если это ИИ или нет ID — просто выходим без всяких alert
-            if (isAI || !targetId || targetId === 'ai_assistant') {
-                console.warn('⚠️ [WebRTC] Звонки недоступны для ИИ-помощника');
-                return;
-            }
-
-            const isVideo = e.target.closest('#videoCallBtn') !== null;
-            startCall(targetId, isVideo);
-        }
-    }, true);
-
-    window.SferaCall = { startCall, getIceServers };
-    console.log('✅ [WebRTC] Module loaded');
+    // Экспорт в глобальную область
+    window.SferaCall = { startCall };
 })();
 
-const socketInterval = setInterval(() => {
+// Ждем сокет и инициализируем слушатели
+const socketInt = setInterval(() => {
     if (window.SferaSocket) {
-        clearInterval(socketInterval);
+        clearInterval(socketInt);
         window.initWebRTCListeners(window.SferaSocket);
-        console.log('✅ [WebRTC] Listeners attached to socket');
     }
 }, 500);
-
-    // Принудительно прячем кнопки звонка для ИИ каждые 300мс
-    setInterval(() => {
-        const activeItem = document.querySelector('.dialog-item.active');
-        const isAI = activeItem && (
-            activeItem.textContent.includes('AI Kömekçi') || 
-            activeItem.textContent.includes('Sfera AI')
-        );
-        const callButtons = document.querySelector('.call-buttons');
-        
-        if (callButtons) {
-            if (isAI) {
-                callButtons.style.display = 'none';
-            } else {
-                callButtons.style.display = 'flex';
-            }
-        }
-    }, 300);
