@@ -399,6 +399,13 @@
         await loadMessages(activeDialogId, true);
     }
 
+    
+    function sanitizeLastMsg(msg) {
+        if (!msg) return '';
+        if (msg.includes('file-card') || msg.includes('<img')) return '📄 Файл';
+        return msg.replace(/<[^>]*>?/gm, ''); // Удаляем любые HTML теги
+    }
+
     function renderChat() {
         if (!activeDialogId || !chatMessages) return;
         const dialog = dialogsData.find(d => d.id === activeDialogId);
