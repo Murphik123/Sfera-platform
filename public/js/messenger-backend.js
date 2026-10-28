@@ -466,6 +466,15 @@
             const isFileCard = message.text && String(message.text).includes('<div class="file-card">');
             if (message.isHtml || isFileCard) {
                 msgEl.innerHTML = message.text;
+                
+                // SFERA-ARCH-FIX: Автоматически исправляем старые кривые ссылки на файлы
+                msgEl.querySelectorAll('a.btn-download-file').forEach(a => {
+                    let href = a.getAttribute('href');
+                    if (href && !href.startsWith('http') && !href.includes('/api/upload/')) {
+                        let filename = href.split('/').pop();
+                        a.setAttribute('href', '/api/upload/' + filename);
+                    }
+                });
             } else {
                 msgEl.innerHTML = `
                     ${message.type === 'received' && dialog.isGroup ? `<div class="msg-username">${escapeHtml(message.sender)}</div>` : ''}
