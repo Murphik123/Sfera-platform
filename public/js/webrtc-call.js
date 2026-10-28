@@ -70,13 +70,27 @@
         remoteUserName = 'Собеседник';
     }
 
+    
+    function getTargetName(targetId) {
+        const activeItem = document.querySelector('.dialog-item.active');
+        if (activeItem) {
+            let name = activeItem.querySelector('.name')?.textContent || 'Собеседник';
+            // Если в диалоге есть значок админа 🛡, добавляем его к имени
+            if (activeItem.innerHTML.includes('admin-badge') || name.includes('🛡')) {
+                name = name.replace('🛡', '').trim() + ' 🛡';
+            }
+            return name;
+        }
+        return 'Собеседник';
+    }
+
     async function startCall(targetId, video) {
         if (callState !== 'idle') return alert('Вы уже в звонке');
         callState = 'calling';
         peerId = targetId;
         isVideoCall = video;
 
-        callTargetName.textContent = 'Звонок...';
+        callTargetName.textContent = getTargetName(targetId) + '...';
         callStatusText.textContent = 'Соединение...';
         callStatusText.style.color = 'var(--accent)';
         callModal.classList.add('active');
@@ -100,7 +114,7 @@
                 if (remoteVideo) remoteVideo.srcObject = event.streams[0];
                 callStatusText.textContent = 'Соединено';
                 callStatusText.style.color = 'var(--accent)';
-                callTargetName.textContent = remoteUserName;
+                callTargetName.textContent = remoteUserName || getTargetName(peerId);
                 callState = 'connected';
                 startTimer();
                 if (muteBtn) muteBtn.style.display = 'block';
