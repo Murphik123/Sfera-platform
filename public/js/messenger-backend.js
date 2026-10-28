@@ -931,7 +931,7 @@
     }
 
     async function escalateToAdmin() {
-        if (!window.confirm('Передать текущий диалог администратору?')) return;
+        if (!(await sferaConfirm('Передать администратору?', 'Ваш диалог с AI будет отправлен администратору для помощи.'))) return;
         try {
             showToast('Вызов администратора...', 'info');
             const res = await window.api.post('/ai/escalate', {});
