@@ -78,6 +78,15 @@
         return getDict()[key] || fallback || key;
     }
 
+    function isAdmin() {
+        try {
+            const lsUser = JSON.parse(localStorage.getItem('user') || '{}');
+            if (lsUser && lsUser.role === 'admin') return true;
+        } catch (_) {}
+        const u = currentUser && (currentUser.user || currentUser);
+        return Boolean(u && u.role === 'admin');
+    }
+
     function getUserId(user) {
         if (!user) return null;
         return String(user._id || user.id || user.userId || '');
@@ -236,8 +245,7 @@
             currentUser = await window.api.getCurrentUser();
         }
 
-        const _meRole = (JSON.parse(localStorage.getItem('user') || '{}').role) || (currentUser && currentUser.role) || '';
-            if (activeDialogId === 'ai_assistant' && _meRole !== 'admin') {
+        if (activeDialogId === 'ai_assistant' && !isAdmin()) {
             const userMsg = normalizeMessage({
                 id: 'local_' + Date.now(),
                 text: value,
