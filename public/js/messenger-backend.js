@@ -966,6 +966,133 @@
 
     document.addEventListener('DOMContentLoaded', init);
 
+
+    // === SFERA-PATCH: NEWS ROOM LOGIC (FORCED INJECTION) ===
+    async function loadNewsRoom() {
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInputArea');
+        const chatHeader = document.getElementById('chatHeader');
+        
+        if (!chatMessages || !chatInput) return;
+        
+        chatHeader.innerHTML = '<div class="chat-avatar" style="background:var(--primary); color:#000;">📰</div><div><div class="chat-name">Новости</div><div class="chat-status">Мировые и Туркменские</div></div>';
+        chatInput.style.display = 'none';
+        
+        chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;">Загрузка новостей...</div>';
+        
+        try {
+            const currentLang = localStorage.getItem('lang') || 'tm';
+            const res = await fetch('/api/news/world?lang=' + currentLang, {
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || localStorage.getItem('sfera_token')) }
+            });
+            const news = await res.json();
+            
+            if (!news.length) {
+                chatMessages.innerHTML = '<div style="padding:20px; color:#fff;">Новости не найдены.</div>';
+                return;
+            }
+
+            let html = '<div class="news-room">';
+            html += '<div class="news-list-pane" id="newsList">';
+            
+            news.forEach((item, index) => {
+                const date = new Date(item.date).toLocaleString(currentLang === 'ru' ? 'ru-RU' : (currentLang === 'tm' ? 'tk-TM' : 'en-US'), { hour: '2-digit', minute:'2-digit', day:'numeric', month:'short' });
+                html += `
+                    <div class="news-item" data-index="${index}" onclick="window.selectNews(${index})">
+                        <div class="news-item-title">${item.title}</div>
+                        <div class="news-item-meta"><span>${item.source}</span><span>${date}</span></div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            html += '<div class="news-content-pane" id="newsContent"><div class="news-content-empty">👈 Выберите новость слева</div></div>';
+            html += '</div>';
+            
+            chatMessages.innerHTML = html;
+            window._newsData = news;
+
+        } catch (e) {
+            chatMessages.innerHTML = '<div style="padding:20px; color:#ff4d4d;">Ошибка загрузки: ' + e.message + '</div>';
+        }
+    }
+
+    window.selectNews = async function(index) {
+        const item = window._newsData[index];
+        if (!item) return;
+
+        document.querySelectorAll('.news-item').forEach(el => el.classList.remove('active'));
+        const activeEl = document.querySelector(`.news-item[data-index="${index}"]`);
+        if (activeEl) activeEl.classList.add('active');
+
+        const currentLang = localStorage.getItem('lang') || 'tm';
+        const contentPane = document.getElementById('newsContent');
+        
+        contentPane.innerHTML = '<div class="news-content-empty">Перевод текста... ⏳</div>';
+
+        let displayText = item.content;
+
+        if (currentLang !== 'ru') {
+            try {
+                const res = await fetch(`/api/news/translate?text=${encodeURIComponent(item.content)}&lang=${currentLang}`, {
+                    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || localStorage.getItem('sfera_token')) }
+                });
+                const data = await res.json();
+                displayText = data.text;
+            } catch (e) {
+                console.error('Translation failed:', e);
+            }
+        }
+
+        const date = new Date(item.date).toLocaleString(currentLang === 'ru' ? 'ru-RU' : (currentLang === 'tm' ? 'tk-TM' : 'en-US'));
+        contentPane.innerHTML = `
+            <div class="news-content-title">${item.title}</div>
+            <div class="news-content-meta">${item.source} • ${date}</div>
+            <div class="news-content-text">${displayText}</div>
+            <br>
+            <a href="${item.link}" target="_blank" style="color:var(--primary); text-decoration:none;">🔗 Читать оригинал</a>
+        `;
+    };
+
+    async function loadPlatformNewsToAI() {
+        const chatMessages = document.getElementById('chatMessages');
+        if (!chatMessages) return;
+        
+        try {
+            const currentLang = localStorage.getItem('lang') || 'tm';
+            const res = await fetch('/api/news/platform?lang=' + currentLang, {
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || localStorage.getItem('sfera_token')) }
+            });
+            const news = await res.json();
+            
+            let html = '<div style="padding: 20px;">';
+            html += '<h3 style="color:var(--accent); margin-bottom:15px; font-size:18px;">📢 Новости платформы</h3>';
+            news.forEach(item => {
+                html += `
+                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:12px; border-left:3px solid var(--accent);">
+                        <div style="font-weight:700; color:#fff; margin-bottom:5px;">${item.title}</div>
+                        <div style="color:var(--text-muted); font-size:14px; line-height:1.4;">${item.content}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            chatMessages.innerHTML = html;
+        } catch (e) {
+            console.error('Ошибка загрузки новостей платформы:', e);
+        }
+    }
+
+    const tabNews = document.getElementById('lblTabNews');
+    if (tabNews) {
+        tabNews.addEventListener('click', () => setTimeout(loadNewsRoom, 50));
+    }
+    
+    const tabAssistant = document.getElementById('lblTabAssistant');
+    if (tabAssistant) {
+        tabAssistant.addEventListener('click', () => setTimeout(loadPlatformNewsToAI, 100));
+    }
+    // === END SFERA-PATCH: NEWS ROOM LOGIC ===
+    
 })();
 
 
