@@ -3,15 +3,20 @@ const parser = new Parser();
 
 const translationCache = new Map();
 
-async function translateText(text, targetLang) {
-    if (!text) return '';
-    if (targetLang === 'ru') return text;
-
-    const cacheKey = `${targetLang}_${text.slice(0, 50)}`;
-    if (translationCache.has(cacheKey)) return translationCache.get(cacheKey);
+// Функция пакетного перевода через Groq API
+async function batchTranslate(newsArray, targetLang) {
+    if (targetLang === 'ru' || !newsArray.length) return newsArray;
 
     const langName = targetLang === 'tm' ? 'Turkmen' : 'English';
-    const prompt = `Translate the following text to ${langName}. Return ONLY the translation, without any explanations or quotes:\n\n${text}`;
+    
+    // Подготавливаем данные для перевода (только title и content)
+    const payload = newsArray.map((item, index) => ({
+        id: index,
+        title: item.title,
+        content: item.content
+    }));
+
+    const prompt = `Translate the 'title' and 'content' fields of this JSON array to ${langName}. Return ONLY a valid JSON array of objects with the exact same structure and 'id'. Do not add any markdown formatting or explanations. JSON: ${JSON.stringify(payload)}`;
 
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -28,13 +33,26 @@ async function translateText(text, targetLang) {
         });
 
         const data = await response.json();
-        const translated = data.choices?.[0]?.message?.content?.trim() || text;
+        let translatedText = data.choices?.[0]?.message?.content?.trim() || '[]';
         
-        translationCache.set(cacheKey, translated);
-        return translated;
+        // Очищаем от markdown-тегов, если Groq их добавил
+        translatedText = translatedText.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
+        
+        const translatedArray = JSON.parse(translatedText);
+
+        // Собираем обратно
+        return newsArray.map((item, index) => {
+            const translatedItem = translatedArray.find(t => t.id === index);
+            return {
+                ...item,
+                title: translatedItem ? translatedItem.title : item.title,
+                content: translatedItem ? translatedItem.content : item.content
+            };
+        });
+
     } catch (e) {
-        console.error('Translation error:', e);
-        return text;
+        console.error('Batch translation error:', e);
+        return newsArray; // В случае ошибки возвращаем оригинал
     }
 }
 
@@ -71,12 +89,10 @@ exports.getWorldNews = async (req, res) => {
         }
 
         news.sort((a, b) => new Date(b.date) - new Date(a.date));
-        news = news.slice(0, 30);
+        news = news.slice(0, 20); // Берем 20 новостей для перевода
 
         if (lang !== 'ru') {
-            for (let i = 0; i < news.length; i++) {
-                news[i].title = await translateText(news[i].title, lang);
-            }
+            news = await batchTranslate(news, lang);
         }
 
         res.json(news);
@@ -87,10 +103,10 @@ exports.getWorldNews = async (req, res) => {
 };
 
 exports.translateNewsText = async (req, res) => {
+    // Оставляем на случай, если понадобится точечный перевод
     const { text, lang } = req.query;
     if (!text || !lang) return res.json({ text });
-    const translated = await translateText(text, lang);
-    res.json({ text: translated });
+    res.json({ text });
 };
 
 exports.getPlatformNews = async (req, res) => {
@@ -101,10 +117,7 @@ exports.getPlatformNews = async (req, res) => {
     ];
     
     if (lang !== 'ru') {
-        for (let i = 0; i < news.length; i++) {
-            news[i].title = await translateText(news[i].title, lang);
-            news[i].content = await translateText(news[i].content, lang);
-        }
+        news = await batchTranslate(news, lang);
     }
     res.json(news);
 };
