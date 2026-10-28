@@ -523,12 +523,14 @@
             <div class="modal-box">
                 <div class="call-avatar" id="callAvatar" style="font-size: 48px; margin-bottom: 16px; text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);">👤</div>
                 <h2 id="callTargetName" style="margin-bottom: 4px;">...</h2>
-                <div class="call-status" id="callStatusText" style="color: var(--accent); font-size: 15px; font-weight: 500; margin-bottom: 20px; letter-spacing: 0.5px;">Birikdirilýär...</div>
+                <div class="call-status" id="callStatusText" style="color: var(--accent); font-size: 15px; font-weight: 500; margin-bottom: 10px; letter-spacing: 0.5px;">Birikdirilýär...</div>
+                <div id="callTimer" style="font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 20px; display: none; text-shadow: 0 0 10px rgba(0,212,255,0.5);">00:00</div>
                 <div class="call-videos" id="callVideos" style="display:none; gap:10px; justify-content:center; margin-bottom:20px;">
                     <video id="localVideo" autoplay muted playsinline style="width:120px; height:160px; border-radius:12px; background:#000; border:1px solid var(--primary); object-fit:cover;"></video>
                     <video id="remoteVideo" autoplay playsinline style="width:240px; height:160px; border-radius:12px; background:#000; border:1px solid var(--primary); object-fit:cover;"></video>
                 </div>
                 <div class="call-actions" style="display:flex; justify-content:center; gap:10px;">
+                    <button class="btn-glass" id="muteBtn" style="display:none;">🔇 Mute</button>
                     <button class="btn-neon-primary" id="acceptCallBtn" style="display:none;">✅ Принять</button>
                     <button class="btn-neon-danger" id="endCallBtn" data-i18n="messenger_end_call">❌ Jaňy bes et</button>
                 </div>

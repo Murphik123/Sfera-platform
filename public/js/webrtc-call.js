@@ -15,6 +15,11 @@
     const callVideos = document.getElementById('callVideos');
     const endCallBtn = document.getElementById('endCallBtn');
     const acceptCallBtn = document.getElementById('acceptCallBtn');
+    const callTimer = document.getElementById('callTimer');
+    const muteBtn = document.getElementById('muteBtn');
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let remoteUserName = 'Собеседник';
 
     async function getIceServers() {
         try {
@@ -31,6 +36,26 @@
         }
     }
 
+    function startTimer() {
+        if (timerInterval) return;
+        timerSeconds = 0;
+        callTimer.style.display = 'block';
+        callTimer.textContent = '00:00';
+        timerInterval = setInterval(() => {
+            timerSeconds++;
+            const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+            const s = String(timerSeconds % 60).padStart(2, '0');
+            callTimer.textContent = m + ':' + s;
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        callTimer.style.display = 'none';
+        callTimer.textContent = '00:00';
+    }
+
     function cleanup() {
         callState = 'idle';
         if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
@@ -40,6 +65,9 @@
         if (remoteVideo) remoteVideo.srcObject = null;
         if (acceptCallBtn) acceptCallBtn.style.display = 'none';
         if (callVideos) callVideos.style.display = 'none';
+        if (muteBtn) muteBtn.style.display = 'none';
+        if (callTimer) stopTimer();
+        remoteUserName = 'Собеседник';
     }
 
     async function startCall(targetId, video) {
@@ -71,7 +99,11 @@
             pc.ontrack = (event) => {
                 if (remoteVideo) remoteVideo.srcObject = event.streams[0];
                 callStatusText.textContent = 'Соединено';
+                callStatusText.style.color = 'var(--accent)';
+                callTargetName.textContent = remoteUserName;
                 callState = 'connected';
+                startTimer();
+                if (muteBtn) muteBtn.style.display = 'block';
             };
 
             const offer = await pc.createOffer();
@@ -111,6 +143,10 @@
             pc.ontrack = (event) => {
                 if (remoteVideo) remoteVideo.srcObject = event.streams[0];
                 callStatusText.textContent = 'Соединено';
+                callStatusText.style.color = 'var(--accent)';
+                callTargetName.textContent = remoteUserName;
+                startTimer();
+                if (muteBtn) muteBtn.style.display = 'block';
             };
 
             await pc.setRemoteDescription(new RTCSessionDescription(window._incomingSignal));
@@ -139,7 +175,9 @@
             isVideoCall = data.isVideo;
             window._incomingSignal = data.signal;
 
-            callTargetName.textContent = 'Входящий звонок...';
+            const dialogItem = document.querySelector(`.dialog-item[data-id="${data.from}"]`);
+            remoteUserName = dialogItem ? (dialogItem.querySelector('.name')?.textContent || 'Собеседник') : 'Собеседник';
+            callTargetName.textContent = remoteUserName;
             callStatusText.textContent = isVideoCall ? '📹 Видеозвонок' : '📞 Аудиозвонок';
             callModal.classList.add('active');
             acceptCallBtn.style.display = 'block';
@@ -150,7 +188,10 @@
             if (pc) {
                 await pc.setRemoteDescription(new RTCSessionDescription(signal));
                 callStatusText.textContent = 'Соединено';
+                callStatusText.style.color = 'var(--accent)';
                 callState = 'connected';
+                startTimer();
+                if (muteBtn) muteBtn.style.display = 'block';
             }
         });
 
@@ -171,6 +212,18 @@
                 window.SferaSocket.emit('end_call', { to: peerId });
             }
             cleanup();
+        });
+    }
+
+    if (muteBtn) {
+        muteBtn.addEventListener('click', () => {
+            if (!localStream) return;
+            const audioTrack = localStream.getAudioTracks()[0];
+            if (audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                muteBtn.textContent = audioTrack.enabled ? '🔇 Mute' : '🔊 Unmute';
+                muteBtn.style.background = audioTrack.enabled ? 'rgba(255,255,255,0.05)' : 'rgba(255, 77, 77, 0.3)';
+            }
         });
     }
 
