@@ -25,10 +25,10 @@
     const callVideos = document.getElementById('callVideos');
     const endCallBtn = document.getElementById('endCallBtn');
     const acceptCallBtn = document.getElementById('acceptCallBtn');
-    const callTimer = document.getElementById('callTimer');
+    
     const muteBtn = document.getElementById('muteBtn');
-    let timerInterval = null;
-    let timerSeconds = 0;
+    
+    
     let remoteUserName = 'Собеседник';
 
     async function getIceServers() {
@@ -47,23 +47,26 @@
     }
 
     function startTimer() {
-        if (timerInterval) return;
-        timerSeconds = 0;
-        callTimer.style.display = 'block';
-        callTimer.textContent = '00:00';
-        timerInterval = setInterval(() => {
-            timerSeconds++;
-            const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
-            const s = String(timerSeconds % 60).padStart(2, '0');
-            callTimer.textContent = m + ':' + s;
+        if (window._timerInterval) return;
+        window._timerSeconds = 0;
+        const timerEl = document.getElementById('callTimer');
+        if (timerEl) { timerEl.style.display = 'block'; timerEl.textContent = '00:00'; }
+        
+        window._timerInterval = setInterval(() => {
+            window._timerSeconds++;
+            const m = String(Math.floor(window._timerSeconds / 60)).padStart(2, '0');
+            const s = String(window._timerSeconds % 60).padStart(2, '0');
+            const el = document.getElementById('callTimer');
+            if (el) el.textContent = m + ':' + s;
         }, 1000);
     }
 
     function stopTimer() {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        callTimer.style.display = 'none';
-        callTimer.textContent = '00:00';
+        clearInterval(window._timerInterval);
+        window._timerInterval = null;
+        window._timerSeconds = 0;
+        const el = document.getElementById('callTimer');
+        if (el) { el.style.display = 'none'; el.textContent = '00:00'; }
     }
 
     function cleanup() {
