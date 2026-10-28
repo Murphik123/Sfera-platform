@@ -808,7 +808,10 @@
                         // Остальные файлы даем скачать напрямую
                         htmlContent = `
                             <div class="file-card">
-                                <span>📄 <strong>${safeName}</strong> (${safeSize} KB)</span>
+                                <div class="file-info">
+                                    <strong>📄 ${safeName}</strong>
+                                    <span style="font-size: 11px; opacity: 0.7;">(${safeSize} KB)</span>
+                                </div>
                                 <a href="/api/upload/${data.filename}" download="${safeName}" class="btn-download-file" style="text-decoration:none;">Скачать 💾</a>
                             </div>
                             <div class="msg-time">${time}</div>

@@ -341,6 +341,35 @@
         .chat-image:hover { opacity: 0.9; }
         .chat-image:active { transform: scale(0.98); }
     
+
+        /* SFERA-PATCH: File Card Overflow Fix */
+        .file-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .file-card .file-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .file-card .file-info strong {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .file-card .btn-download-file {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+    
 </style>
 <style>
 /* SFERA-PATCH:MSG-SPRINT1-css */
@@ -553,7 +582,7 @@
     <script src="/js/api.js"></script>
     <script src="/js/socket.js"></script>
     <script src="/js/webrtc-call.js?v=999"></script>
-    <script src="/js/messenger-backend.js?v=1002"></script>
+    <script src="/js/messenger-backend.js?v=1003"></script>
 
     <script>
         // Отрисовка фона и навигации (не вмешиваемся в работу messenger-backend.js)
