@@ -792,13 +792,27 @@
                     messagesData[activeDialogId] = messagesData[activeDialogId].filter(m => m.id !== tempId);
 
                     // Формируем HTML для файла (ссылка на сервер)
-                    const htmlContent = `
-                        <div class="file-card">
-                            <span>📄 <strong>${safeName}</strong> (${safeSize} KB)</span>
-                            <a href="/api/upload/${data.filename}" target="_blank" class="btn-download-file" style="text-decoration:none;">Открыть 💾</a>
-                        </div>
-                        <div class="msg-time">${time}</div>
-                    `;
+                    const isImage = file.type.startsWith('image/');
+                    let htmlContent = '';
+
+                    if (isImage) {
+                        // Картинки рендерим прямо в ленте
+                        htmlContent = `
+                            <div class="file-card" style="padding: 5px; background: transparent; border: none;">
+                                <img src="/api/upload/${data.filename}" class="chat-image" alt="${safeName}">
+                            </div>
+                            <div class="msg-time">${time}</div>
+                        `;
+                    } else {
+                        // Остальные файлы даем скачать напрямую
+                        htmlContent = `
+                            <div class="file-card">
+                                <span>📄 <strong>${safeName}</strong> (${safeSize} KB)</span>
+                                <a href="/api/upload/${data.filename}" download="${safeName}" class="btn-download-file" style="text-decoration:none;">Скачать 💾</a>
+                            </div>
+                            <div class="msg-time">${time}</div>
+                        `;
+                    }
 
                     // Отправляем через сокет, чтобы получатель увидел
                     if (window.SferaSocket && activeDialogId) {

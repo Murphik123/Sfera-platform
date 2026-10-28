@@ -328,7 +328,20 @@
             .messenger-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
             .chat-header .back-btn { display: block; }
         }
-    </style>
+    
+        /* SFERA-PATCH: Chat Image Styles */
+        .chat-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: block;
+        }
+        .chat-image:hover { opacity: 0.9; }
+        .chat-image:active { transform: scale(0.98); }
+    
+</style>
 <style>
 /* SFERA-PATCH:MSG-SPRINT1-css */
 .toast {
@@ -540,7 +553,7 @@
     <script src="/js/api.js"></script>
     <script src="/js/socket.js"></script>
     <script src="/js/webrtc-call.js?v=999"></script>
-    <script src="/js/messenger-backend.js?v=999"></script>
+    <script src="/js/messenger-backend.js?v=1000"></script>
 
     <script>
         // Отрисовка фона и навигации (не вмешиваемся в работу messenger-backend.js)
