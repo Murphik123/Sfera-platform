@@ -236,7 +236,7 @@
             currentUser = await window.api.getCurrentUser();
         }
 
-        if (activeDialogId === 'ai_assistant') {
+        if (activeDialogId === 'ai_assistant' && currentUser && currentUser.role !== 'admin') {
             const userMsg = normalizeMessage({
                 id: 'local_' + Date.now(),
                 text: value,
