@@ -68,7 +68,7 @@
   "stat_orders": "Geleşikler",
   "stat_docs": "Resminamalar",
   "stat_coin": "Döwriýədiki TM Coin",
-  "news_title": "Soňky täzelikler",
+  "news_title": "Habarlar",
   "news_launch": "Sfera platformasynyň işe girizilmegi",
   "news_launch_desc": "Bitewi tehnologiki ekoulgam esasy maliýe hyzmatlaryny birleşdirdi.",
   "news_ai": "Resminama dolanyşygynda AI moduly",
@@ -404,8 +404,16 @@
   "auto_58f1911b": "Все сообщения в этой группе будут безвозвратно удалены.",
   "auto_ed2bbfbc": "Удалить",
   "auto_cfd33d06": "✅ Принять",
-  "call_audio": "📞 Sesli jaň",
-  "call_video": "📹 Wideojaň",
+  "call_audio": "Sesli jaň",
+  "call_video": "Wideojaň",
   "call_connecting": "Birikdirilýär...",
-  "call_error_conn": "❌ Birikdirmek säwlik"
+  "call_error_conn": "❌ Birikdirmek säwlik",
+  "messenger_tab_chats": "Çatlar",
+  "messenger_create_group": "➕ Topar",
+  "messenger_send": "Iber",
+  "messenger_type_message": "Habaryňyzy ýazyň...",
+  "messenger_online": "onlaýn",
+  "messenger_end_call": "❌ Jaňy bes et",
+  "messenger_tab_news": "Habarlar",
+  "messenger_tab_ai": "Sfera AI Kömekçi"
 }

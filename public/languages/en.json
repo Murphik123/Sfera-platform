@@ -68,7 +68,7 @@
   "stat_orders": "Deals",
   "stat_docs": "Documents",
   "stat_coin": "TM Coin in Circulation",
-  "news_title": "Latest News",
+  "news_title": "News",
   "news_launch": "Sfera Platform Launch",
   "news_launch_desc": "Unified technological ecosystem has integrated key financial services.",
   "news_ai": "AI Module in Document Flow",
@@ -404,8 +404,16 @@
   "auto_58f1911b": "Все сообщения в этой группе будут безвозвратно удалены.",
   "auto_ed2bbfbc": "Удалить",
   "auto_cfd33d06": "✅ Принять",
-  "call_audio": "📞 Audio call",
-  "call_video": "📹 Video call",
+  "call_audio": "Audio call",
+  "call_video": "Video call",
   "call_connecting": "Connecting...",
-  "call_error_conn": "❌ Connection error"
+  "call_error_conn": "❌ Connection error",
+  "messenger_tab_chats": "Chats",
+  "messenger_create_group": "➕ Group",
+  "messenger_send": "Send",
+  "messenger_type_message": "Type a message...",
+  "messenger_online": "online",
+  "messenger_end_call": "❌ End call",
+  "messenger_tab_news": "News",
+  "messenger_tab_ai": "Sfera AI Assistant"
 }

@@ -68,7 +68,7 @@
   "stat_orders": "Сделок",
   "stat_docs": "Документов",
   "stat_coin": "TM Coin",
-  "news_title": "Последние новости",
+  "news_title": "Новости",
   "news_launch": "Запуск платформы Сфера",
   "news_launch_desc": "Единая технологическая экосистема объединила ключевые финансовые сервисы.",
   "news_ai": "ИИ модуль в документообороте",
@@ -403,8 +403,16 @@
   "auto_58f1911b": "Все сообщения в этой группе будут безвозвратно удалены.",
   "auto_ed2bbfbc": "Удалить",
   "auto_cfd33d06": "✅ Принять",
-  "call_audio": "📞 Аудиозвонок",
-  "call_video": "📹 Видеозвонок",
+  "call_audio": "Аудиозвонок",
+  "call_video": "Видеозвонок",
   "call_connecting": "Соединение...",
-  "call_error_conn": "❌ Ошибка подключения"
+  "call_error_conn": "❌ Ошибка подключения",
+  "messenger_tab_chats": "Чаты",
+  "messenger_create_group": "➕ Группа",
+  "messenger_send": "Отправить",
+  "messenger_type_message": "Напишите сообщение...",
+  "messenger_online": "онлайн",
+  "messenger_end_call": "❌ Завершить",
+  "messenger_tab_news": "Новости",
+  "messenger_tab_ai": "Sfera AI Помощник"
 }
