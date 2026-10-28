@@ -754,9 +754,9 @@
             if (callStatusText) callStatusText.textContent = type === 'audio' ? tr('audio_call', 'Audio call...') : tr('video_call', 'Video call...');
             if (callModal) callModal.classList.add('active');
         }
-        if (audioCallBtn) audioCallBtn.addEventListener('click', () => startCall('audio'));
-        if (videoCallBtn) videoCallBtn.addEventListener('click', () => startCall('video'));
-        if (endCallBtn && callModal) endCallBtn.addEventListener('click', () => callModal.classList.remove('active'));
+        
+        
+        
     }
 
     // ИСПРАВЛЕНИЕ: Функция загрузки файлов

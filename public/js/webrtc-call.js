@@ -228,6 +228,30 @@
     }
 
     // Экспорт в глобальную область
+    
+    // Перехват кликов по кнопкам звонка
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('#audioCallBtn') || e.target.closest('#videoCallBtn')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isVideo = e.target.closest('#videoCallBtn') !== null;
+            
+            // Берем ID собеседника из активного диалога
+            let targetId = window.activeDialogId;
+            if (!targetId) {
+                const activeItem = document.querySelector('.dialog-item.active');
+                if (activeItem) targetId = activeItem.dataset.id || activeItem.id.replace('dialog-', '');
+            }
+
+            if (targetId && targetId !== 'ai_assistant') {
+                startCall(targetId, isVideo);
+            } else {
+                console.warn('⚠️ Выберите диалог с пользователем для звонка');
+            }
+        }
+    }, true); // capture: true позволяет перехватить клик раньше других скриптов
+    
     window.SferaCall = { startCall };
 })();
 
