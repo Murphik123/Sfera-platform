@@ -981,10 +981,14 @@
         
         if (!chatMessages || !chatInput) return;
         
-        chatHeader.innerHTML = '<div class="chat-avatar" style="background:var(--primary); color:#000;">📰</div><div><div class="chat-name">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_title || 'Новости') + '</div><div class="chat-status">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_subtitle || 'Мировые и Туркменские') + '</div></div>';
+        // Шапка с правильными data-i18n
+        chatHeader.innerHTML = '<div class="chat-avatar" style="background:var(--primary); color:#000;">📰</div><div><div class="chat-name" data-i18n="news_title">Новости</div><div class="chat-status" data-i18n="news_subtitle">Мировые и Туркменские</div></div>';
+        chatInput.style.display = 'none';
         
+        chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;" data-i18n="news_loading">Загрузка новостей...</div>';
         
-        chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_loading || '<span data-i18n="news_loading">Загрузка новостей...</span>') + '</div>';
+        // Мгновенно переводим то, что вставили
+        if (window.SFERA_I18N) window.SFERA_I18N.setLanguage(window.SFERA_I18N.getLanguage());
         
         try {
             const currentLang = localStorage.getItem('lang') || 'tm';
@@ -998,11 +1002,17 @@
                 return;
             }
 
+            // Определяем локаль для правильного формата даты
+            let locale = 'tk-TM';
+            if (currentLang === 'ru') locale = 'ru-RU';
+            if (currentLang === 'en') locale = 'en-US';
+
             let html = '';
             news.forEach((item) => {
-                const date = new Date(item.date).toLocaleString(currentLang === 'ru' ? 'ru-RU' : (currentLang === 'tm' ? 'tk-TM' : 'en-US'), { hour: '2-digit', minute:'2-digit', day:'numeric', month:'short' });
+                const date = new Date(item.date).toLocaleString(locale, { hour: '2-digit', minute:'2-digit', day:'numeric', month:'short' });
                 const textContent = item.content || 'Текст новости доступен по ссылке.';
                 
+                // Ссылка "Читать оригинал" получает data-i18n="news_read_orig"
                 html += `
                     <div class="message received" style="max-width: 90%; margin-bottom: 16px; padding: 16px 20px;">
                         <div style="font-size: 11px; color: var(--primary); font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">${item.source}</div>
@@ -1010,7 +1020,7 @@
                         <div style="font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 12px;">${textContent}</div>
                         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; font-size: 12px;">
                             <span style="color: var(--text-muted);">${date}</span>
-                            <a href="${item.link}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">🔗 ' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_read_orig || 'Читать оригинал') + '</a>
+                            <a href="${item.link}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;" data-i18n="news_read_orig">🔗 Читать оригинал</a>
                         </div>
                     </div>
                 `;
@@ -1018,6 +1028,9 @@
             
             chatMessages.innerHTML = html;
             chatMessages.scrollTop = 0;
+
+            // Принудительный перевод после рендера (чтобы работало без F5)
+            if (window.SFERA_I18N) window.SFERA_I18N.setLanguage(window.SFERA_I18N.getLanguage());
 
         } catch (e) {
             chatMessages.innerHTML = '<div style="padding:20px; color:#ff4d4d;">Ошибка загрузки: ' + e.message + '</div>';
