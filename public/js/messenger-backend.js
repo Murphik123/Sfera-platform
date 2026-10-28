@@ -463,7 +463,8 @@
             const msgEl = document.createElement('div');
             msgEl.className = `message ${message.type}`;
             
-            if (message.isHtml) {
+            const isFileCard = message.text && String(message.text).includes('<div class="file-card">');
+            if (message.isHtml || isFileCard) {
                 msgEl.innerHTML = message.text;
             } else {
                 msgEl.innerHTML = `
