@@ -350,5 +350,18 @@
   "no_accounts": "Hasaplar elýeterli däl",
   "bank_api_unavailable": "Bank API elýeterli däl",
   "bank_load_error": "Bank maglumatlaryny ýüklemek başartmady",
-  "bank_transfer_contract_pending": "Geçiriş API şertnamasy tassyklanylýança amal ýapyk"
+  "bank_transfer_contract_pending": "Geçiriş API şertnamasy tassyklanylýança amal ýapyk",
+  "call_accept": "✅ Kabul et",
+  "call_mute": "🔇 Ümsi",
+  "call_unmute": "🔊 Ses aç",
+  "call_end": "❌ Jaňy bes et",
+  "call_incoming": "Gelýän jaň...",
+  "call_connected": "Birikdirildi",
+  "call_calling": "Jaň edilýär...",
+  "call_error_mic": "❌ Mikrofon/Kamera petiklenen",
+  "call_error_busy": "❌ Kamera/Mikrofon meşgul",
+  "news_subtitle": "Dünýä we Türkmen",
+  "news_loading": "Habarlar ýüklenýär...",
+  "news_read_orig": "🔗 Asyl nusgasyny oka",
+  "news_platform_title": "📢 Platformanyň habarlary"
 }

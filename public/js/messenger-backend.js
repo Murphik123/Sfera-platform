@@ -981,10 +981,10 @@
         
         if (!chatMessages || !chatInput) return;
         
-        chatHeader.innerHTML = '<div class="chat-avatar" style="background:var(--primary); color:#000;">📰</div><div><div class="chat-name">Новости</div><div class="chat-status">Мировые и Туркменские</div></div>';
+        chatHeader.innerHTML = '<div class="chat-avatar" style="background:var(--primary); color:#000;">📰</div><div><div class="chat-name">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_title || 'Новости') + '</div><div class="chat-status">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_subtitle || 'Мировые и Туркменские') + '</div></div>';
         
         
-        chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;">Загрузка новостей...</div>';
+        chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;">' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_loading || 'Загрузка новостей...') + '</div>';
         
         try {
             const currentLang = localStorage.getItem('lang') || 'tm';
@@ -1010,7 +1010,7 @@
                         <div style="font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 12px;">${textContent}</div>
                         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; font-size: 12px;">
                             <span style="color: var(--text-muted);">${date}</span>
-                            <a href="${item.link}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">🔗 Читать оригинал</a>
+                            <a href="${item.link}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">🔗 ' + (window.translations?.[localStorage.getItem('lang')||'tm']?.news_read_orig || 'Читать оригинал') + '</a>
                         </div>
                     </div>
                 `;

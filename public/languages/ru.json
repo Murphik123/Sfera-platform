@@ -349,5 +349,18 @@
   "no_accounts": "Нет доступных счетов",
   "bank_api_unavailable": "Bank API недоступен",
   "bank_load_error": "Не удалось загрузить данные банка",
-  "bank_transfer_contract_pending": "Перевод заблокирован до утверждения API-контракта"
+  "bank_transfer_contract_pending": "Перевод заблокирован до утверждения API-контракта",
+  "call_accept": "✅ Принять",
+  "call_mute": "🔇 Mute",
+  "call_unmute": "🔊 Unmute",
+  "call_end": "❌ Jaňy bes et",
+  "call_incoming": "Входящий звонок...",
+  "call_connected": "Соединено",
+  "call_calling": "Звонок...",
+  "call_error_mic": "❌ Микрофон/Камера заблокированы",
+  "call_error_busy": "❌ Камера/Микрофон заняты",
+  "news_subtitle": "Мировые и Туркменские",
+  "news_loading": "Загрузка новостей...",
+  "news_read_orig": "🔗 Читать оригинал",
+  "news_platform_title": "📢 Новости платформы"
 }

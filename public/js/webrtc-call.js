@@ -1,6 +1,16 @@
 (function() {
     'use strict';
 
+    (key, fallback) => {
+    const lang = localStorage.getItem('lang') || 'tm';
+    // Пытаемся взять из глобального объекта, который создает auto_translate_i18n.js
+    if (window.translations && window.translations[lang] && window.translations[lang][key]) {
+        return window.translations[lang][key];
+    }
+    return fallback;
+}
+
+
     let pc = null;
     let localStream = null;
     let peerId = null;
@@ -120,7 +130,7 @@
                     remoteVideo.srcObject = event.streams[0];
                     remoteVideo.play().catch(e => console.warn('Autoplay blocked:', e));
                 }
-                callStatusText.textContent = 'Соединено';
+                callStatusText.textContent = getTrans('call_connected', 'Соединено');
                 callStatusText.style.color = 'var(--accent)';
                 callTargetName.textContent = remoteUserName || getTargetName(peerId);
                 startTimer();
@@ -136,9 +146,9 @@
         } catch (err) {
             console.error('Error startCall:', err);
             if (err.name === 'NotReadableError') {
-                callStatusText.textContent = '❌ Камера/Микрофон заняты';
+                callStatusText.textContent = getTrans('call_error_busy', '❌ Камера/Микрофон заняты');
             } else {
-                callStatusText.textContent = '❌ Микрофон/Камера заблокированы';
+                callStatusText.textContent = getTrans('call_error_mic', '❌ Микрофон/Камера заблокированы');
             }
             callStatusText.style.color = '#ff4d4d';
             setTimeout(cleanup, 3000);
@@ -167,7 +177,7 @@
 
             pc.ontrack = (event) => {
                 if (remoteVideo) remoteVideo.srcObject = event.streams[0];
-                callStatusText.textContent = 'Соединено';
+                callStatusText.textContent = getTrans('call_connected', 'Соединено');
                 callStatusText.style.color = 'var(--accent)';
                 callTargetName.textContent = remoteUserName;
                 startTimer();
@@ -184,9 +194,9 @@
         } catch (err) {
             console.error('Error acceptCall:', err);
             if (err.name === 'NotReadableError') {
-                callStatusText.textContent = '❌ Камера/Микрофон заняты';
+                callStatusText.textContent = getTrans('call_error_busy', '❌ Камера/Микрофон заняты');
             } else {
-                callStatusText.textContent = '❌ Ошибка подключения';
+                callStatusText.textContent = getTrans('call_error_mic', '❌ Ошибка подключения');
             }
             callStatusText.style.color = '#ff4d4d';
             setTimeout(cleanup, 3000);
@@ -216,7 +226,7 @@
         socket.on('call_accepted', async (signal) => {
             if (pc) {
                 await pc.setRemoteDescription(new RTCSessionDescription(signal));
-                callStatusText.textContent = 'Соединено';
+                callStatusText.textContent = getTrans('call_connected', 'Соединено');
                 callStatusText.style.color = 'var(--accent)';
                 callState = 'connected';
                 startTimer();

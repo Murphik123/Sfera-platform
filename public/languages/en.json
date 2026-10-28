@@ -350,5 +350,18 @@
   "no_accounts": "No accounts available",
   "bank_api_unavailable": "Bank API unavailable",
   "bank_load_error": "Failed to load bank data",
-  "bank_transfer_contract_pending": "Transfer disabled until API contract is approved"
+  "bank_transfer_contract_pending": "Transfer disabled until API contract is approved",
+  "call_accept": "✅ Accept",
+  "call_mute": "🔇 Mute",
+  "call_unmute": "🔊 Unmute",
+  "call_end": "❌ End call",
+  "call_incoming": "Incoming call...",
+  "call_connected": "Connected",
+  "call_calling": "Calling...",
+  "call_error_mic": "❌ Mic/Camera blocked",
+  "call_error_busy": "❌ Camera/Mic in use",
+  "news_subtitle": "World and Turkmen",
+  "news_loading": "Loading news...",
+  "news_read_orig": "🔗 Read original",
+  "news_platform_title": "📢 Platform News"
 }
