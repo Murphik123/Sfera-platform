@@ -542,6 +542,10 @@
         socket = window.io(window.location.origin, {
             auth: { token }, transports: ['websocket', 'polling'], upgrade: false, rememberUpgrade: true, withCredentials: true, reconnection: true, reconnectionAttempts: 20, reconnectionDelay: 1500, reconnectionDelayMax: 8000, timeout: 30000, pingTimeout: 60000, pingInterval: 25000
         });
+        window.SferaSocket = socket;
+        console.log('✅ SferaSocket exposed to window');
+        window.SferaSocket = socket;
+        console.log('✅ SferaSocket exposed to window');
 
         socket.on('connect', () => {
             if (heartbeatInterval) clearInterval(heartbeatInterval);
@@ -965,3 +969,9 @@
     document.addEventListener('DOMContentLoaded', init);
 
 })();
+
+
+if (typeof socket !== 'undefined') {
+    
+    
+}
