@@ -28,81 +28,114 @@
     const muteBtn = $('muteBtn');
     const ringtoneEl = $('ringtone');
 
-    // WebAudio-фолбэк: если нет файла ringtone — бип через осциллятор
+    // WebAudio-фолбэк — телефонный ringtone через осциллятор
     let _ringtoneOsc = null;
     let _ringtoneCtx = null;
+    let _ringtoneInterval = null;
 
-    // Разблокировка AudioContext (autoplay policy) — при первом user gesture
+    // Разблокировка AudioContext — при КАЖДОМ клике, пока не running
     (function _unlockAudioContext() {
+        const _events = ['click', 'touchstart', 'keydown'];
+        function _removeAll() {
+            _events.forEach(function (ev) {
+                try { document.removeEventListener(ev, _try, true); } catch (_) {}
+            });
+        }
         function _try() {
             try {
-                _ringtoneCtx = _ringtoneCtx || new (window.AudioContext || window.webkitAudioContext)();
-                if (_ringtoneCtx.state === 'suspended') _ringtoneCtx.resume().catch(function () {});
+                if (!_ringtoneCtx) _ringtoneCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (_ringtoneCtx.state === 'running') { console.log('[ringtone] ctx unlocked'); _removeAll(); return; }
+                if (_ringtoneCtx.state === 'suspended') {
+                    _ringtoneCtx.resume().then(function () {
+                        if (_ringtoneCtx.state === 'running') { console.log('[ringtone] ctx unlocked (resume)'); _removeAll(); }
+                    }).catch(function () {});
+                }
             } catch (_) {}
         }
-        ['click', 'touchstart', 'keydown'].forEach(function (ev) {
-            document.addEventListener(ev, _try, { once: true, capture: true });
-        });
+        _events.forEach(function (ev) { document.addEventListener(ev, _try, true); });
     })();
-    let _ringtoneInterval = null;
-    async function _ringtoneFallbackStart() {
-        if (_ringtoneOsc) return;
+
+    function _ringtonePulse() {
+        if (!_ringtoneCtx || _ringtoneCtx.state !== 'running') {
+            console.log('[ringtone] pulse skip, state:', _ringtoneCtx ? _ringtoneCtx.state : 'null');
+            return;
+        }
         try {
-            _ringtoneCtx = _ringtoneCtx || new (window.AudioContext || window.webkitAudioContext)();
-            if (_ringtoneCtx.state === 'suspended') {
-                await _ringtoneCtx.resume();
-            }
+            const gain = _ringtoneCtx.createGain();
+            gain.gain.value = 0.35;
+            gain.connect(_ringtoneCtx.destination);
 
-            // Реальный телефонный "tuu-tuu": 2 тона 440+480 Гц, 1 сек вкл / 2 сек пауза
-            function _pulseOnce() {
-                if (!_ringtoneCtx || _ringtoneCtx.state === 'closed') return;
-                const gain = _ringtoneCtx.createGain();
-                gain.gain.value = 0.35;
-                gain.connect(_ringtoneCtx.destination);
+            const osc1 = _ringtoneCtx.createOscillator();
+            const osc2 = _ringtoneCtx.createOscillator();
+            osc1.type = 'sine'; osc2.type = 'sine';
+            osc1.frequency.value = 440; osc2.frequency.value = 480;
+            osc1.connect(gain); osc2.connect(gain);
 
-                const osc1 = _ringtoneCtx.createOscillator();
-                const osc2 = _ringtoneCtx.createOscillator();
-                osc1.type = 'sine';
-                osc2.type = 'sine';
-                osc1.frequency.value = 440;
-                osc2.frequency.value = 480;
-                osc1.connect(gain);
-                osc2.connect(gain);
-
-                const now = _ringtoneCtx.currentTime;
-                gain.gain.setValueAtTime(0.35, now);
-                gain.gain.setValueAtTime(0.35, now + 0.9);
-                gain.gain.linearRampToValueAtTime(0, now + 1.0);
-
-                osc1.start(now);
-                osc2.start(now);
-                osc1.stop(now + 1.0);
-                osc2.stop(now + 1.0);
-            }
-
-            _pulseOnce();
-            _ringtoneInterval = setInterval(_pulseOnce, 3000);  // каждые 3 сек
-
-            // Для cleanup - флаг
-            _ringtoneOsc = { osc: { stop: function () { if (_ringtoneInterval) clearInterval(_ringtoneInterval); } }, gain: { disconnect: function () {} } };
-        } catch (_) {}
+            const now = _ringtoneCtx.currentTime;
+            gain.gain.setValueAtTime(0.35, now);
+            gain.gain.setValueAtTime(0.35, now + 0.9);
+            gain.gain.linearRampToValueAtTime(0, now + 1.0);
+            osc1.start(now); osc2.start(now);
+            osc1.stop(now + 1.0); osc2.stop(now + 1.0);
+            console.log('[ringtone] pulse OK');
+        } catch (e) { console.log('[ringtone] pulse error:', e.message); }
     }
+
+    function _ringtoneFallbackStart() {
+        console.log('[ringtone] start, ctx:', _ringtoneCtx ? _ringtoneCtx.state : 'null', 'osc:', !!_ringtoneOsc);
+        if (_ringtoneOsc) return;
+
+        function _beginPulse() {
+            if (_ringtoneInterval) return;
+            _ringtonePulse();
+            _ringtoneInterval = setInterval(_ringtonePulse, 3000);
+            _ringtoneOsc = { stop: function () {} };
+        }
+
+        try {
+            if (!_ringtoneCtx) _ringtoneCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (_ringtoneCtx.state === 'running') {
+                _beginPulse();
+            } else {
+                _ringtoneCtx.resume().then(function () {
+                    console.log('[ringtone] resume OK, state:', _ringtoneCtx.state);
+                    _beginPulse();
+                }).catch(function (e) {
+                    console.log('[ringtone] resume FAIL:', e && e.name);
+                    _beginPulse();
+                });
+            }
+        } catch (e) { console.log('[ringtone] start error:', e.message); }
+    }
+
     function _ringtoneFallbackStop() {
         if (_ringtoneInterval) { try { clearInterval(_ringtoneInterval); } catch (_) {} _ringtoneInterval = null; }
-        if (!_ringtoneOsc) return;
-        try { _ringtoneOsc.osc.stop(); _ringtoneOsc.gain.disconnect(); } catch (_) {}
         _ringtoneOsc = null;
+        console.log('[ringtone] stopped');
     }
+
     function playRingtone() {
+        console.log('[ringtone] playRingtone called');
         try {
             if (ringtoneEl) {
                 ringtoneEl.currentTime = 0;
                 const pr = ringtoneEl.play();
-                if (pr && pr.catch) pr.catch(function () { _ringtoneFallbackStart(); });
+                if (pr && pr.then) {
+                    pr.then(function () { console.log('[ringtone] mp3 play OK'); })
+                      .catch(function (e) {
+                          console.log('[ringtone] mp3 play FAIL:', e && e.name, '→ fallback');
+                          _ringtoneFallbackStart();
+                      });
+                } else {
+                    _ringtoneFallbackStart();
+                }
             } else {
                 _ringtoneFallbackStart();
             }
-        } catch (_) { _ringtoneFallbackStart(); }
+        } catch (e) {
+            console.log('[ringtone] playRingtone catch:', e && e.message, '→ fallback');
+            _ringtoneFallbackStart();
+        }
     }
     function stopRingtone() {
         try { if (ringtoneEl) { ringtoneEl.pause(); ringtoneEl.currentTime = 0; } } catch (_) {}
@@ -141,6 +174,7 @@
             if (statusText) statusText.textContent = tr('call_connecting', 'Соединение...');
             if (endBtn) endBtn.textContent = '❌ ' + tr('call_cancel', 'Отменить');
             if (muteBtn) { muteBtn.style.display = 'inline-block'; updateMuteLabel(); }
+            console.log('[ringtone] updateUI(calling) → playRingtone()');
             playRingtone();
         } else if (state === 'ringing') {
             if (targetName) targetName.textContent = text || tr('call_incoming', 'Входящий звонок...');
