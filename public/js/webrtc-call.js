@@ -102,7 +102,10 @@
         } else if (state === 'ringing') {
             if (targetName) targetName.textContent = text || tr('call_incoming', 'Входящий звонок...');
             if (statusText) statusText.textContent = isVideoCall ? '📹 ' + tr('call_video', 'Видеозвонок') : '📞 ' + tr('call_audio', 'Аудиозвонок');
-            if (acceptBtn) acceptBtn.style.display = 'inline-block';
+            if (acceptBtn) {
+                acceptBtn.style.display = 'inline-block';
+                acceptBtn.textContent = '✅ ' + tr('call_accept', 'Принять');
+            }
             if (endBtn) endBtn.textContent = '❌ ' + tr('call_reject', 'Отклонить');
             playRingtone();
         } else if (state === 'connecting') {
@@ -126,7 +129,9 @@
         if (!muteBtn || !localStream) return;
         const audio = localStream.getAudioTracks()[0];
         if (!audio) return;
-        muteBtn.textContent = audio.enabled ? '🔇 Mute' : '🔊 Unmute';
+        muteBtn.textContent = audio.enabled
+            ? '🔇 ' + tr('call_mute', 'Mute')
+            : '🔊 ' + tr('call_unmute', 'Unmute');
     }
 
     function startTimer() {
