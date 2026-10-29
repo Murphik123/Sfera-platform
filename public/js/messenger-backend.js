@@ -71,7 +71,8 @@
     }
 
     function getDict() {
-        return (window.translations && window.translations[currentLang]) ? window.translations[currentLang] : {};
+        const lang = localStorage.getItem('lang') || localStorage.getItem('sfera_lang') || currentLang || 'tm';
+        return (window.translations && window.translations[lang]) ? window.translations[lang] : {};
     }
 
     function tr(key, fallback = '') {
@@ -928,6 +929,18 @@
         }
     }
 
+    async function preloadAllTranslations() {
+        if (!window.translations) window.translations = {};
+        const langs = ['tm', 'ru', 'en'];
+        await Promise.allSettled(langs.map(async (l) => {
+            if (window.translations[l] && Object.keys(window.translations[l]).length > 0) return;
+            try {
+                const res = await fetch('/languages/' + l + '.json');
+                if (res.ok) window.translations[l] = await res.json();
+            } catch (_) {}
+        }));
+    }
+
     async function init() {
         if (!window.api) {
             showToast('API-клиент не загружен', 'error');
@@ -956,6 +969,7 @@
             initGlobalClicks();
             initMessaging();
 
+            await preloadAllTranslations();
             await loadDialogs();
             connectRealtime();
 
