@@ -26,6 +26,46 @@
     const endBtn = $('endCallBtn');
     const acceptBtn = $('acceptCallBtn');
     const muteBtn = $('muteBtn');
+    const ringtoneEl = $('ringtone');
+
+    // WebAudio-фолбэк: если нет файла ringtone — бип через осциллятор
+    let _ringtoneOsc = null;
+    let _ringtoneCtx = null;
+    function _ringtoneFallbackStart() {
+        if (_ringtoneOsc) return;
+        try {
+            _ringtoneCtx = _ringtoneCtx || new (window.AudioContext || window.webkitAudioContext)();
+            const gain = _ringtoneCtx.createGain();
+            gain.gain.value = 0.08;
+            gain.connect(_ringtoneCtx.destination);
+            const osc = _ringtoneCtx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.value = 880;
+            osc.connect(gain);
+            osc.start();
+            _ringtoneOsc = { osc: osc, gain: gain };
+        } catch (_) {}
+    }
+    function _ringtoneFallbackStop() {
+        if (!_ringtoneOsc) return;
+        try { _ringtoneOsc.osc.stop(); _ringtoneOsc.gain.disconnect(); } catch (_) {}
+        _ringtoneOsc = null;
+    }
+    function playRingtone() {
+        try {
+            if (ringtoneEl) {
+                ringtoneEl.currentTime = 0;
+                const pr = ringtoneEl.play();
+                if (pr && pr.catch) pr.catch(function () { _ringtoneFallbackStart(); });
+            } else {
+                _ringtoneFallbackStart();
+            }
+        } catch (_) { _ringtoneFallbackStart(); }
+    }
+    function stopRingtone() {
+        try { if (ringtoneEl) { ringtoneEl.pause(); ringtoneEl.currentTime = 0; } } catch (_) {}
+        _ringtoneFallbackStop();
+    }
 
     function tr(key, fallback) {
         try { return (window.SFERA_I18N && window.SFERA_I18N.t && window.SFERA_I18N.t(key)) || fallback || key; }
@@ -57,19 +97,27 @@
         if (state === 'calling') {
             if (targetName) targetName.textContent = text || tr('call_calling', 'Звонок...');
             if (statusText) statusText.textContent = tr('call_connecting', 'Соединение...');
+            if (endBtn) endBtn.textContent = '❌ ' + tr('call_cancel', 'Отменить');
+            if (muteBtn) { muteBtn.style.display = 'inline-block'; updateMuteLabel(); }
         } else if (state === 'ringing') {
             if (targetName) targetName.textContent = text || tr('call_incoming', 'Входящий звонок...');
             if (statusText) statusText.textContent = isVideoCall ? '📹 ' + tr('call_video', 'Видеозвонок') : '📞 ' + tr('call_audio', 'Аудиозвонок');
             if (acceptBtn) acceptBtn.style.display = 'inline-block';
+            if (endBtn) endBtn.textContent = '❌ ' + tr('call_reject', 'Отклонить');
+            playRingtone();
         } else if (state === 'connecting') {
             if (statusText) statusText.textContent = tr('call_connecting', 'Соединение...');
+            if (endBtn) endBtn.textContent = '❌ ' + tr('call_cancel', 'Отменить');
+            if (muteBtn) { muteBtn.style.display = 'inline-block'; updateMuteLabel(); }
         } else if (state === 'connected') {
             if (statusText) statusText.textContent = tr('call_connected', 'Соединено');
             if (timerEl) timerEl.style.display = 'block';
             if (muteBtn) { muteBtn.style.display = 'inline-block'; updateMuteLabel(); }
+            if (endBtn) endBtn.textContent = '❌ ' + tr('call_end', 'Завершить');
+            stopRingtone();
             startTimer();
         } else if (state === 'error') {
-            if (statusText) { statusText.textContent = text || tr('call_error_conn', '❌ Ошибка подключения'); statusText.style.color = '#ff4d4d'; }
+            if (statusText) { statusText.textContent = text || ('❌ ' + tr('call_error_conn', 'Ошибка подключения')); statusText.style.color = '#ff4d4d'; }
             setTimeout(cleanup, 3000);
         }
     }
@@ -103,6 +151,7 @@
         peerId = null;
         isVideoCall = false;
         window._incomingSignal = null;
+        stopRingtone();
         updateUI('idle');
     }
 
@@ -203,6 +252,7 @@
     async function acceptCall() {
         if (callState !== 'ringing') return;
         if (!window._incomingSignal) { updateUI('error', '❌ Нет данных звонка'); return; }
+        stopRingtone();
         updateUI('connecting');
         if (isVideoCall && videosBox) videosBox.style.display = 'flex';
 

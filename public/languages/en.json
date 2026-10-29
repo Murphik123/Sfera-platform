@@ -351,10 +351,10 @@
   "bank_api_unavailable": "Bank API unavailable",
   "bank_load_error": "Failed to load bank data",
   "bank_transfer_contract_pending": "Transfer disabled until API contract is approved",
-  "call_accept": "✅ Accept",
-  "call_mute": "🔇 Mute",
-  "call_unmute": "🔊 Unmute",
-  "call_end": "❌ End call",
+  "call_accept": "Accept",
+  "call_mute": "Mute",
+  "call_unmute": "Unmute",
+  "call_end": "End",
   "call_incoming": "Incoming call...",
   "call_connected": "Connected",
   "call_calling": "Calling...",
@@ -407,7 +407,7 @@
   "call_audio": "Audio call",
   "call_video": "Video call",
   "call_connecting": "Connecting...",
-  "call_error_conn": "❌ Connection error",
+  "call_error_conn": "Connection failed",
   "messenger_tab_chats": "Chats",
   "messenger_create_group": "➕ Group",
   "messenger_send": "Send",
@@ -415,5 +415,7 @@
   "messenger_online": "online",
   "messenger_end_call": "❌ End call",
   "messenger_tab_news": "News",
-  "messenger_tab_ai": "Sfera AI Assistant"
+  "messenger_tab_ai": "Sfera AI Assistant",
+  "call_cancel": "Cancel",
+  "call_reject": "Reject"
 }

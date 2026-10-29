@@ -350,10 +350,10 @@
   "bank_api_unavailable": "Bank API недоступен",
   "bank_load_error": "Не удалось загрузить данные банка",
   "bank_transfer_contract_pending": "Перевод заблокирован до утверждения API-контракта",
-  "call_accept": "✅ Принять",
-  "call_mute": "🔇 Mute",
-  "call_unmute": "🔊 Unmute",
-  "call_end": "❌ Jaňy bes et",
+  "call_accept": "Принять",
+  "call_mute": "Выкл. микро",
+  "call_unmute": "Вкл. микро",
+  "call_end": "Завершить",
   "call_incoming": "Входящий звонок...",
   "call_connected": "Соединено",
   "call_calling": "Звонок...",
@@ -406,7 +406,7 @@
   "call_audio": "Аудиозвонок",
   "call_video": "Видеозвонок",
   "call_connecting": "Соединение...",
-  "call_error_conn": "❌ Ошибка подключения",
+  "call_error_conn": "Ошибка соединения",
   "messenger_tab_chats": "Чаты",
   "messenger_create_group": "➕ Группа",
   "messenger_send": "Отправить",
@@ -414,5 +414,7 @@
   "messenger_online": "онлайн",
   "messenger_end_call": "❌ Завершить",
   "messenger_tab_news": "Новости",
-  "messenger_tab_ai": "Sfera AI Помощник"
+  "messenger_tab_ai": "Sfera AI Помощник",
+  "call_cancel": "Отменить",
+  "call_reject": "Отклонить"
 }

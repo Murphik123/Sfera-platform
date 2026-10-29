@@ -351,10 +351,10 @@
   "bank_api_unavailable": "Bank API elýeterli däl",
   "bank_load_error": "Bank maglumatlaryny ýüklemek başartmady",
   "bank_transfer_contract_pending": "Geçiriş API şertnamasy tassyklanylýança amal ýapyk",
-  "call_accept": "✅ Kabul et",
-  "call_mute": "🔇 Ümsi",
-  "call_unmute": "🔊 Ses aç",
-  "call_end": "❌ Jaňy bes et",
+  "call_accept": "Kabul et",
+  "call_mute": "Ümsi",
+  "call_unmute": "Aç",
+  "call_end": "Bes et",
   "call_incoming": "Gelýän jaň...",
   "call_connected": "Birikdirildi",
   "call_calling": "Jaň edilýär...",
@@ -407,7 +407,7 @@
   "call_audio": "Sesli jaň",
   "call_video": "Wideojaň",
   "call_connecting": "Birikdirilýär...",
-  "call_error_conn": "❌ Birikdirmek säwlik",
+  "call_error_conn": "Birikdirip bolmady",
   "messenger_tab_chats": "Çatlar",
   "messenger_create_group": "➕ Topar",
   "messenger_send": "Iber",
@@ -415,5 +415,7 @@
   "messenger_online": "onlaýn",
   "messenger_end_call": "❌ Jaňy bes et",
   "messenger_tab_news": "Habarlar",
-  "messenger_tab_ai": "Sfera AI Kömekçi"
+  "messenger_tab_ai": "Sfera AI Kömekçi",
+  "call_cancel": "Ýatyrt",
+  "call_reject": "Ret et"
 }
