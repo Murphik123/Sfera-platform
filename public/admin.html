@@ -810,7 +810,7 @@
             if (!list) return;
             list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
             try {
-                const res = await api.get('/ai/admin/sessions');
+                const res = await ovFetch('/api/ai/admin/sessions');
                 const sessions = (res && res.sessions) || [];
                 if (!sessions.length) {
                     list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);"><span data-i18n="admin_ai_no_sessions">Нет AI-сессий</span></div>';
@@ -844,7 +844,7 @@
             if (header) header.textContent = 'AI · ' + (username || userId);
             list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
             try {
-                const res = await api.get('/ai/admin/session/' + encodeURIComponent(userId));
+                const res = await ovFetch('/api/ai/admin/session/' + encodeURIComponent(userId));
                 const msgs = (res && res.messages) || [];
                 if (!msgs.length) {
                     list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);"><span data-i18n="admin_ai_no_messages">Нет сообщений</span></div>';
