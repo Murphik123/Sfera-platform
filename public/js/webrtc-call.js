@@ -45,11 +45,13 @@
         });
     })();
     let _ringtoneInterval = null;
-    function _ringtoneFallbackStart() {
+    async function _ringtoneFallbackStart() {
         if (_ringtoneOsc) return;
         try {
             _ringtoneCtx = _ringtoneCtx || new (window.AudioContext || window.webkitAudioContext)();
-            if (_ringtoneCtx.state === 'suspended') _ringtoneCtx.resume().catch(function () {});
+            if (_ringtoneCtx.state === 'suspended') {
+                await _ringtoneCtx.resume();
+            }
 
             // Реальный телефонный "tuu-tuu": 2 тона 440+480 Гц, 1 сек вкл / 2 сек пауза
             function _pulseOnce() {
@@ -86,6 +88,7 @@
         } catch (_) {}
     }
     function _ringtoneFallbackStop() {
+        if (_ringtoneInterval) { try { clearInterval(_ringtoneInterval); } catch (_) {} _ringtoneInterval = null; }
         if (!_ringtoneOsc) return;
         try { _ringtoneOsc.osc.stop(); _ringtoneOsc.gain.disconnect(); } catch (_) {}
         _ringtoneOsc = null;
@@ -375,6 +378,7 @@
         });
 
         socket.on('call_accepted', async function (signal) {
+            stopRingtone();  // A: B принял → гудки стоп
             if (pc && callState === 'connecting') {
                 try {
                     await pc.setRemoteDescription(new RTCSessionDescription(signal));
