@@ -70,6 +70,19 @@ exports.sendMessage = async (req, res, next) => {
       throw err;
     }
 
+    // Проверка закрытой группы: писать может только creator или сквозной админ
+    const groupForCheck = await Group.findOne({ _id: to }).select('closed creator').lean();
+    if (groupForCheck && groupForCheck.closed) {
+      const me = await User.findById(from).select('role').lean();
+      const isAdmin = me && me.role === 'admin';
+      const isCreator = String(groupForCheck.creator) === String(from);
+      if (!isAdmin && !isCreator) {
+        const err = createHttpError('Группа закрыта. Только создатель может писать', 403);
+        err.code = 'GROUP_CLOSED';
+        throw err;
+      }
+    }
+
     const messagePayload = {
       from,
       to,
@@ -223,7 +236,7 @@ exports.getDialogs = async (req, res, next) => {
       if (partnerObj.type === 'user') {
         userPayload = formatUserOnlineStatus(partnerObj.doc);
       } else {
-        userPayload = { _id: partnerId, username: partnerObj.doc.name, avatar: '', online: false, isGroup: true, creator: partnerObj.doc.creator };
+        userPayload = { _id: partnerId, username: partnerObj.doc.name, avatar: '', online: false, isGroup: true, creator: partnerObj.doc.creator, closed: Boolean(partnerObj.doc.closed) };
       }
 
       if (!dialogsMap.has(partnerId)) {
@@ -256,7 +269,7 @@ exports.getDialogs = async (req, res, next) => {
       if (!dialogsMap.has(gid)) {
         dialogsMap.set(gid, {
           id: gid,
-          user: { _id: gid, username: g.name, avatar: '', online: false, isGroup: true, creator: g.creator },
+          user: { _id: gid, username: g.name, avatar: '', online: false, isGroup: true, creator: g.creator, closed: Boolean(g.closed) },
           lastMsg: '',
           time: g.createdAt,
           unread: 0
@@ -344,6 +357,41 @@ exports.getGroups = async (req, res, next) => {
 // ============================================================
 // УДАЛЕНИЕ ГРУППЫ (только создатель)
 // ============================================================
+exports.toggleGroupClose = async (req, res, next) => {
+  try {
+    const { groupId } = req.params;
+    if (!groupId || !mongoose.Types.ObjectId.isValid(String(groupId))) {
+      throw createHttpError('Неверный идентификатор группы', 400);
+    }
+
+    const group = await Group.findById(groupId);
+    if (!group) throw createHttpError('Группа не найдена', 404);
+
+    const me = await User.findById(req.userId).select('role').lean();
+    const isAdmin = me && me.role === 'admin';
+    const isCreator = String(group.creator) === String(req.userId);
+    if (!isCreator && !isAdmin) {
+      throw createHttpError('Только создатель группы или администратор может закрывать группу', 403);
+    }
+
+    // Если closed передан явно — используем его, иначе toggle
+    const wantClosed = typeof req.body.closed === 'boolean' ? req.body.closed : !group.closed;
+    group.closed = wantClosed;
+    await group.save();
+
+    const io = req.app.get('io');
+    if (io && Array.isArray(group.members)) {
+      const payload = { groupId: String(group._id), closed: Boolean(group.closed), by: String(req.userId) };
+      group.members.forEach(m => {
+        try { io.to(String(m)).emit('group_closed', payload); } catch (_) {}
+      });
+      try { io.to(String(group.creator)).emit('group_closed', payload); } catch (_) {}
+    }
+
+    return res.json({ success: true, closed: Boolean(group.closed) });
+  } catch (e) { next(e); }
+};
+
 exports.deleteGroup = async (req, res, next) => {
   try {
     const { groupId } = req.params;
@@ -354,8 +402,10 @@ exports.deleteGroup = async (req, res, next) => {
     const group = await Group.findById(groupId);
     if (!group) throw createHttpError('Группа не найдена', 404);
 
-    if (String(group.creator) !== String(req.userId)) {
-      throw createHttpError('Только создатель может удалить группу', 403);
+    const me = await User.findById(req.userId).select('role').lean();
+    const isAdmin = me && me.role === 'admin';
+    if (String(group.creator) !== String(req.userId) && !isAdmin) {
+      throw createHttpError('Только создатель группы или администратор может удалить группу', 403);
     }
 
     // Удаляем сообщения и группу
@@ -392,8 +442,16 @@ exports.deleteMessage = async (req, res, next) => {
     const me = await User.findById(req.userId).select('role').lean();
     const isAuthor = String(message.from) === String(req.userId);
     const isAdmin = me && me.role === 'admin';
-    if (!isAuthor && !isAdmin) {
-      throw createHttpError('Можно удалять только свои сообщения', 403);
+
+    // Создатель группы может удалять любые сообщения в своей группе
+    let isGroupCreator = false;
+    try {
+      const group = await Group.findOne({ _id: message.to, creator: req.userId }).select('_id').lean();
+      isGroupCreator = Boolean(group);
+    } catch (_) {}
+
+    if (!isAuthor && !isAdmin && !isGroupCreator) {
+      throw createHttpError('Можно удалять только свои сообщения (или вы создатель группы)', 403);
     }
 
     const fromId = String(message.from);

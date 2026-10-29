@@ -9,6 +9,7 @@ const {
   createGroup,
   getGroups,
   deleteGroup,
+  toggleGroupClose,
   deleteMessage,
   deleteDialog,
   adminOversightUsers,
@@ -21,6 +22,7 @@ router.get('/dialogs', getDialogs);
 router.get('/groups', getGroups);
 router.post('/groups', createGroup);
 router.delete('/groups/:groupId', deleteGroup);
+router.post('/groups/:groupId/toggle-close', toggleGroupClose);
 router.post('/send', sendMessage);
 router.put('/read/:messageId', markAsRead);
 router.delete('/message/:messageId', deleteMessage);

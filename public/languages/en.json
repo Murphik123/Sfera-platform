@@ -435,5 +435,10 @@
   "admin_ai_messages": "AI messages",
   "admin_ai_select_session": "Select session",
   "admin_ai_no_sessions": "No AI sessions",
-  "admin_ai_no_messages": "No messages"
+  "admin_ai_no_messages": "No messages",
+  "group_close": "Close group",
+  "group_open": "Open group",
+  "group_closed_warning": "Group is closed — only creator can post",
+  "group_closed_toast": "Group closed",
+  "group_opened_toast": "Group opened"
 }

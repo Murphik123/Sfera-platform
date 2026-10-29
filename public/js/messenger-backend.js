@@ -116,6 +116,7 @@
             online: online,
             isGroup: isGroup,
             isAI: isAI,
+            closed: Boolean(dialog?.closed),
             role: String(dialog?.role || user?.role || 'user'),
             creator: dialog?.creator || user?.creator || null
         };
@@ -452,7 +453,21 @@
                 chatActionsEl.appendChild(escBtn);
             }
             const isCreator = dialog.isGroup && dialog.creator && String(dialog.creator) === String(getUserId(currentUser));
-            if (isCreator) {
+            const groupManageAllowed = dialog.isGroup && (isCreator || isAdmin());
+
+            if (groupManageAllowed) {
+                const existingToggle = document.getElementById('toggleGroupCloseBtn');
+                if (existingToggle) existingToggle.remove();
+                const toggleBtn = document.createElement('button');
+                toggleBtn.id = 'toggleGroupCloseBtn';
+                toggleBtn.title = dialog.closed ? tr('group_open', 'Открыть группу') : tr('group_close', 'Закрыть группу');
+                toggleBtn.style.cssText = 'background: rgba(255,165,0,0.15); border-color: rgba(255,165,0,0.4); color: #ffa500;';
+                toggleBtn.textContent = dialog.closed ? '🔓' : '🔒';
+                toggleBtn.addEventListener('click', toggleGroupClose);
+                chatActionsEl.appendChild(toggleBtn);
+            }
+
+            if (groupManageAllowed) {
                 const delBtn = document.createElement('button');
                 delBtn.id = 'deleteGroupBtn';
                 delBtn.title = 'Удалить группу';
@@ -505,6 +520,15 @@
         });
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        if (messageInput) {
+            const lockInput = dialog.isGroup && dialog.closed && !groupManageAllowed;
+            messageInput.disabled = lockInput;
+            messageInput.placeholder = lockInput
+                ? tr('group_closed_warning', 'Группа закрыта — писать может только создатель')
+                : tr('messenger_type_message', 'Напишите сообщение...');
+        }
+        if (sendBtn) sendBtn.disabled = Boolean(dialog.isGroup && dialog.closed && !groupManageAllowed);
     }
 
     function sanitizePreview(msg) {
@@ -515,6 +539,21 @@
 
     function escapeHtml(value) {
         return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    async function toggleGroupClose() {
+        const dialog = dialogsData.find(d => String(d.id) === String(activeDialogId));
+        if (!dialog || !dialog.isGroup) return;
+        if (!window.api || !window.api.post) { showToast('API не готов', 'error'); return; }
+        try {
+            const res = await window.api.post('/chat/groups/' + activeDialogId + '/toggle-close', {});
+            const newClosed = Boolean(res && (res.closed !== undefined ? res.closed : !dialog.closed));
+            dialog.closed = newClosed;
+            renderChat();
+            showToast(newClosed ? '🔒 ' + tr('group_closed_toast', 'Группа закрыта') : '🔓 ' + tr('group_opened_toast', 'Группа открыта'), 'info');
+        } catch (e) {
+            showToast('Ошибка: ' + (e.message || ''), 'error');
+        }
     }
 
     async function deleteCurrentGroup() {
@@ -578,7 +617,17 @@
             heartbeatInterval = setInterval(() => { if (socket && socket.connected) socket.emit('heartbeat'); }, 45000);
         });
 
-socket.on('user_status_change', ({ userId, online }) => {
+        socket.on('group_closed', ({ groupId, closed }) => {
+            if (!groupId) return;
+            const d = dialogsData.find(x => String(x.id) === String(groupId));
+            if (d) {
+                d.closed = Boolean(closed);
+                renderDialogs();
+                if (String(activeDialogId) === String(groupId)) renderChat();
+            }
+        });
+
+        socket.on('user_status_change', ({ userId, online }) => {
             if (!userId) return;
             const key = String(userId);
             let changed = false;

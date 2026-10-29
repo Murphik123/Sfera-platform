@@ -435,5 +435,10 @@
   "admin_ai_messages": "AI habarlary",
   "admin_ai_select_session": "Sessiýa saýlaň",
   "admin_ai_no_sessions": "AI-sessiýa ýok",
-  "admin_ai_no_messages": "Habar ýok"
+  "admin_ai_no_messages": "Habar ýok",
+  "group_close": "Çaty ýap",
+  "group_open": "Çaty aç",
+  "group_closed_warning": "Çat ýapyk — diňe dörediji ýazyp biler",
+  "group_closed_toast": "Çat ýapyldy",
+  "group_opened_toast": "Çat açyldy"
 }

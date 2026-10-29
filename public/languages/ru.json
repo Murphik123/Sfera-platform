@@ -434,5 +434,10 @@
   "admin_ai_messages": "Сообщения AI",
   "admin_ai_select_session": "Выберите сессию",
   "admin_ai_no_sessions": "Нет AI-сессий",
-  "admin_ai_no_messages": "Нет сообщений"
+  "admin_ai_no_messages": "Нет сообщений",
+  "group_close": "Закрыть группу",
+  "group_open": "Открыть группу",
+  "group_closed_warning": "Группа закрыта — писать может только создатель",
+  "group_closed_toast": "Группа закрыта",
+  "group_opened_toast": "Группа открыта"
 }
