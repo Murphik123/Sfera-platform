@@ -775,7 +775,7 @@
                     }
                 } else if (activeTab === 'news') {
                     if (dialogsList) dialogsList.style.display = 'none';
-                    if (newsFeed) newsFeed.style.display = 'none';
+                    if (newsFeed) newsFeed.style.display = 'block';
                     const _ciaN = document.getElementById('chatInputArea');
                     if (_ciaN) _ciaN.style.display = 'none';
                     ['deleteGroupBtn', 'clearChatBtn', 'escalateAiBtn', 'toggleGroupCloseBtn'].forEach(function (id) {
@@ -1248,6 +1248,7 @@
                 `;
             });
             
+            if (activeTab !== 'news') return;
             chatMessages.innerHTML = html;
             chatMessages.scrollTop = 0;
 
@@ -1255,6 +1256,7 @@
             if (window.SFERA_I18N) window.SFERA_I18N.setLanguage(window.SFERA_I18N.getLanguage());
 
         } catch (e) {
+            if (activeTab !== 'news') return;
             const msg = (e && e.name === 'AbortError')
                 ? 'Сервер не ответил за 30 сек. Обновите страницу.'
                 : (e && e.message ? e.message : 'Ошибка загрузки');
@@ -1264,10 +1266,7 @@
 
     
 
-    const tabNewsBtn = document.getElementById('lblTabNews');
-    if (tabNewsBtn) {
-        tabNewsBtn.addEventListener('click', () => loadNewsRoom());
-    }
+    // SFERA-PATCH: lblTabNews уже слушается через initTabs
     
     
     // === END SFERA-PATCH ===
