@@ -372,9 +372,11 @@
         });
 
         socket.on('disconnect', function () {
-            if (callState !== 'idle') {
-                console.log('[call] socket disconnect → cleanup');
+            if (callState === 'calling' || callState === 'ringing' || callState === 'connecting') {
+                console.log('[call] socket disconnect during setup → cleanup');
                 cleanup();
+            } else if (callState === 'connected') {
+                console.log('[call] socket disconnect during active call — keep WebRTC alive');
             }
         });
     }
