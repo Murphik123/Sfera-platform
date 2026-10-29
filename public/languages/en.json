@@ -427,5 +427,13 @@
   "admin_oversight_select_dialog": "Select dialog",
   "btn_back": "← Back",
   "btn_logout": "🚪 Logout",
-  "offline": "Offline"
+  "offline": "Offline",
+  "menu_ai_oversight": "AI Monitoring",
+  "admin_ai_oversight_title": "AI Sessions Monitoring",
+  "admin_ai_oversight_subtitle": "View all AI sessions (read-only).",
+  "admin_ai_sessions": "AI sessions",
+  "admin_ai_messages": "AI messages",
+  "admin_ai_select_session": "Select session",
+  "admin_ai_no_sessions": "No AI sessions",
+  "admin_ai_no_messages": "No messages"
 }

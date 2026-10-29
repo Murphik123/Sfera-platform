@@ -426,5 +426,13 @@
   "admin_oversight_select_dialog": "Выберите диалог",
   "btn_back": "← Назад",
   "btn_logout": "🚪 Выйти",
-  "offline": "Не в сети"
+  "offline": "Не в сети",
+  "menu_ai_oversight": "AI Мониторинг",
+  "admin_ai_oversight_title": "Мониторинг AI-сессий",
+  "admin_ai_oversight_subtitle": "Просмотр всех AI-сессий (только чтение).",
+  "admin_ai_sessions": "AI сессии",
+  "admin_ai_messages": "Сообщения AI",
+  "admin_ai_select_session": "Выберите сессию",
+  "admin_ai_no_sessions": "Нет AI-сессий",
+  "admin_ai_no_messages": "Нет сообщений"
 }

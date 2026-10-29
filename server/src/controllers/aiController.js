@@ -109,6 +109,88 @@ exports.deleteAIMessage = async (req, res, next) => {
 // ============================================================
 // ЭСКАЛАЦИЯ AI → admin (Позвать админа)
 // ============================================================
+exports.adminListSessions = async (req, res, next) => {
+  try {
+    const AISession = require('../models/AISession');
+    const sessions = await AISession.find({})
+      .populate('userId', 'username avatar role')
+      .sort({ escalated: -1, lastActivity: -1 })
+      .lean();
+    const out = sessions.map(s => {
+      const u = s.userId;
+      const msgs = s.messages || [];
+      const lastMsg = msgs.length ? String(msgs[msgs.length - 1].content || '').slice(0, 120) : '';
+      return {
+        _id: String(s._id),
+        userId: u ? String(u._id) : null,
+        username: u ? u.username : '(deleted)',
+        avatar: u ? (u.avatar || null) : null,
+        role: u ? (u.role || 'user') : 'user',
+        escalated: Boolean(s.escalated),
+        lastActivity: s.lastActivity || null,
+        messagesCount: msgs.length,
+        lastMessage: lastMsg
+      };
+    });
+    return res.json({ success: true, sessions: out });
+  } catch (e) { next(e); }
+};
+
+exports.adminGetSession = async (req, res, next) => {
+  try {
+    const AISession = require('../models/AISession');
+    const s = await AISession.findOne({ userId: req.params.userId }).lean();
+    if (!s) return res.json({ success: true, messages: [], escalated: false });
+    return res.json({
+      success: true,
+      escalated: Boolean(s.escalated),
+      lastActivity: s.lastActivity || null,
+      messages: s.messages || []
+    });
+  } catch (e) { next(e); }
+};
+
+exports.adminListSessions = async (req, res, next) => {
+  try {
+    const AISession = require('../models/AISession');
+    const sessions = await AISession.find({})
+      .populate('userId', 'username avatar role')
+      .sort({ escalated: -1, lastActivity: -1 })
+      .lean();
+    const out = sessions.map(s => {
+      const u = s.userId;
+      const msgs = s.messages || [];
+      const lastMsg = msgs.length ? String(msgs[msgs.length - 1].content || '').slice(0, 120) : '';
+      return {
+        _id: String(s._id),
+        userId: u ? String(u._id) : null,
+        username: u ? u.username : '(deleted)',
+        avatar: u ? (u.avatar || null) : null,
+        role: u ? (u.role || 'user') : 'user',
+        escalated: Boolean(s.escalated),
+        lastActivity: s.lastActivity || null,
+        messagesCount: msgs.length,
+        lastMessage: lastMsg
+      };
+    });
+    return res.json({ success: true, sessions: out });
+  } catch (e) { next(e); }
+};
+
+exports.adminGetSession = async (req, res, next) => {
+  try {
+    const AISession = require('../models/AISession');
+    const s = await AISession.findOne({ userId: req.params.userId }).lean();
+    if (!s) return res.json({ success: true, messages: [], escalated: false });
+    return res.json({
+      success: true,
+      escalated: Boolean(s.escalated),
+      lastActivity: s.lastActivity || null,
+      messages: s.messages || []
+    });
+  } catch (e) { next(e); }
+};
+
 exports.escalateToAdmin = async (req, res, next) => {
   try {
     const userId = req.userId;

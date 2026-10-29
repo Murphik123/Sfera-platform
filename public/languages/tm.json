@@ -427,5 +427,13 @@
   "admin_oversight_select_dialog": "Dialog saýlaň",
   "btn_back": "← Yza",
   "btn_logout": "🚪 Çykmak",
-  "offline": "Offline"
+  "offline": "Offline",
+  "menu_ai_oversight": "AI gözegçiligi",
+  "admin_ai_oversight_title": "AI-sessiýalaryň monitoriňi",
+  "admin_ai_oversight_subtitle": "Ähli AI-sessiýalar (diňe okamak).",
+  "admin_ai_sessions": "AI sessiýalary",
+  "admin_ai_messages": "AI habarlary",
+  "admin_ai_select_session": "Sessiýa saýlaň",
+  "admin_ai_no_sessions": "AI-sessiýa ýok",
+  "admin_ai_no_messages": "Habar ýok"
 }

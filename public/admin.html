@@ -423,6 +423,7 @@
                         <li data-section="mail"><span class="icon">📬</span> <span data-i18n="menu_mail">Poçta</span></li>
                         <li data-section="ai"><span class="icon">🤖</span> <span data-i18n="menu_ai">AI çaklamalar</span></li>
                         <li data-section="oversight"><span class="icon">🕵️</span> <span data-i18n="auto_9a5a2c11">Мониторинг чатов</span></li>
+                        <li data-section="ai-oversight"><span class="icon">🤖</span> <span data-i18n="menu_ai_oversight">AI Мониторинг</span></li>
                         <li data-section="settings"><span class="icon">⚙️</span> <span data-i18n="menu_settings">Sazlamalar</span></li>
                     </ul>
                 </aside>
@@ -467,6 +468,12 @@
                 logout: "Çykmak", back: "← Yza", welcome: "Hoş geldiňiz, Administrator!", dashboard_welcome: "Platformanyň modullaryna giriş etmek üçin aşakdaky kartlardan saýlaň.",
                 menu_dashboard: "Umumy", menu_users: "Ulanyjylar", menu_transactions: "Tranzaksiýalar", menu_listings: "Harytlar", menu_mail: "Poçta", menu_ai: "AI çaklamalar", menu_settings: "Sazlamalar",
                 admin_oversight_title: "Messenjeriň monitoriňi", admin_oversight_subtitle: "Hatlar we AI-sessiýalar (diňe okamak).",
+                menu_ai_oversight: "AI gözegçiligi", admin_ai_oversight_title: "AI-sessiýalaryň monitoriňi", admin_ai_oversight_subtitle: "Ähli AI-sessiýalar (diňe okamak).",
+                admin_ai_sessions: "AI sessiýalary", admin_ai_messages: "AI habarlary", admin_ai_select_session: "Sessiýa saýlaň",
+                admin_ai_no_sessions: "AI-sessiýa ýok", admin_ai_no_messages: "Habar ýok",
+                menu_ai_oversight: "AI gözegçiligi", admin_ai_oversight_title: "AI-sessiýalaryň monitoriňi", admin_ai_oversight_subtitle: "Ähli AI-sessiýalar (diňe okamak).",
+                admin_ai_sessions: "AI sessiýalary", admin_ai_messages: "AI habarlary", admin_ai_select_session: "Sessiýa saýlaň",
+                admin_ai_no_sessions: "AI-sessiýa ýok", admin_ai_no_messages: "Habar ýok",
                 admin_oversight_users: "Ulanyjylar", admin_oversight_dialogs: "Dialoglar", admin_oversight_messages: "Habarlar",
                 admin_oversight_select_user: "Ulanyjy saýlaň", admin_oversight_select_dialog: "Dialog saýlaň",
                 btn_back: "← Yza", btn_logout: "🚪 Çykmak", offline: "Offline",
@@ -480,6 +487,12 @@
                 logout: "Выйти", back: "← Назад", welcome: "Добро пожаловать, Администратор!", dashboard_welcome: "Выберите модуль платформы для перехода.",
                 menu_dashboard: "Обзор", menu_users: "Пользователи", menu_transactions: "Транзакции", menu_listings: "Объявления", menu_mail: "Почта", menu_ai: "AI прогнозы", menu_settings: "Настройки",
                 admin_oversight_title: "Мониторинг Мессенджера", admin_oversight_subtitle: "Сквозной доступ к перепискам и AI-сессиям (только чтение).",
+                menu_ai_oversight: "AI Мониторинг", admin_ai_oversight_title: "Мониторинг AI-сессий", admin_ai_oversight_subtitle: "Просмотр всех AI-сессий (только чтение).",
+                admin_ai_sessions: "AI сессии", admin_ai_messages: "Сообщения AI", admin_ai_select_session: "Выберите сессию",
+                admin_ai_no_sessions: "Нет AI-сессий", admin_ai_no_messages: "Нет сообщений",
+                menu_ai_oversight: "AI Мониторинг", admin_ai_oversight_title: "Мониторинг AI-сессий", admin_ai_oversight_subtitle: "Просмотр всех AI-сессий (только чтение).",
+                admin_ai_sessions: "AI сессии", admin_ai_messages: "Сообщения AI", admin_ai_select_session: "Выберите сессию",
+                admin_ai_no_sessions: "Нет AI-сессий", admin_ai_no_messages: "Нет сообщений",
                 admin_oversight_users: "Пользователи", admin_oversight_dialogs: "Диалоги", admin_oversight_messages: "Сообщения",
                 admin_oversight_select_user: "Выберите пользователя", admin_oversight_select_dialog: "Выберите диалог",
                 btn_back: "← Назад", btn_logout: "🚪 Выйти", offline: "Не в сети",
@@ -493,6 +506,12 @@
                 logout: "Logout", back: "← Back", welcome: "Welcome, Administrator!", dashboard_welcome: "Select a platform module to navigate.",
                 menu_dashboard: "Dashboard", menu_users: "Users", menu_transactions: "Transactions", menu_listings: "Listings", menu_mail: "Mail", menu_ai: "AI Predictions", menu_settings: "Settings",
                 admin_oversight_title: "Messenger Monitoring", admin_oversight_subtitle: "Cross-access to chats and AI-sessions (read-only).",
+                menu_ai_oversight: "AI Monitoring", admin_ai_oversight_title: "AI Sessions Monitoring", admin_ai_oversight_subtitle: "View all AI sessions (read-only).",
+                admin_ai_sessions: "AI sessions", admin_ai_messages: "AI messages", admin_ai_select_session: "Select session",
+                admin_ai_no_sessions: "No AI sessions", admin_ai_no_messages: "No messages",
+                menu_ai_oversight: "AI Monitoring", admin_ai_oversight_title: "AI Sessions Monitoring", admin_ai_oversight_subtitle: "View all AI sessions (read-only).",
+                admin_ai_sessions: "AI sessions", admin_ai_messages: "AI messages", admin_ai_select_session: "Select session",
+                admin_ai_no_sessions: "No AI sessions", admin_ai_no_messages: "No messages",
                 admin_oversight_users: "Users", admin_oversight_dialogs: "Dialogs", admin_oversight_messages: "Messages",
                 admin_oversight_select_user: "Select user", admin_oversight_select_dialog: "Select dialog",
                 btn_back: "← Back", btn_logout: "🚪 Logout", offline: "Offline",
@@ -613,6 +632,22 @@
                     </div>
                 `;
                 loadOversightUsers();
+            } else if (section === 'ai-oversight') {
+                contentArea.innerHTML = `
+                    <h1 data-i18n="admin_ai_oversight_title">Мониторинг AI-сессий</h1>
+                    <p class="welcome"><span data-i18n="admin_ai_oversight_subtitle">Просмотр всех AI-сессий (только чтение).</span></p>
+                    <div class="oversight-container">
+                        <div class="oversight-pane" style="max-width: 340px; min-width: 240px;">
+                            <div class="pane-header" data-i18n="admin_ai_sessions">AI сессии</div>
+                            <div class="pane-list" id="aiSessionsList"></div>
+                        </div>
+                        <div class="oversight-pane" style="flex: 1;">
+                            <div class="pane-header" id="aiMessagesHeader" data-i18n="admin_ai_messages">Сообщения AI</div>
+                            <div class="pane-list" id="aiMessagesList" style="display: flex; flex-direction: column;"><div style="padding: 16px; color: var(--text-muted);"><span data-i18n="admin_ai_select_session">Выберите сессию</span></div></div>
+                        </div>
+                    </div>
+                `;
+                loadAiSessions();
             } else if (section === 'users') {
                 contentArea.innerHTML = `
                     <h1>${t.menu_users || 'Ulanyjylar'}</h1>
@@ -770,6 +805,71 @@
             return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
+        async function loadAiSessions() {
+            const list = document.getElementById('aiSessionsList');
+            if (!list) return;
+            list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
+            try {
+                const res = await api.get('/ai/admin/sessions');
+                const sessions = (res && res.sessions) || [];
+                if (!sessions.length) {
+                    list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);"><span data-i18n="admin_ai_no_sessions">Нет AI-сессий</span></div>';
+                    return;
+                }
+                list.innerHTML = sessions.map(s => {
+                    const escName = ovEscape(s.username || '(deleted)');
+                    const escPreview = ovEscape((s.lastMessage || '').slice(0, 80));
+                    const sos = s.escalated ? ' <span style="color: #ff4d4d; font-size: 11px;">🆘</span>' : '';
+                    const count = s.messagesCount || 0;
+                    return '<div class="oversight-item" data-user="' + (s.userId || '') + '" onclick="loadAiSession(\'' + (s.userId || '') + '\', \'' + ovEscape(s.username || '') + '\')">'
+                        + '<div style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">'
+                        + '<div style="font-weight: 700; font-size: 13px;">' + escName + sos + '</div>'
+                        + '<div style="font-size: 10px; color: var(--text-muted);">' + count + '</div>'
+                        + '</div>'
+                        + '<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">' + escPreview + '</div>'
+                        + '</div>';
+                }).join('');
+            } catch (e) {
+                list.innerHTML = '<div style="padding: 16px; color: #ff4d4d;">' + ovEscape(e.message) + '</div>';
+            }
+        }
+
+        async function loadAiSession(userId, username) {
+            document.querySelectorAll('#aiSessionsList .oversight-item').forEach(function (el) {
+                el.classList.toggle('active', el.dataset.user === userId);
+            });
+            const header = document.getElementById('aiMessagesHeader');
+            const list = document.getElementById('aiMessagesList');
+            if (!list) return;
+            if (header) header.textContent = 'AI · ' + (username || userId);
+            list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
+            try {
+                const res = await api.get('/ai/admin/session/' + encodeURIComponent(userId));
+                const msgs = (res && res.messages) || [];
+                if (!msgs.length) {
+                    list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);"><span data-i18n="admin_ai_no_messages">Нет сообщений</span></div>';
+                    return;
+                }
+                list.innerHTML = msgs.map(m => {
+                    const isUser = m.role === 'user';
+                    const bg = isUser ? 'rgba(0, 212, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)';
+                    const border = isUser ? 'var(--primary)' : 'rgba(255,255,255,0.1)';
+                    const label = isUser ? '👤 ' + ovEscape(username || 'user') : '🤖 Sfera AI';
+                    const time = m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                    const content = ovEscape(m.content || '');
+                    return '<div style="padding: 10px 14px; margin-bottom: 8px; background: ' + bg + '; border-left: 3px solid ' + border + '; border-radius: 8px;">'
+                        + '<div style="font-size: 11px; color: ' + (isUser ? 'var(--primary)' : 'var(--accent)') + '; margin-bottom: 4px; font-weight: 700;">' + label + (time ? ' · ' + time : '') + '</div>'
+                        + '<div style="font-size: 13px; color: #fff; white-space: pre-wrap; word-break: break-word;">' + content + '</div>'
+                        + '</div>';
+                }).join('');
+            } catch (e) {
+                list.innerHTML = '<div style="padding: 16px; color: #ff4d4d;">' + ovEscape(e.message) + '</div>';
+            }
+        }
+
+        window.loadAiSessions = loadAiSessions;
+        window.loadAiSession = loadAiSession;
+
         async function loadOversightUsers() {
             const list = document.getElementById('ovUsersList');
             list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
@@ -876,6 +976,12 @@
                 var name = (data && data.username) || 'User';
                 showAdminToast('🆘 <b>' + esc(name) + '</b> просит помощи в AI <a href="/messenger.html">Открыть →</a>');
                 bumpBadge();
+                try {
+                    var activeLi = document.querySelector('#adminMenu li.active');
+                    if (activeLi && activeLi.dataset.section === 'ai-oversight' && typeof window.loadAiSessions === 'function') {
+                        window.loadAiSessions();
+                    }
+                } catch (_) {}
             });
             var oversightLi = document.querySelector('li[data-section="oversight"]');
             if (oversightLi && !oversightLi.dataset.sosBound) {
