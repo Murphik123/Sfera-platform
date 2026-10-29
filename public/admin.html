@@ -811,5 +811,64 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/global-calls.js"></script>
 
+    <!-- SFERA-PATCH: realtime AI escalation -->
+    <style id="sfera-escalation-style">
+        .admin-toast-error { position: fixed !important; bottom: 24px !important; right: 24px !important; z-index: 10000 !important; padding: 14px 20px !important; border-radius: 14px !important; background: linear-gradient(135deg, rgba(255,60,60,0.95), rgba(200,30,30,0.95)) !important; color: #fff !important; font-weight: 600 !important; font-size: 14px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important; animation: adminToastIn 0.3s ease !important; max-width: 380px !important; font-family: inherit !important; }
+        .admin-toast-error a { color: #fff !important; text-decoration: underline !important; font-weight: 800 !important; margin-left: 8px !important; }
+        @keyframes adminToastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .section-badge.sos { display: inline-block !important; background: #ff4d4d !important; color: #fff !important; font-size: 10px !important; font-weight: 800 !important; padding: 2px 6px !important; border-radius: 8px !important; margin-left: 6px !important; vertical-align: middle !important; animation: sosPulse 1.5s infinite !important; }
+        @keyframes sosPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,77,77,0.7); } 50% { box-shadow: 0 0 0 8px rgba(255,77,77,0); } }
+    </style>
+
+    <script id="sfera-escalation-js">
+    (function () {
+        'use strict';
+        function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        function showAdminToast(html) {
+            var el = document.createElement('div');
+            el.className = 'admin-toast-error';
+            el.innerHTML = html;
+            document.body.appendChild(el);
+            setTimeout(function () { if (el.parentNode) el.remove(); }, 10000);
+        }
+        function bumpBadge() {
+            var li = document.querySelector('li[data-section="oversight"]');
+            if (!li) return;
+            var badge = li.querySelector('.section-badge.sos');
+            if (!badge) { badge = document.createElement('span'); badge.className = 'section-badge sos'; li.appendChild(badge); }
+            var cur = parseInt(badge.dataset.count || '0', 10) + 1;
+            badge.dataset.count = String(cur);
+            badge.textContent = '🆘' + (cur > 1 ? cur : '');
+        }
+        function clearBadge() {
+            var li = document.querySelector('li[data-section="oversight"]');
+            if (!li) return;
+            var badge = li.querySelector('.section-badge.sos');
+            if (badge) { badge.dataset.count = '0'; badge.style.display = 'none'; }
+        }
+        function bind() {
+            if (!window.SferaSocket) return false;
+            if (window._sferaEscalationBound) return true;
+            window._sferaEscalationBound = true;
+            window.SferaSocket.on('ai_escalated', function (data) {
+                console.log('[ai_escalated]', data);
+                var name = (data && data.username) || 'User';
+                showAdminToast('🆘 <b>' + esc(name) + '</b> просит помощи в AI <a href="/messenger.html">Открыть →</a>');
+                bumpBadge();
+            });
+            var oversightLi = document.querySelector('li[data-section="oversight"]');
+            if (oversightLi && !oversightLi.dataset.sosBound) {
+                oversightLi.dataset.sosBound = '1';
+                oversightLi.addEventListener('click', clearBadge);
+            }
+            console.log('✅ [admin] ai_escalated listener bound');
+            return true;
+        }
+        if (!bind()) {
+            var attempts = 0;
+            var poll = setInterval(function () { attempts++; if (bind() || attempts > 40) clearInterval(poll); }, 250);
+        }
+    })();
+    </script>
 
 </body></html>

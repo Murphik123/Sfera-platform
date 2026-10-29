@@ -136,6 +136,22 @@ exports.escalateToAdmin = async (req, res, next) => {
 
     if (session) { session.escalated = true; await session.save(); }
 
+    // Realtime-уведомление админу (для badge/toast без F5)
+    try {
+      const io = req.app.get('io');
+      if (io && admin) {
+        io.to(String(admin._id)).emit('ai_escalated', {
+          userId: String(userId),
+          username: (user && user.username) || String(userId),
+          preview: (last || '(нет сообщений)').slice(0, 200),
+          sessionId: session ? String(session._id) : null,
+          createdAt: new Date().toISOString()
+        });
+      }
+    } catch (e) {
+      console.warn('[ai/escalate] realtime emit failed:', e.message);
+    }
+
     const populated = await Message.findById(msg._id)
       .populate('from', 'username avatar online')
       .populate('to', 'username avatar online')
