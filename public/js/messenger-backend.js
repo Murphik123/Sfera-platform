@@ -48,7 +48,7 @@
 
     // SFERA-PATCH:MSG-SPRINT1 — единый источник fixed-диалогов
     const FIXED_DIALOGS = [
-        { id: 'ai_assistant', name: 'Sfera AI Kömekçi', lastMsg: 'Salam! Size nähili kömek edip bilerin?', time: 'Häzir', unread: 0, isAI: true, type: 'assistant' }
+        { id: 'ai_assistant', name: 'Sfera AI Kömekçi', lastMsg: 'Salam! Size nähili kömek edip bilerin?', time: 'Häzir', unread: 0, isAI: true, type: 'assistant', online: true }
     ];
 
     // SFERA-PATCH:MSG-SPRINT1 — data-url'ы файлов вне DOM-атрибутов
@@ -103,6 +103,9 @@
         const id = dialog?.id || dialog?._id || getUserId(user);
         if (!id) return null;
 
+        const isGroup = Boolean(dialog?.isGroup || user?.isGroup);
+        const isAI = String(id) === 'ai_assistant' || Boolean(dialog?.isAI);
+        const online = (isAI || isGroup) ? true : Boolean(dialog?.online || user?.online);
         return {
             id: String(id),
             name: getUserName(user),
@@ -110,10 +113,10 @@
             lastMsg: dialog?.lastMessage?.text || dialog?.lastMsg || '',
             time: formatTime(dialog?.lastMessage?.createdAt || dialog?.time || dialog?.updatedAt),
             unread: Number(dialog?.unread || dialog?.unreadCount || 0),
-            online: Boolean(dialog?.online || user?.online),
-            isGroup: Boolean(dialog?.isGroup || user?.isGroup),
+            online: online,
+            isGroup: isGroup,
+            isAI: isAI,
             role: String(dialog?.role || user?.role || 'user'),
-            creator: String(dialog?.creator || user?.creator || ''),
             creator: dialog?.creator || user?.creator || null
         };
     }
@@ -573,6 +576,23 @@
         socket.on('connect', () => {
             if (heartbeatInterval) clearInterval(heartbeatInterval);
             heartbeatInterval = setInterval(() => { if (socket && socket.connected) socket.emit('heartbeat'); }, 45000);
+        });
+
+socket.on('user_status_change', ({ userId, online }) => {
+            if (!userId) return;
+            const key = String(userId);
+            let changed = false;
+            dialogsData.forEach(d => {
+                if (String(d.id) === key && !d.isGroup && !d.isAI) {
+                    d.online = Boolean(online);
+                    changed = true;
+                }
+            });
+            if (changed) renderDialogs();
+            if (String(activeDialogId) === key) {
+                const st = document.getElementById('chatStatus');
+                if (st) st.textContent = online ? tr('online', 'Online') : tr('offline', 'Offline');
+            }
         });
 
         socket.on('disconnect', () => {

@@ -47,10 +47,12 @@ module.exports = (server) => {
       });
   });
 
+  // При старте сервера — все офлайн (соединения умерли вместе со старым процессом).
+  // ОДИН РАЗ, не при каждом коннекте (иначе сбрасываем других активных юзеров).
+  User.updateMany({}, { online: false }).catch(() => {});
+
   io.on('connection', (socket) => {
     const userId = socket.userId;
-      // При старте сервера — все офлайн (соединения умерли вместе со старым процессом)
-  User.updateMany({}, { online: false }).catch(() => {});
 
     console.log(`🟢 Пользователь ${userId} подключился к WebSocket (${socket.id})`);
 
@@ -70,7 +72,11 @@ module.exports = (server) => {
       User.updateOne(
         { _id: userId },
         { lastSeen: new Date(), online: true }
-      ).catch(() => {});
+      ).then((r) => {
+        if (r && r.modifiedCount > 0) {
+          io.emit('user_status_change', { userId, online: true });
+        }
+      }).catch(() => {});
     });
 
     // Сохранение и realtime-доставка сообщений.
