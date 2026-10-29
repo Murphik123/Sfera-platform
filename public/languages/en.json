@@ -440,5 +440,6 @@
   "group_open": "Open group",
   "group_closed_warning": "Group is closed — only creator can post",
   "group_closed_toast": "Group closed",
-  "group_opened_toast": "Group opened"
+  "group_opened_toast": "Group opened",
+  "messenger_default_chat": "Sfera Developers"
 }

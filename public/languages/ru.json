@@ -439,5 +439,6 @@
   "group_open": "Открыть группу",
   "group_closed_warning": "Группа закрыта — писать может только создатель",
   "group_closed_toast": "Группа закрыта",
-  "group_opened_toast": "Группа открыта"
+  "group_opened_toast": "Группа открыта",
+  "messenger_default_chat": "Разработчики Sfera"
 }
