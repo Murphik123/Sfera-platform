@@ -390,10 +390,9 @@
         });
     }
 
-         async function selectDialog(id) {
+    async function selectDialog(id) {
         activeDialogId = String(id);
-        window.activeDialogId = activeDialogId;  
-    if (socket && socket.connected) socket.emit('join_room', activeDialogId);
+        if (socket && socket.connected) socket.emit('join_room', activeDialogId);
         renderDialogs();
         const dialog = dialogsData.find(d => d.id === activeDialogId);
         if (dialog) dialog.unread = 0;
@@ -628,7 +627,10 @@
                     await window.api.put(`/chat/read/${encodeURIComponent(normalized.id)}`, {});
                 }
             } else {
-                                    dialog.lastMsg = (normalized.text && (normalized.text.includes('file-card') || normalized.text.includes('<img'))) ? '📄 Файл' : (normalized.text || '').replace(/<[^>]*>?/gm, '');                              dialog.time = normalized.time || dialog.time;    
+                const dialog = dialogsData.find(d => String(d.id) === key);
+                if (dialog) {
+                    dialog.lastMsg = normalized.text || '';
+                    dialog.time = normalized.time || dialog.time;
                     if (normalized.type === 'received') dialog.unread = Number(dialog.unread || 0) + 1;
                 }
             }
