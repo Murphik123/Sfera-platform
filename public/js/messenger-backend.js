@@ -755,6 +755,14 @@
                     if (newsFeed) newsFeed.style.display = 'none';
                     const _cia = document.getElementById('chatInputArea');
                     if (_cia) _cia.style.display = 'flex';
+                    if (!activeDialogId) {
+                        const _cn2 = document.getElementById('chatName');
+                        const _ca2 = document.getElementById('chatAvatar');
+                        const _cs2 = document.getElementById('chatStatus');
+                        if (_cn2) _cn2.textContent = tr('messenger_default_chat', 'Sfera Düzüjileri');
+                        if (_ca2) _ca2.textContent = '💻';
+                        if (_cs2) _cs2.textContent = tr('offline', 'Offline');
+                    }
                     renderDialogs();
                     if (activeDialogId === 'ai_assistant') {
                         const firstChat = dialogsData.find(d => !d.isAI);
@@ -767,7 +775,14 @@
                     }
                 } else if (activeTab === 'news') {
                     if (dialogsList) dialogsList.style.display = 'none';
-                    if (newsFeed) newsFeed.style.display = 'block';
+                    if (newsFeed) newsFeed.style.display = 'none';
+                    const _ciaN = document.getElementById('chatInputArea');
+                    if (_ciaN) _ciaN.style.display = 'none';
+                    ['deleteGroupBtn', 'clearChatBtn', 'escalateAiBtn', 'toggleGroupCloseBtn'].forEach(function (id) {
+                        const el = document.getElementById(id);
+                        if (el) el.remove();
+                    });
+                    loadNewsRoom();
                 } else if (activeTab === 'assistant') {
                     if (dialogsList) dialogsList.style.display = 'block';
                     if (newsFeed) newsFeed.style.display = 'none';
@@ -1040,6 +1055,10 @@
 
             await preloadAllTranslations();
             await loadDialogs();
+            if (!activeDialogId) {
+                const _cnI = document.getElementById('chatName');
+                if (_cnI) _cnI.textContent = tr('messenger_default_chat', 'Sfera Düzüjileri');
+            }
             connectRealtime();
 
         } catch (error) {
@@ -1053,6 +1072,10 @@
         currentLang = e.detail.lang;
         renderDialogs();
         renderChat();
+        if (!activeDialogId && activeTab === 'chats') {
+            const _cnL = document.getElementById('chatName');
+            if (_cnL) _cnL.textContent = tr('messenger_default_chat', 'Sfera Düzüjileri');
+        }
     });
 
     function sferaConfirm(title, message, confirmText) {
@@ -1161,6 +1184,15 @@
         const chatHeader = document.getElementById('chatHeader');
         
         if (!chatMessages || !chatInput) return;
+
+        activeTab = 'news';
+        window.activeTab = 'news';
+        window._prevActiveDialogId = activeDialogId;
+
+        ['deleteGroupBtn', 'clearChatBtn', 'escalateAiBtn', 'toggleGroupCloseBtn'].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        });
         
         // Шапка: обновляем точечно, иначе сносим .chat-actions (кнопки звонков 📞📹)
         const _ca = document.getElementById('chatAvatar');
@@ -1174,13 +1206,17 @@
         chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;" data-i18n="news_loading">Загрузка новостей...</div>';
         
         // Мгновенно переводим то, что вставили
-        if (window.SFERA_I18N) window.SFERA_I18N.setLanguage(window.SFERA_I18N.getLanguage());
+        // НЕ вызываем setLanguage здесь — он перезаписывает chatName через data-i18n
         
         try {
             const currentLang = localStorage.getItem('lang') || 'tm';
+            const controller = new AbortController();
+            const timeoutId = setTimeout(function () { controller.abort(); }, 30000);
             const res = await fetch('/api/news/world?lang=' + currentLang, {
-                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || localStorage.getItem('sfera_token')) }
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || localStorage.getItem('sfera_token')) },
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
             const news = await res.json();
             
             if (!news || !news.length) {
@@ -1219,7 +1255,10 @@
             if (window.SFERA_I18N) window.SFERA_I18N.setLanguage(window.SFERA_I18N.getLanguage());
 
         } catch (e) {
-            chatMessages.innerHTML = '<div style="padding:20px; color:#ff4d4d;">Ошибка загрузки: ' + e.message + '</div>';
+            const msg = (e && e.name === 'AbortError')
+                ? 'Сервер не ответил за 30 сек. Обновите страницу.'
+                : (e && e.message ? e.message : 'Ошибка загрузки');
+            chatMessages.innerHTML = '<div style="padding:20px; color:#ff4d4d;">Ошибка загрузки: ' + msg + '</div>';
         }
     }
 
