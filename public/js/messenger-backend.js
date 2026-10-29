@@ -219,12 +219,11 @@
 
             if (markRead) {
                 const unread = messagesData[userId].filter(m => m.type === 'received' && !m.read && m.id);
-                for (const message of unread) {
-                    try {
-                        await window.api.put(`/chat/read/${encodeURIComponent(message.id)}`, {});
-                    } catch (e) {
-                        console.warn('Не удалось пометить прочитанным:', e.message);
-                    }
+                if (unread.length) {
+                    await Promise.allSettled(unread.map(m =>
+                        window.api.put(`/chat/read/${encodeURIComponent(m.id)}`, {})
+                            .catch(e => console.warn('markRead fail', e.message))
+                    ));
                 }
                 const dialog = dialogsData.find(d => d.id === userId);
                 if (dialog) { dialog.unread = 0; renderDialogs(); }
@@ -289,7 +288,7 @@
                 const t = document.getElementById('aiTyping');
                 if (t) t.remove();
             }
-            try { await loadMessages('ai_assistant', false); } catch (_) { renderChat(); }
+            renderChat();
             return;
         }
 
@@ -324,8 +323,8 @@
             }
 
             if (messageInput) messageInput.value = '';
-            await loadDialogs();
             renderChat();
+            loadDialogs().catch(e => console.warn('reload dialogs bg fail', e.message));
 
         } catch (error) {
             console.error('SFERA Messenger send:', error);
@@ -408,6 +407,7 @@
     }
 
     function renderChat() {
+        if (activeTab === 'news') return;
         if (!activeDialogId || !chatMessages) return;
         const dialog = dialogsData.find(d => d.id === activeDialogId);
         if (!dialog) return;
@@ -1144,7 +1144,7 @@
 
     const tabNewsBtn = document.getElementById('lblTabNews');
     if (tabNewsBtn) {
-        tabNewsBtn.addEventListener('click', () => setTimeout(loadNewsRoom, 50));
+        tabNewsBtn.addEventListener('click', () => loadNewsRoom());
     }
     
     
