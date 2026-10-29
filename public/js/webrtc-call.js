@@ -31,10 +31,24 @@
     // WebAudio-фолбэк: если нет файла ringtone — бип через осциллятор
     let _ringtoneOsc = null;
     let _ringtoneCtx = null;
+
+    // Разблокировка AudioContext (autoplay policy) — при первом user gesture
+    (function _unlockAudioContext() {
+        function _try() {
+            try {
+                _ringtoneCtx = _ringtoneCtx || new (window.AudioContext || window.webkitAudioContext)();
+                if (_ringtoneCtx.state === 'suspended') _ringtoneCtx.resume().catch(function () {});
+            } catch (_) {}
+        }
+        ['click', 'touchstart', 'keydown'].forEach(function (ev) {
+            document.addEventListener(ev, _try, { once: true, capture: true });
+        });
+    })();
     function _ringtoneFallbackStart() {
         if (_ringtoneOsc) return;
         try {
             _ringtoneCtx = _ringtoneCtx || new (window.AudioContext || window.webkitAudioContext)();
+            if (_ringtoneCtx.state === 'suspended') _ringtoneCtx.resume().catch(function () {});
             const gain = _ringtoneCtx.createGain();
             gain.gain.value = 0.08;
             gain.connect(_ringtoneCtx.destination);
@@ -99,6 +113,7 @@
             if (statusText) statusText.textContent = tr('call_connecting', 'Соединение...');
             if (endBtn) endBtn.textContent = '❌ ' + tr('call_cancel', 'Отменить');
             if (muteBtn) { muteBtn.style.display = 'inline-block'; updateMuteLabel(); }
+            playRingtone();
         } else if (state === 'ringing') {
             if (targetName) targetName.textContent = text || tr('call_incoming', 'Входящий звонок...');
             if (statusText) statusText.textContent = isVideoCall ? '📹 ' + tr('call_video', 'Видеозвонок') : '📞 ' + tr('call_audio', 'Аудиозвонок');
