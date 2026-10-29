@@ -752,16 +752,17 @@
     }
 
     function initCalls() {
-        function startCall(type) {
-            const dialog = dialogsData.find(d => d.id === activeDialogId);
-            if (!dialog) { showToast(tr('select_chat', 'Select a chat first'), 'error'); return; }
-            if (callTargetName) callTargetName.textContent = dialog.name;
-            if (callStatusText) callStatusText.textContent = type === 'audio' ? tr('audio_call', 'Audio call...') : tr('video_call', 'Video call...');
-            if (callModal) callModal.classList.add('active');
-        }
-        
-        
-        
+        // Fallback: если webrtc-call.js не загрузился — сообщить, а не молчать.
+        const __fallback = () => {
+            if (window.SferaCall && typeof window.SferaCall.startCall === 'function') return;
+            if (!activeDialogId || activeDialogId === 'ai_assistant') {
+                showToast(tr('select_chat', 'Select a chat first'), 'error');
+                return;
+            }
+            showToast('Звонки недоступны: webrtc-call.js не загружен', 'error');
+        };
+        if (audioCallBtn) audioCallBtn.addEventListener('click', __fallback);
+        if (videoCallBtn) videoCallBtn.addEventListener('click', __fallback);
     }
 
     // ИСПРАВЛЕНИЕ: Функция загрузки файлов
