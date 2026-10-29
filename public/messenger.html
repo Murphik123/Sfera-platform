@@ -605,7 +605,9 @@
     </div>
 
     <div class="call-modal" id="callModal">
-        <audio id="ringtone" loop preload="none" style="display:none;"></audio>
+        <audio id="ringtone" loop preload="auto" style="display:none;">
+            <source src="/sounds/ringtone.wav" type="audio/wav">
+        </audio>
         <div class="modal-box" style="position: relative;">
             <div class="call-avatar" id="callAvatar" style="font-size: 48px; margin-bottom: 16px; text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);">👤</div>
             <h2 id="callTargetName" style="margin-bottom: 4px;">...</h2>
@@ -631,7 +633,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/socket.js"></script>
-    <script src="/js/webrtc-call.js?v=1024"></script>
+    <script src="/js/webrtc-call.js?v=1026"></script>
     <script src="/js/messenger-backend.js?v=1025"></script>
 
     <script>

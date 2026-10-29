@@ -28,34 +28,37 @@
     const muteBtn = $('muteBtn');
     const ringtoneEl = $('ringtone');
 
-    // WebAudio-фолбэк — телефонный ringtone через осциллятор
+    // ============================================================
+    // RINGTONE — unlock AudioContext on gesture, pulse only when running
+    // ============================================================
     let _ringtoneOsc = null;
     let _ringtoneCtx = null;
+    let _ringtoneUnlocked = false;
     let _ringtoneInterval = null;
 
-    // Разблокировка AudioContext — при КАЖДОМ клике, пока не running
-    (function _unlockAudioContext() {
-        const _events = ['click', 'touchstart', 'keydown'];
-        function _removeAll() {
-            _events.forEach(function (ev) {
-                try { document.removeEventListener(ev, _try, true); } catch (_) {}
-            });
-        }
-        function _try() {
-            try {
-                if (!_ringtoneCtx) _ringtoneCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (_ringtoneCtx.state === 'running') { console.log('[ringtone] ctx unlocked'); _removeAll(); return; }
-                if (_ringtoneCtx.state === 'suspended') {
-                    _ringtoneCtx.resume().then(function () {
-                        if (_ringtoneCtx.state === 'running') { console.log('[ringtone] ctx unlocked (resume)'); _removeAll(); }
-                    }).catch(function () {});
-                }
-            } catch (_) {}
-        }
-        _events.forEach(function (ev) { document.addEventListener(ev, _try, true); });
-    })();
+    function _unlockAudio() {
+        if (_ringtoneUnlocked) return;
+        try {
+            if (!_ringtoneCtx) _ringtoneCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (_ringtoneCtx.state === 'suspended') {
+                _ringtoneCtx.resume().then(function () {
+                    if (_ringtoneCtx.state === 'running') {
+                        _ringtoneUnlocked = true;
+                        console.log('[ringtone] AudioContext unlocked (resume)');
+                    }
+                }).catch(function () {});
+            } else if (_ringtoneCtx.state === 'running') {
+                _ringtoneUnlocked = true;
+                console.log('[ringtone] AudioContext already running');
+            }
+        } catch (_) {}
+    }
 
-    function _ringtonePulse() {
+    ['click', 'touchstart', 'keydown'].forEach(function (ev) {
+        document.addEventListener(ev, _unlockAudio, { capture: true });
+    });
+
+    function _pulseOnce() {
         if (!_ringtoneCtx || _ringtoneCtx.state !== 'running') {
             console.log('[ringtone] pulse skip, state:', _ringtoneCtx ? _ringtoneCtx.state : 'null');
             return;
@@ -81,65 +84,46 @@
         } catch (e) { console.log('[ringtone] pulse error:', e.message); }
     }
 
-    function _ringtoneFallbackStart() {
-        console.log('[ringtone] start, ctx:', _ringtoneCtx ? _ringtoneCtx.state : 'null', 'osc:', !!_ringtoneOsc);
-        if (_ringtoneOsc) return;
-
-        function _beginPulse() {
-            if (_ringtoneInterval) return;
-            _ringtonePulse();
-            _ringtoneInterval = setInterval(_ringtonePulse, 3000);
-            _ringtoneOsc = { stop: function () {} };
-        }
-
-        try {
-            if (!_ringtoneCtx) _ringtoneCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (_ringtoneCtx.state === 'running') {
-                _beginPulse();
-            } else {
-                _ringtoneCtx.resume().then(function () {
-                    console.log('[ringtone] resume OK, state:', _ringtoneCtx.state);
-                    _beginPulse();
-                }).catch(function (e) {
-                    console.log('[ringtone] resume FAIL:', e && e.name);
-                    _beginPulse();
-                });
-            }
-        } catch (e) { console.log('[ringtone] start error:', e.message); }
+    function _startPulse() {
+        if (_ringtoneInterval) return;
+        _pulseOnce();
+        _ringtoneInterval = setInterval(_pulseOnce, 3000);
+        _ringtoneOsc = { stop: function () {} };
     }
 
-    function _ringtoneFallbackStop() {
+    function _stopPulse() {
         if (_ringtoneInterval) { try { clearInterval(_ringtoneInterval); } catch (_) {} _ringtoneInterval = null; }
         _ringtoneOsc = null;
         console.log('[ringtone] stopped');
     }
 
     function playRingtone() {
-        console.log('[ringtone] playRingtone called');
-        try {
-            if (ringtoneEl) {
+        console.log('[ringtone] play, unlocked:', _ringtoneUnlocked, 'state:', _ringtoneCtx ? _ringtoneCtx.state : 'null');
+
+        if (_ringtoneCtx && _ringtoneCtx.state === 'running') {
+            _startPulse();
+        } else {
+            _unlockAudio();
+            if (_ringtoneCtx && _ringtoneCtx.state === 'running') _startPulse();
+        }
+
+        if (ringtoneEl && ringtoneEl.src) {
+            try {
                 ringtoneEl.currentTime = 0;
-                const pr = ringtoneEl.play();
-                if (pr && pr.then) {
-                    pr.then(function () { console.log('[ringtone] mp3 play OK'); })
-                      .catch(function (e) {
-                          console.log('[ringtone] mp3 play FAIL:', e && e.name, '→ fallback');
-                          _ringtoneFallbackStart();
-                      });
-                } else {
-                    _ringtoneFallbackStart();
-                }
-            } else {
-                _ringtoneFallbackStart();
-            }
-        } catch (e) {
-            console.log('[ringtone] playRingtone catch:', e && e.message, '→ fallback');
-            _ringtoneFallbackStart();
+                ringtoneEl.play().catch(function (e) { console.log('[ringtone] audio FAIL:', e && e.name); });
+            } catch (_) {}
+        }
+
+        if (!_ringtoneUnlocked) {
+            const statusEl = document.getElementById('callStatusText');
+            if (statusEl) statusEl.textContent = '🔔 Нажмите в любом месте, чтобы включить звук';
+            if (navigator.vibrate) { try { navigator.vibrate([300, 100, 300, 100, 300]); } catch (_) {} }
         }
     }
+
     function stopRingtone() {
         try { if (ringtoneEl) { ringtoneEl.pause(); ringtoneEl.currentTime = 0; } } catch (_) {}
-        _ringtoneFallbackStop();
+        _stopPulse();
     }
 
     function tr(key, fallback) {
