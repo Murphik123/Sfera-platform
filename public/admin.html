@@ -799,7 +799,7 @@
                 list.innerHTML = dialogs.map(d => `
                     <div class="oversight-item" onclick="loadOversightMessages('${userId}', '${d.partnerId}', '${ovEscape(username)}', '${ovEscape(d.partnerName)}')">
                         <div style="font-weight: 700;">${ovEscape(d.partnerName)} ${d.partnerRole === 'admin' ? '🛡' : ''}</div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${ovEscape(d.lastMsg)}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${ovEscape(stripAdminHtml(d.lastMsg))}</div>
                     </div>
                 `).join('');
             } catch (e) { list.innerHTML = '<div style="padding: 16px; color: #ff4d4d;">' + e.message + '</div>'; }

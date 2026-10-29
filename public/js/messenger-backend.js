@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    let currentLang = localStorage.getItem('sfera_lang') || 'tm';
+    let currentLang = localStorage.getItem('lang') || localStorage.getItem('sfera_lang') || 'tm';
     let activeTab = 'chats';
     let activeDialogId = null;
 
