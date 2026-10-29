@@ -416,5 +416,15 @@
   "messenger_tab_news": "Новости",
   "messenger_tab_ai": "Sfera AI Помощник",
   "call_cancel": "Отменить",
-  "call_reject": "Отклонить"
+  "call_reject": "Отклонить",
+  "admin_oversight_title": "Мониторинг Мессенджера",
+  "admin_oversight_subtitle": "Сквозной доступ к перепискам и AI-сессиям (только чтение).",
+  "admin_oversight_users": "Пользователи",
+  "admin_oversight_dialogs": "Диалоги",
+  "admin_oversight_messages": "Сообщения",
+  "admin_oversight_select_user": "Выберите пользователя",
+  "admin_oversight_select_dialog": "Выберите диалог",
+  "btn_back": "← Назад",
+  "btn_logout": "🚪 Выйти",
+  "offline": "Не в сети"
 }

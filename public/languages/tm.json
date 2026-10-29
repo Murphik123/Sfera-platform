@@ -417,5 +417,15 @@
   "messenger_tab_news": "Habarlar",
   "messenger_tab_ai": "Sfera AI Kömekçi",
   "call_cancel": "Ýatyrt",
-  "call_reject": "Ret et"
+  "call_reject": "Ret et",
+  "admin_oversight_title": "Messenjeriň monitoriňi",
+  "admin_oversight_subtitle": "Hatlar we AI-sessiýalar (diňe okamak).",
+  "admin_oversight_users": "Ulanyjylar",
+  "admin_oversight_dialogs": "Dialoglar",
+  "admin_oversight_messages": "Habarlar",
+  "admin_oversight_select_user": "Ulanyjy saýlaň",
+  "admin_oversight_select_dialog": "Dialog saýlaň",
+  "btn_back": "← Yza",
+  "btn_logout": "🚪 Çykmak",
+  "offline": "Offline"
 }

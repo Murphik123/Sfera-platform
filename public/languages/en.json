@@ -417,5 +417,15 @@
   "messenger_tab_news": "News",
   "messenger_tab_ai": "Sfera AI Assistant",
   "call_cancel": "Cancel",
-  "call_reject": "Reject"
+  "call_reject": "Reject",
+  "admin_oversight_title": "Messenger Monitoring",
+  "admin_oversight_subtitle": "Cross-access to chats and AI-sessions (read-only).",
+  "admin_oversight_users": "Users",
+  "admin_oversight_dialogs": "Dialogs",
+  "admin_oversight_messages": "Messages",
+  "admin_oversight_select_user": "Select user",
+  "admin_oversight_select_dialog": "Select dialog",
+  "btn_back": "← Back",
+  "btn_logout": "🚪 Logout",
+  "offline": "Offline"
 }

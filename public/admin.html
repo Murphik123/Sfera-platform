@@ -466,6 +466,11 @@
             tm: {
                 logout: "Çykmak", back: "← Yza", welcome: "Hoş geldiňiz, Administrator!", dashboard_welcome: "Platformanyň modullaryna giriş etmek üçin aşakdaky kartlardan saýlaň.",
                 menu_dashboard: "Umumy", menu_users: "Ulanyjylar", menu_transactions: "Tranzaksiýalar", menu_listings: "Harytlar", menu_mail: "Poçta", menu_ai: "AI çaklamalar", menu_settings: "Sazlamalar",
+                admin_oversight_title: "Messenjeriň monitoriňi", admin_oversight_subtitle: "Hatlar we AI-sessiýalar (diňe okamak).",
+                admin_oversight_users: "Ulanyjylar", admin_oversight_dialogs: "Dialoglar", admin_oversight_messages: "Habarlar",
+                admin_oversight_select_user: "Ulanyjy saýlaň", admin_oversight_select_dialog: "Dialog saýlaň",
+                btn_back: "← Yza", btn_logout: "🚪 Çykmak", offline: "Offline",
+                auto_9a5a2c11: "Çat gözegçiligi",
                 module_marketplace: "Marketpleýs", module_marketplace_desc: "Birža we söwda meýdançasy", module_bank: "TM Bank", module_bank_desc: "Sanly bank hyzmatlary",
                 module_messenger: "Messenger", module_messenger_desc: "Çalt habarlaşma", module_mail: "TM Poçta", module_mail_desc: "Içki poçta ulgamy",
                 module_ai: "AI analitika", module_ai_desc: "TM Coin prokgnozlary, trendler", module_docs: "Resmiýetler", module_docs_desc: "Awtomatik tassyklama",
@@ -474,6 +479,11 @@
             ru: {
                 logout: "Выйти", back: "← Назад", welcome: "Добро пожаловать, Администратор!", dashboard_welcome: "Выберите модуль платформы для перехода.",
                 menu_dashboard: "Обзор", menu_users: "Пользователи", menu_transactions: "Транзакции", menu_listings: "Объявления", menu_mail: "Почта", menu_ai: "AI прогнозы", menu_settings: "Настройки",
+                admin_oversight_title: "Мониторинг Мессенджера", admin_oversight_subtitle: "Сквозной доступ к перепискам и AI-сессиям (только чтение).",
+                admin_oversight_users: "Пользователи", admin_oversight_dialogs: "Диалоги", admin_oversight_messages: "Сообщения",
+                admin_oversight_select_user: "Выберите пользователя", admin_oversight_select_dialog: "Выберите диалог",
+                btn_back: "← Назад", btn_logout: "🚪 Выйти", offline: "Не в сети",
+                auto_9a5a2c11: "Мониторинг чатов",
                 module_marketplace: "Маркетплейс", module_marketplace_desc: "Биржа и торговая площадка", module_bank: "ТМ Банк", module_bank_desc: "Цифровые банковские услуги",
                 module_messenger: "Мессенджер", module_messenger_desc: "Быстрая связь", module_mail: "TM Почта", module_mail_desc: "Внутренняя почта",
                 module_ai: "ИИ-аналитика", module_ai_desc: "Прогнозы TM Coin, тренды", module_docs: "Документы", module_docs_desc: "Автоматическая проверка",
@@ -482,6 +492,11 @@
             en: {
                 logout: "Logout", back: "← Back", welcome: "Welcome, Administrator!", dashboard_welcome: "Select a platform module to navigate.",
                 menu_dashboard: "Dashboard", menu_users: "Users", menu_transactions: "Transactions", menu_listings: "Listings", menu_mail: "Mail", menu_ai: "AI Predictions", menu_settings: "Settings",
+                admin_oversight_title: "Messenger Monitoring", admin_oversight_subtitle: "Cross-access to chats and AI-sessions (read-only).",
+                admin_oversight_users: "Users", admin_oversight_dialogs: "Dialogs", admin_oversight_messages: "Messages",
+                admin_oversight_select_user: "Select user", admin_oversight_select_dialog: "Select dialog",
+                btn_back: "← Back", btn_logout: "🚪 Logout", offline: "Offline",
+                auto_9a5a2c11: "Chat monitoring",
                 module_marketplace: "Marketplace", module_marketplace_desc: "Exchange and trading platform", module_bank: "TM Bank", module_bank_desc: "Digital banking services",
                 module_messenger: "Messenger", module_messenger_desc: "Instant messaging", module_mail: "TM Mail", module_mail_desc: "Internal mail system",
                 module_ai: "AI Analytics", module_ai_desc: "TM Coin forecasts, trends", module_docs: "Documents", module_docs_desc: "Automatic verification",
@@ -533,6 +548,12 @@
         });
 
         // Отрисовка секций
+        
+        function stripAdminHtml(html) {
+            if (!html) return '';
+            if (html.includes('file-card') || html.includes('<img')) return '📄 Файл';
+            return String(html).replace(/<[^>]*>?/gm, '');
+        }
         function renderSection(section) {
             const contentArea = document.getElementById('adminContent');
             const t = loadedTranslations;
@@ -574,20 +595,20 @@
                 loadStats();
             } else if (section === 'oversight') {
                 contentArea.innerHTML = `
-                    <h1>Мониторинг Мессенджера</h1>
-                    <p class="welcome">Сквозной доступ к перепискам и AI-сессиям (только чтение).</p>
+                    <h1 data-i18n="admin_oversight_title">Мониторинг Мессенджера</h1>
+                    <p class="welcome"><span data-i18n="admin_oversight_subtitle">Сквозной доступ к перепискам и AI-сессиям (только чтение).</span></p>
                     <div class="oversight-container">
                         <div class="oversight-pane">
-                            <div class="pane-header">Пользователи</div>
+                            <div class="pane-header" data-i18n="admin_oversight_users">Пользователи</div>
                             <div class="pane-list" id="ovUsersList"></div>
                         </div>
                         <div class="oversight-pane">
-                            <div class="pane-header">Диалоги</div>
-                            <div class="pane-list" id="ovDialogsList"><div style="padding: 16px; color: var(--text-muted);">Выберите пользователя</div></div>
+                            <div class="pane-header" data-i18n="admin_oversight_dialogs">Диалоги</div>
+                            <div class="pane-list" id="ovDialogsList"><div style="padding: 16px; color: var(--text-muted);"><span data-i18n="admin_oversight_select_user">Выберите пользователя</span></div></div>
                         </div>
                         <div class="oversight-pane" style="flex: 1;">
-                            <div class="pane-header" id="ovMessagesHeader">Сообщения</div>
-                            <div class="pane-list" id="ovMessagesList" style="display: flex; flex-direction: column;"><div style="padding: 16px; color: var(--text-muted);">Выберите диалог</div></div>
+                            <div class="pane-header" id="ovMessagesHeader" data-i18n="admin_oversight_messages">Сообщения</div>
+                            <div class="pane-list" id="ovMessagesList" style="display: flex; flex-direction: column;"><div style="padding: 16px; color: var(--text-muted);"><span data-i18n="admin_oversight_select_dialog">Выберите диалог</span></div></div>
                         </div>
                     </div>
                 `;
@@ -770,7 +791,7 @@
             });
             const list = document.getElementById('ovDialogsList');
             list.innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Загрузка...</div>';
-            document.getElementById('ovMessagesList').innerHTML = '<div style="padding: 16px; color: var(--text-muted);">Выберите диалог</div>';
+            document.getElementById('ovMessagesList').innerHTML = '<div style="padding: 16px; color: var(--text-muted);"><span data-i18n="admin_oversight_select_dialog">Выберите диалог</span></div>';
             
             try {
                 const dialogs = await ovFetch('/api/chat/admin/oversight/users/' + userId + '/dialogs');
