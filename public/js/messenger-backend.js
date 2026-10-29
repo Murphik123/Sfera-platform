@@ -1058,7 +1058,8 @@
     window.sferaMessenger = {
         reload: loadDialogs,
         selectDialog,
-        sendMessage
+        sendMessage,
+        getDialogById: (id) => dialogsData.find(d => String(d.id) === String(id))
     };
 
     document.addEventListener('DOMContentLoaded', init);

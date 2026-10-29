@@ -261,6 +261,22 @@
             isVideoCall = !!data.isVideo;
             window._incomingSignal = data.signal;
             updateUI('ringing', 'Собеседник');
+
+            let callerName = data.fromName || data.name || null;
+            if (!callerName && window.sferaMessenger && typeof window.sferaMessenger.getDialogById === 'function') {
+                const d = window.sferaMessenger.getDialogById(peerId);
+                if (d && d.name) callerName = d.name;
+            }
+            if (!callerName) {
+                const el = document.querySelector('.dialog-item[data-id="' + peerId + '"] .name');
+                if (el) {
+                    const clone = el.cloneNode(true);
+                    const badge = clone.querySelector('.admin-badge');
+                    if (badge) badge.remove();
+                    callerName = clone.textContent.trim() || null;
+                }
+            }
+            updateUI('ringing', callerName || tr('call_incoming', 'Входящий звонок...'));
         });
 
         socket.on('call_accepted', async function (signal) {

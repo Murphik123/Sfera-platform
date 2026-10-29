@@ -31,7 +31,20 @@ module.exports = (server) => {
     }
 
     socket.userId = decoded.userId.toString();
-    next();
+
+    // Загружаем имя для показа в звонках (fromName в incoming_call)
+    User.findById(decoded.userId)
+      .select('username name fullName')
+      .lean()
+      .then((u) => {
+        socket.userName = (u && (u.username || u.name || u.fullName)) || null;
+        next();
+      })
+      .catch((err) => {
+        console.warn('[socket] userName lookup failed:', err.message);
+        socket.userName = null;
+        next();
+      });
   });
 
   io.on('connection', (socket) => {
@@ -110,6 +123,7 @@ module.exports = (server) => {
       io.to(String(target)).emit('incoming_call', {
         signal: data.signalData,
         from: userId,
+        fromName: socket.userName || null,
         isVideo: Boolean(data.isVideo),
       });
     });
