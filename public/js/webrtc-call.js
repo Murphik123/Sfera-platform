@@ -44,20 +44,45 @@
             document.addEventListener(ev, _try, { once: true, capture: true });
         });
     })();
+    let _ringtoneInterval = null;
     function _ringtoneFallbackStart() {
         if (_ringtoneOsc) return;
         try {
             _ringtoneCtx = _ringtoneCtx || new (window.AudioContext || window.webkitAudioContext)();
             if (_ringtoneCtx.state === 'suspended') _ringtoneCtx.resume().catch(function () {});
-            const gain = _ringtoneCtx.createGain();
-            gain.gain.value = 0.08;
-            gain.connect(_ringtoneCtx.destination);
-            const osc = _ringtoneCtx.createOscillator();
-            osc.type = 'sine';
-            osc.frequency.value = 880;
-            osc.connect(gain);
-            osc.start();
-            _ringtoneOsc = { osc: osc, gain: gain };
+
+            // Реальный телефонный "tuu-tuu": 2 тона 440+480 Гц, 1 сек вкл / 2 сек пауза
+            function _pulseOnce() {
+                if (!_ringtoneCtx || _ringtoneCtx.state === 'closed') return;
+                const gain = _ringtoneCtx.createGain();
+                gain.gain.value = 0.35;
+                gain.connect(_ringtoneCtx.destination);
+
+                const osc1 = _ringtoneCtx.createOscillator();
+                const osc2 = _ringtoneCtx.createOscillator();
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                osc1.frequency.value = 440;
+                osc2.frequency.value = 480;
+                osc1.connect(gain);
+                osc2.connect(gain);
+
+                const now = _ringtoneCtx.currentTime;
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.setValueAtTime(0.35, now + 0.9);
+                gain.gain.linearRampToValueAtTime(0, now + 1.0);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 1.0);
+                osc2.stop(now + 1.0);
+            }
+
+            _pulseOnce();
+            _ringtoneInterval = setInterval(_pulseOnce, 3000);  // каждые 3 сек
+
+            // Для cleanup - флаг
+            _ringtoneOsc = { osc: { stop: function () { if (_ringtoneInterval) clearInterval(_ringtoneInterval); } }, gain: { disconnect: function () {} } };
         } catch (_) {}
     }
     function _ringtoneFallbackStop() {
