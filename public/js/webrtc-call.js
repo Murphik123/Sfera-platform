@@ -8,6 +8,7 @@
     let callState = 'idle'; // idle, calling, ringing, connecting, connected, error
     let timerInterval = null;
     let timerSeconds = 0;
+    let pendingCandidates = [];
 
     const $ = (id) => document.getElementById(id);
     const modal = $('callModal');
@@ -86,7 +87,16 @@
         if (pc) { pc.close(); pc = null; }
         if (localVideo) localVideo.srcObject = null;
         if (remoteVideo) remoteVideo.srcObject = null;
+        pendingCandidates = [];
         updateUI('idle');
+    }
+
+    async function flushPendingCandidates() {
+        if (!pc || !pc.remoteDescription) return;
+        const list = pendingCandidates.splice(0);
+        for (const c of list) {
+            await pc.addIceCandidate(new RTCIceCandidate(c)).catch(() => {});
+        }
     }
 
     async function getIceServers() {
@@ -157,6 +167,7 @@
     async function acceptCall() {
         if (callState !== 'ringing') return;
         updateUI('connecting');
+        if (isVideoCall && videosBox) videosBox.style.display = 'flex';
 
         try {
             localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideoCall });
@@ -169,6 +180,7 @@
             localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
             await pc.setRemoteDescription(new RTCSessionDescription(window._incomingSignal));
+            await flushPendingCandidates();
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
 
@@ -195,13 +207,16 @@
         socket.on('call_accepted', async (signal) => {
             if (pc && callState === 'connecting') {
                 await pc.setRemoteDescription(new RTCSessionDescription(signal));
+                await flushPendingCandidates();
             }
         });
 
         socket.on('ice_candidate', async (data) => {
-            if (pc) {
-                await pc.addIceCandidate(new RTCIceCandidate(data.candidate)).catch(() => {});
+            if (!pc || !pc.remoteDescription) {
+                pendingCandidates.push(data.candidate);
+                return;
             }
+            await pc.addIceCandidate(new RTCIceCandidate(data.candidate)).catch(() => {});
         });
 
         socket.on('call_ended', () => {

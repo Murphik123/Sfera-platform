@@ -392,6 +392,7 @@
 
     async function selectDialog(id) {
         activeDialogId = String(id);
+        window.activeDialogId = activeDialogId;
         if (socket && socket.connected) socket.emit('join_room', activeDialogId);
         renderDialogs();
         const dialog = dialogsData.find(d => d.id === activeDialogId);
@@ -682,6 +683,8 @@
                 if (activeTab === 'chats') {
                     if (dialogsList) dialogsList.style.display = 'block';
                     if (newsFeed) newsFeed.style.display = 'none';
+                    const _cia = document.getElementById('chatInputArea');
+                    if (_cia) _cia.style.display = 'flex';
                     renderDialogs();
                     if (activeDialogId === 'ai_assistant') {
                         const firstChat = dialogsData.find(d => !d.isAI);
@@ -698,6 +701,8 @@
                 } else if (activeTab === 'assistant') {
                     if (dialogsList) dialogsList.style.display = 'block';
                     if (newsFeed) newsFeed.style.display = 'none';
+                    const _cia2 = document.getElementById('chatInputArea');
+                    if (_cia2) _cia2.style.display = 'flex';
                     renderDialogs();
                     selectDialog('ai_assistant');
                 }                        
@@ -1072,8 +1077,13 @@
         
         if (!chatMessages || !chatInput) return;
         
-        // Шапка с правильными data-i18n
-        chatHeader.innerHTML = '<div class="chat-avatar" style="background:var(--primary); color:#000;">📰</div><div><div class="chat-name" data-i18n="news_title">Новости</div><div class="chat-status" data-i18n="news_subtitle">Мировые и Туркменские</div></div>';
+        // Шапка: обновляем точечно, иначе сносим .chat-actions (кнопки звонков 📞📹)
+        const _ca = document.getElementById('chatAvatar');
+        const _cn = document.getElementById('chatName');
+        const _cs = document.getElementById('chatStatus');
+        if (_ca) { _ca.textContent = '📰'; _ca.style.background = 'var(--primary)'; _ca.style.color = '#000'; }
+        if (_cn) _cn.textContent = 'Новости';
+        if (_cs) _cs.textContent = 'Мировые и Туркменские';
         chatInput.style.display = 'none';
         
         chatMessages.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#fff;" data-i18n="news_loading">Загрузка новостей...</div>';
