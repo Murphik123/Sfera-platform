@@ -754,7 +754,9 @@
 
                 if (tabsDropdown) tabsDropdown.classList.remove('show');
 
+                var __mc = document.querySelector('.messenger-container');
                 if (activeTab === 'chats') {
+                    if (__mc) __mc.classList.remove('chat-open');
                     if (dialogsList) dialogsList.style.display = 'block';
                     if (newsFeed) newsFeed.style.display = 'none';
                     const _cia = document.getElementById('chatInputArea');
@@ -778,6 +780,7 @@
                         }
                     }
                 } else if (activeTab === 'news') {
+                    if (__mc) __mc.classList.add('chat-open');
                     if (dialogsList) dialogsList.style.display = 'none';
                     if (newsFeed) newsFeed.style.display = 'block';
                     const _ciaN = document.getElementById('chatInputArea');
