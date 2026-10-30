@@ -275,6 +275,27 @@
         return pc;
     }
 
+    async function _requestMedia(wantVideo) {
+        // Samsung Chrome bug: video: false в объекте парсится как "" → запрос камеры.
+        // Поэтому для аудио — БЕЗ поля video вообще.
+        if (!wantVideo) {
+            return await navigator.mediaDevices.getUserMedia({ audio: true });
+        }
+        // Видео — без facingMode (Samsung не поддерживает на части моделей)
+        try {
+            return await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        } catch (e) {
+            console.warn('[call] audio+video failed:', e.name, e.message, '→ trying separate');
+            // Fallback: раздельно + merge (iOS/Samsung workaround)
+            const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            return new MediaStream([
+                ...videoStream.getVideoTracks(),
+                ...audioStream.getAudioTracks()
+            ]);
+        }
+    }
+
     async function startCall(target, video) {
         if (callState !== 'idle') {
             toast('Уже идёт звонок — завершите текущий', 'error');
@@ -292,10 +313,7 @@
 
         try {
             // КРИТИЧНО (iOS): getUserMedia ПЕРВЫМ — пока user gesture активен
-            localStream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: isVideoCall ? { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } : false
-            });
+            localStream = await _requestMedia(isVideoCall);
             if (localVideo) localVideo.srcObject = localStream;
 
             const ice = await getIceServers();
@@ -328,10 +346,7 @@
 
         try {
             // КРИТИЧНО (iOS): getUserMedia ПЕРВЫМ — пока user gesture активен
-            localStream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: isVideoCall ? { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } : false
-            });
+            localStream = await _requestMedia(isVideoCall);
             if (localVideo) localVideo.srcObject = localStream;
 
             const ice = await getIceServers();
