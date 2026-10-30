@@ -294,7 +294,7 @@
             // КРИТИЧНО (iOS): getUserMedia ПЕРВЫМ — пока user gesture активен
             localStream = await navigator.mediaDevices.getUserMedia({
                 audio: true,
-                video: isVideoCall ? { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } : false
+                ...(isVideoCall ? { video: true } : {})
             });
             if (localVideo) localVideo.srcObject = localStream;
 
@@ -330,7 +330,7 @@
             // КРИТИЧНО (iOS): getUserMedia ПЕРВЫМ — пока user gesture активен
             localStream = await navigator.mediaDevices.getUserMedia({
                 audio: true,
-                video: isVideoCall ? { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } : false
+                ...(isVideoCall ? { video: true } : {})
             });
             if (localVideo) localVideo.srcObject = localStream;
 
