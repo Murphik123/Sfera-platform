@@ -376,7 +376,6 @@
             peerId = String(data.from);
             isVideoCall = !!data.isVideo;
             window._incomingSignal = data.signal;
-            updateUI('ringing', 'Собеседник');
 
             let callerName = data.fromName || data.name || null;
             if (!callerName && window.sferaMessenger && typeof window.sferaMessenger.getDialogById === 'function') {
