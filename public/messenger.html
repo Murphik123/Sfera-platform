@@ -107,7 +107,8 @@
         /* Обертка без огромного заголовка, просто отступ под фиксированную шапку */
         .messenger-page {
             padding: 110px 7% 40px;
-            height: 100vh; /* Занимает весь экран */
+            height: 100vh; /* Занимает весь экран (fallback) */
+            height: 100dvh; /* Динамическая высота (mobile-safe) */
             display: flex;
             flex-direction: column;
             position: relative;
@@ -269,7 +270,7 @@
         .btn-download-file:hover { background: var(--primary); color: #000; font-weight: bold; }
 
         .chat-input-area {
-            padding: 16px 24px; border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; gap: 12px; align-items: center;
+            padding: 16px 24px; border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
             background: rgba(255, 255, 255, 0.01); position: relative;
         }
         .chat-input-area .input-group { flex: 1; display: flex; gap: 10px; align-items: center; }
@@ -324,9 +325,39 @@
         footer p { color: #c0d8f0; font-size: 14px; }
 
         @media (max-width: 768px) {
-            .messenger-container { flex-direction: column; height: auto; transform: none; }
+            .messenger-page {
+                padding: 80px 8px calc(8px + env(safe-area-inset-bottom));
+                height: 100vh;
+                height: 100dvh;
+            }
+            .messenger-container { flex-direction: column; height: 100%; transform: none; }
+            .messenger-container:hover { transform: none; }
             .messenger-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
             .chat-header .back-btn { display: block; }
+
+            /* Mobile: compact input area + buttons */
+            .chat-input-area {
+                padding: 10px 12px;
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+            .chat-input-area .input-group {
+                min-width: 0;
+                flex: 1 1 100%;
+            }
+            .chat-input-area .call-buttons {
+                gap: 4px;
+            }
+            .chat-input-area #audioCallBtn,
+            .chat-input-area #videoCallBtn {
+                width: 38px !important;
+                height: 38px !important;
+                font-size: 16px;
+            }
+            .chat-input-area .send-btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
         }
     
         /* SFERA-PATCH: Chat Image Styles */
