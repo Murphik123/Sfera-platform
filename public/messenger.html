@@ -332,8 +332,16 @@
             }
             .messenger-container { flex-direction: column; height: 100%; transform: none; }
             .messenger-container:hover { transform: none; }
-            .messenger-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+            .messenger-sidebar {
+                width: 100%;
+                flex: 0 0 45%;
+                max-height: 45vh;
+                min-height: 180px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
             .chat-header .back-btn { display: block; }
+            footer { display: none; }
 
             /* Mobile: compact input area + buttons */
             .chat-input-area {
@@ -664,7 +672,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/socket.js"></script>
-    <script src="/js/webrtc-call.js?v=1027"></script>
+    <script src="/js/webrtc-call.js?v=1028"></script>
     <script src="/js/messenger-backend.js?v=1025"></script>
 
     <script>

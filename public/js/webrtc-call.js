@@ -291,10 +291,14 @@
         if (isVideoCall && videosBox) videosBox.style.display = 'flex';
 
         try {
-            const ice = await getIceServers();
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideoCall });
+            // КРИТИЧНО (iOS): getUserMedia ПЕРВЫМ — пока user gesture активен
+            localStream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: isVideoCall ? { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } : false
+            });
             if (localVideo) localVideo.srcObject = localStream;
 
+            const ice = await getIceServers();
             setupPC(ice);
             localStream.getTracks().forEach(function (t) { pc.addTrack(t, localStream); });
 
@@ -323,10 +327,14 @@
         if (isVideoCall && videosBox) videosBox.style.display = 'flex';
 
         try {
-            const ice = await getIceServers();
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideoCall });
+            // КРИТИЧНО (iOS): getUserMedia ПЕРВЫМ — пока user gesture активен
+            localStream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: isVideoCall ? { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } : false
+            });
             if (localVideo) localVideo.srcObject = localStream;
 
+            const ice = await getIceServers();
             setupPC(ice);
             localStream.getTracks().forEach(function (t) { pc.addTrack(t, localStream); });
 
