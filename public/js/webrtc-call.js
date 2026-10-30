@@ -292,10 +292,11 @@
 
         try {
             // КРИТИЧНО (iOS): getUserMedia ПЕРВЫМ — пока user gesture активен
-            localStream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                ...(isVideoCall ? { video: true } : {})
-            });
+            localStream = await navigator.mediaDevices.getUserMedia(
+                isVideoCall
+                    ? { audio: true, video: true }
+                    : { audio: true, video: false }
+            );
             if (localVideo) localVideo.srcObject = localStream;
 
             const ice = await getIceServers();
@@ -328,10 +329,11 @@
 
         try {
             // КРИТИЧНО (iOS): getUserMedia ПЕРВЫМ — пока user gesture активен
-            localStream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                ...(isVideoCall ? { video: true } : {})
-            });
+            localStream = await navigator.mediaDevices.getUserMedia(
+                isVideoCall
+                    ? { audio: true, video: true }
+                    : { audio: true, video: false }
+            );
             if (localVideo) localVideo.srcObject = localStream;
 
             const ice = await getIceServers();
@@ -349,7 +351,7 @@
         } catch (e) {
             console.error('[call] acceptCall failed:', e);
             let msg = '❌ Ошибка';
-            if (e && e.name === 'NotAllowedError') msg = '❌ Нет доступа к камере';
+            if (e && e.name === 'NotAllowedError') msg = isVideoCall ? '❌ Нет доступа к камере/микрофону' : '❌ Нет доступа к микрофону';
             else if (e && e.message) msg = '❌ ' + e.message;
             updateUI('error', msg);
         }
