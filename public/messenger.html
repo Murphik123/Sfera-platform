@@ -667,6 +667,25 @@
         </div>
     </div>
 
+    <!-- Eruda debug console — только с ?debug=1 в URL -->
+    <script>
+    (function() {
+        if (!/[?&]debug=1/.test(window.location.search)) return;
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/eruda@3.4.1/eruda.min.js';
+        s.onload = function() {
+            try {
+                window.eruda.init();
+                console.log('✅ Eruda debug mode active (?debug=1)');
+            } catch (e) { console.error('Eruda init failed:', e); }
+        };
+        s.onerror = function() {
+            console.error('❌ Eruda CDN failed to load');
+        };
+        document.head.appendChild(s);
+    })();
+    </script>
+
     <script src="/js/auth-check.js"></script>
     <script src="/scripts/auto_translate_i18n.js"></script>
     <script src="/socket.io/socket.io.js"></script>
