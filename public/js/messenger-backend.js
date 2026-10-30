@@ -397,6 +397,10 @@
     async function selectDialog(id) {
         activeDialogId = String(id);
         window.activeDialogId = activeDialogId;
+        try {
+            var __mc = document.querySelector('.messenger-container');
+            if (__mc) __mc.classList.add('chat-open');
+        } catch (_) {}
         if (socket && socket.connected) socket.emit('join_room', activeDialogId);
         renderDialogs();
         const dialog = dialogsData.find(d => d.id === activeDialogId);

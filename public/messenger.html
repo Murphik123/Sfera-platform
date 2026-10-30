@@ -369,6 +369,30 @@
             }
         }
     
+        /* SFERA-PATCH: mobile master-detail (список ↔ чат) */
+        @media (max-width: 768px) {
+            .messenger-container:not(.chat-open) .messenger-chat { display: none; }
+            .messenger-container:not(.chat-open) .messenger-sidebar {
+                flex: 1 1 auto;
+                max-height: none;
+                min-height: 0;
+            }
+            .messenger-container.chat-open .messenger-sidebar { display: none; }
+            .messenger-container.chat-open .messenger-chat {
+                display: flex;
+                flex: 1 1 auto;
+                min-height: 0;
+            }
+            .messenger-container.chat-open .chat-messages {
+                min-height: 0;
+                padding: 12px 14px;
+            }
+            .messenger-container.chat-open .chat-input-area {
+                flex-shrink: 0;
+                padding: 10px 12px;
+            }
+        }
+
         /* SFERA-PATCH: Chat Image Styles */
         .chat-image {
             max-width: 100%;
@@ -741,6 +765,15 @@
             const user = JSON.parse(localStorage.getItem('user') || '{"username":"User","role":"user"}');
             const usernameEl = document.getElementById('username');
             if (usernameEl) usernameEl.textContent = user.username || 'User';
+
+            const backBtn = document.getElementById('backBtn');
+            const __mc = document.querySelector('.messenger-container');
+            if (backBtn && __mc) {
+                backBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    __mc.classList.remove('chat-open');
+                });
+            }
 
             const backLink = document.getElementById('backLink');
             if (backLink) backLink.href = (user && user.role === 'admin') ? 'admin.html' : 'dashboard.html';
